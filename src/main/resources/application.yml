@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_practice
+    username: mysql
+    password: mysql
+  jpa:
+    hibernate:
+      ddl-auto: update
+      
+google:
+  sheet:
+    id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
+    name: 2. 得点表
+    
+logging:
+  level:
+    org.hibernate.SQL: debug
