@@ -1,4 +1,4 @@
-package io.github.gogotea55t.jiriki.domain;
+ package io.github.gogotea55t.jiriki.domain;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,8 +102,6 @@ public class JirikiService {
             .setAccessType("offline")
             .build();
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-    System.out.println("C'mon baby" + clientSecrets);
-    System.out.println("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
     return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
   }
 
@@ -190,8 +188,6 @@ public class JirikiService {
         } else {
           jirikiRank = songInfo.get(0).toString();
         }
-
-        System.out.println(jirikiRank);
 
         Songs song =
             Songs.of(
