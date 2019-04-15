@@ -12,7 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
@@ -20,6 +24,7 @@ import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
+//@TestExecutionListeners({TransactionalTestExecutionListener.class})
 @SpringBootTest
 public class JirikiServiceTest {
   @Autowired private GoogleSpreadSheetConfig sheetConfig;
@@ -34,10 +39,15 @@ public class JirikiServiceTest {
 
   Pageable defaultPaging = PageRequest.of(0, 20);
 
+  @Transactional
   @Before
   public void init() {
     jirikiService = new JirikiService(sheetConfig, userRepository, songRepository, scoreRepository);
     SampleDatum sample = new SampleDatum();
+    userRepository.deleteAll();
+    songRepository.deleteAll();
+    scoreRepository.deleteAll();
+    
     userRepository.saveAll(sample.getUsers());
     songRepository.saveAll(sample.getSongs());
     scoreRepository.saveAll(sample.getScores());
@@ -145,5 +155,36 @@ public class JirikiServiceTest {
   public void 存在しない楽曲IDで検索をかけると何もないを返す() throws Exception {
 	SongsResponse songs = jirikiService.getSongBySongId("aaa");
 	assertThat(songs).isNull();
+  }
+  
+  /*
+   * スコア系
+   */
+//  @Transactional
+//  @Test
+//  public void 楽曲IDからスコアを取得できる() throws Exception {
+//	List<Score4SongResponse> scores = jirikiService.getScoresBySongId("001");
+//	assertThat(scores.size()).isEqualTo(2);
+//	List<Score4SongResponse> scores2 = jirikiService.getScoresBySongId("002");
+//	assertThat(scores2.size()).isEqualTo(1);
+//  }
+//  
+//  @Transactional
+//  @Test
+//  public void ユーザーIDからスコアを取得できる() throws Exception {
+//	List<Score4UserResponse> scores = jirikiService.getScoresByUserId("u001");
+//	assertThat(scores.size()).isEqualTo(2);
+//  }
+  
+  @Test
+  public void 存在しない楽曲IDでスコアを検索すると何もないが返ってくる() throws Exception {
+	List<Score4SongResponse> scores = jirikiService.getScoresBySongId("00000");
+	assertThat(scores).isNull();
+  }
+  
+  @Test
+  public void 空行付きリクエストをすると空行も一緒に帰ってくる() throws Exception {
+	List<Score4UserResponse> scores = jirikiService.getScoresByUserIdWithEmpty("u002", defaultPaging);
+	assertThat(scores.size()).isEqualTo(2);
   }
 }
