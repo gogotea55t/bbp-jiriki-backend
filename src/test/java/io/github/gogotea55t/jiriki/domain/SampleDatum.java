@@ -1,5 +1,6 @@
 package io.github.gogotea55t.jiriki.domain;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class SampleDatum {
     score3.setSongs(miraclePaint);
     score3.setScore(99);
     score3.setScoreId(2);
-
+    
     List<Users> users = new ArrayList<Users>();
     users.add(user1);
     users.add(user2);
