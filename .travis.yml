@@ -7,5 +7,6 @@ jdk:
   - oraclejdk8
   
 before_install:
-  - sudo chmod +x gradle/wrapper/gradle-wrapper.jar
+  - chmod a+x gradlew && ./gradlew.build
+  - chmod +x gradle/wrapper/gradle-wrapper.jar
   - git add -f gradle/wrapper/gradle-wrapper.jar
