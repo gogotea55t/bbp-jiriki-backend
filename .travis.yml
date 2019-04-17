@@ -4,4 +4,4 @@ sudo: required
 dist: trusty
 
 jdk: 
-  - 8
+  - oraclejdk8
