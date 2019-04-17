@@ -8,3 +8,4 @@ jdk:
   
 before_install:
   - chmod +x gradle/wrapper/gradle-wrapper.jar
+  - git add -f gradle/wrapper/gradle-wrapper.jar
