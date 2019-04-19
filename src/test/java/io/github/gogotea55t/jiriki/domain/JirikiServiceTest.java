@@ -24,7 +24,6 @@ import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
-//@TestExecutionListeners({TransactionalTestExecutionListener.class})
 @SpringBootTest
 public class JirikiServiceTest {
   @Autowired private GoogleSpreadSheetConfig sheetConfig;
