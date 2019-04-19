@@ -9,5 +9,5 @@ import io.github.gogotea55t.jiriki.domain.entity.Users;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, String> {
-	public List<Users> findByUserNameLike(String userName);
+  public List<Users> findByUserNameLike(String userName);
 }

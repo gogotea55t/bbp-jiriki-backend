@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 
 @Repository
-public interface ScoresRepository extends JpaRepository<Scores, Long> {
-}
+public interface ScoresRepository extends JpaRepository<Scores, Long> {}
