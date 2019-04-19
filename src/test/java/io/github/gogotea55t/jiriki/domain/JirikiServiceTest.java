@@ -66,6 +66,7 @@ public class JirikiServiceTest {
     List<UserResponse> searchResult = jirikiService.getPlayerByName("妖怪1");
     assertThat(searchResult.size()).isEqualTo(1);
     assertThat(searchResult.get(0).getUserName()).isEqualTo("妖怪1");
+    assertThat(searchResult.get(0).getUserId()).isEqualTo("u001");
   }
 
   @Test
