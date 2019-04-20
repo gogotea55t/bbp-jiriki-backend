@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -228,6 +230,7 @@ public class JirikiService {
         // 最後から二番目の列はユーザーに紐づかないソート用の列であるため除外
         for (int j = 1; j < scoreRow.size() - 2; j++) {
           String scoreCol = scoreRow.get(j).toString();
+          try {
 
           // 条件は「空欄じゃない」かつ「0~100までの数字」
           if (scoreCol != null && ("100".equals(scoreCol) || p.matcher(scoreCol).find())) {
@@ -238,6 +241,10 @@ public class JirikiService {
             score.setScore(Integer.parseInt(scoreCol));
 
             scores.add(score);
+          }
+          } catch (Exception e) {
+        	System.out.println(scoreRow);
+        	continue;
           }
         }
       }
@@ -256,7 +263,7 @@ public class JirikiService {
    */
   public List<UserResponse> getAllPlayer() {
     List<UserResponse> players = new ArrayList<>();
-    List<Users> users = userRepository.findAll();
+    List<Users> users = userRepository.findAll(Sort.by(Order.asc("userId")));
     for (Users user : users) {
       players.add(UserResponse.of(user));
     }
