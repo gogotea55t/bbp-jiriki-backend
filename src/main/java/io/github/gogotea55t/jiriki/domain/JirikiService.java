@@ -1,4 +1,4 @@
- package io.github.gogotea55t.jiriki.domain;
+package io.github.gogotea55t.jiriki.domain;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +40,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @Service
 public class JirikiService {
@@ -162,7 +163,7 @@ public class JirikiService {
         Users user = new Users();
 
         String userIdStr = userId.get(i).toString();
-        
+
         user.setUserId(userIdStr);
         user.setUserName(userName.get(i).toString());
         users.put(userIdStr, user);
@@ -184,12 +185,7 @@ public class JirikiService {
           continue;
         }
 
-        String jirikiRank;
-        if (songInfo.get(0).toString().indexOf("■") > -1) {
-          jirikiRank = "未決定";
-        } else {
-          jirikiRank = songInfo.get(0).toString();
-        }
+        JirikiRank jirikiRank = JirikiRank.getJirikiRankFromRankName(songInfo.get(0).toString());
 
         Songs song =
             Songs.of(
@@ -220,11 +216,13 @@ public class JirikiService {
         List<Object> scoreRow = scoreRows.get(i);
 
         // 完全に空白になっている行はスキップする（もっとやりようがある気がする）
-        if (scoreRow.size() == 0 || scoreRow.get(0) == null || scoreRow.get(0).toString().equals("")) {
+        if (scoreRow.size() == 0
+            || scoreRow.get(0) == null
+            || scoreRow.get(0).toString().equals("")) {
           k++;
           continue;
         }
-        
+
         Songs thisSong = songs.get(scoreRow.get(0));
 
         // 最後から二番目の列はユーザーに紐づかないソート用の列であるため除外
@@ -232,19 +230,19 @@ public class JirikiService {
           String scoreCol = scoreRow.get(j).toString();
           try {
 
-          // 条件は「空欄じゃない」かつ「0~100までの数字」
-          if (scoreCol != null && ("100".equals(scoreCol) || p.matcher(scoreCol).find())) {
-            Scores score = new Scores();
+            // 条件は「空欄じゃない」かつ「0~100までの数字」
+            if (scoreCol != null && ("100".equals(scoreCol) || p.matcher(scoreCol).find())) {
+              Scores score = new Scores();
 
-            score.setSongs(thisSong);
-            score.setUsers(users.get(scoreRows.get(0).get(j).toString()));
-            score.setScore(Integer.parseInt(scoreCol));
+              score.setSongs(thisSong);
+              score.setUsers(users.get(scoreRows.get(0).get(j).toString()));
+              score.setScore(Integer.parseInt(scoreCol));
 
-            scores.add(score);
-          }
+              scores.add(score);
+            }
           } catch (Exception e) {
-        	System.out.println(scoreRow);
-        	continue;
+            System.out.println(scoreRow);
+            continue;
           }
         }
       }

@@ -23,7 +23,7 @@ public class SongsResponse {
     SongsResponse songsResponse = new SongsResponse();
     songsResponse.setContributor(song.getContributor());
     songsResponse.setInstrument(song.getInstrument());
-    songsResponse.setJirikiRank(song.getJirikiRank());
+    songsResponse.setJirikiRank(song.getJirikiRank().getJirikiRank());
     songsResponse.setSongId(song.getSongId());
     songsResponse.setSongName(song.getSongName());
     return songsResponse;
