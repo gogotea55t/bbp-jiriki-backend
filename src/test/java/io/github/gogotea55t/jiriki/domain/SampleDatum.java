@@ -7,6 +7,7 @@ import java.util.List;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import lombok.Getter;
 
 @Getter
@@ -26,14 +27,14 @@ public class SampleDatum {
 
     Songs mitemite = new Songs();
     mitemite.setSongId("001");
-    mitemite.setJirikiRank("地力Ｓ＋");
+    mitemite.setJirikiRank(JirikiRank.getJirikiRankFromRankName("地力Ｓ＋"));
     mitemite.setInstrument("チェンバロ");
     mitemite.setSongName("みてみて☆こっちっち");
     mitemite.setContributor("エメラル");
 
     Songs miraclePaint = new Songs();
     miraclePaint.setSongId("002");
-    miraclePaint.setJirikiRank("地力Ａ＋");
+    miraclePaint.setJirikiRank(JirikiRank.getJirikiRankFromRankName("地力Ａ＋"));
     miraclePaint.setSongName("ミラクルペイント");
     miraclePaint.setContributor("タタナミ");
     miraclePaint.setInstrument("ピアノ①");

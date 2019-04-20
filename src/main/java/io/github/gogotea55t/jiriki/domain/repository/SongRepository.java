@@ -27,7 +27,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
               + "LEFT OUTER JOIN scores sc "
               + "ON sc.songs_song_id = so.song_id "
               + "AND sc.users_user_id = ?1 "
-              + "ORDER BY so.song_id asc",
+              + "ORDER BY so.jiriki_rank asc",
       countQuery = "SELECT COUNT(*) FROM songs",
       nativeQuery = true)
   public List<Object[]> findSongsByUserIdWithEmptyRows(String userId, Pageable page);
