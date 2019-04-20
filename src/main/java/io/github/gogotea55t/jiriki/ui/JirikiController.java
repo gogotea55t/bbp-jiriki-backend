@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +43,7 @@ public class JirikiController {
       @RequestParam(required = false) String instrument,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq = PageRequest.of(page, limit);
+    Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank")));
 
     if (name != null) {
       return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));
@@ -81,7 +83,7 @@ public class JirikiController {
       @PathVariable(name = "id") String id,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-	PageRequest pageReq = PageRequest.of(page, limit);
+    PageRequest pageReq = PageRequest.of(page, limit);
     List<Score4UserResponse> response = jirikiService.getScoresByUserIdWithEmpty(id, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();

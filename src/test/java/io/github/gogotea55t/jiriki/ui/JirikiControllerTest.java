@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +46,8 @@ public class JirikiControllerTest {
   @Autowired ObjectMapper objectMapper;
 
   private JirikiController controller;
+  
+  private Pageable defaultPaging = PageRequest.of(0,20, Sort.by(Order.asc("jirikiRank")));
 
   private SampleDatum sample = new SampleDatum();
   List<SongsResponse> mockSongsResponse =
@@ -65,7 +70,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 楽曲情報が取得できる() throws Exception {
-    when(mockService.getAllSongs(PageRequest.of(0, 20))).thenReturn(mockSongsResponse);
+    when(mockService.getAllSongs(defaultPaging)).thenReturn(mockSongsResponse);
 
     mockMvc
         .perform(get(new URI("/songs")))
@@ -75,7 +80,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 楽曲名で検索して楽曲情報が取得できる() throws Exception {
-    when(mockService.getSongBySongName("カミサマネジマキ", PageRequest.of(0, 20)))
+    when(mockService.getSongBySongName("カミサマネジマキ", defaultPaging))
         .thenReturn(mockSongsResponse);
     mockMvc
         .perform(get(new URI("/songs?name=カミサマネジマキ")))
@@ -85,7 +90,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 投稿者名で検索して楽曲情報が取得できる() throws Exception {
-    when(mockService.getSongByContributor("ミラ", PageRequest.of(0, 20)))
+    when(mockService.getSongByContributor("ミラ", defaultPaging))
         .thenReturn(mockSongsResponse);
     mockMvc
         .perform(get(new URI("/songs?contributor=ミラ")))
@@ -95,7 +100,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 楽器名で検索して楽曲情報が取得できる() throws Exception {
-    when(mockService.getSongByInstrument("ロックオルガン", PageRequest.of(0, 20)))
+    when(mockService.getSongByInstrument("ロックオルガン", defaultPaging))
         .thenReturn(mockSongsResponse);
     mockMvc
         .perform(get(new URI("/songs?instrument=ロックオルガン")))
