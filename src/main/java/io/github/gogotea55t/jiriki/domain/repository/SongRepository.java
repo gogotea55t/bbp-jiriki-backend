@@ -22,7 +22,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
 
   @Query(
       value =
-          "SELECT so.song_id, so.song_name, so.contributor, so.instrument, sc.score "
+          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, sc.score "
               + "FROM songs so "
               + "LEFT OUTER JOIN scores sc "
               + "ON sc.songs_song_id = so.song_id "
