@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,7 +31,7 @@ public class Songs {
   private String songId;
 
   @Column(length = 15)
-  private String jirikiRank;
+  private JirikiRank jirikiRank;
 
   /** 楽曲名 */
   @Column(length = 60)
@@ -52,7 +53,7 @@ public class Songs {
   private List<Scores> scores;
 
   public static Songs of(
-      String songId, String jirikiRank, String songName, String contributor, String instrument) {
+      String songId, JirikiRank jirikiRank, String songName, String contributor, String instrument) {
     Songs song = new Songs();
     song.setSongId(songId);
     song.setJirikiRank(jirikiRank);
