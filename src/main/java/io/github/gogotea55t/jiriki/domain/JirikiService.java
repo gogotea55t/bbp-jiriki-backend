@@ -374,6 +374,42 @@ public class JirikiService {
     }
   }
 
+  public List<Score4UserResponse> getScoresByUserIdAndSongNameWithEmpty(
+      String userId, String songName, Pageable page) {
+    if (userRepository.existsById(userId)) {
+      return songRepository.findSongsByUserIdAndSongNameWithEmpty(userId, songName, page);
+    } else {
+      return null;
+    }
+  }
+
+  public List<Score4UserResponse> getScoresByUserIdAndContributorWithEmpty(
+      String userId, String contributor, Pageable page) {
+    if (userRepository.existsById(userId)) {
+      return songRepository.findSongsByUserIdAndContributorWithEmpty(userId, contributor, page);
+    } else {
+      return null;
+    }
+  }
+
+  public List<Score4UserResponse> getScoresByUserIdAndInstrumentWithEmpty(
+      String userId, String instrument, Pageable page) {
+    if (userRepository.existsById(userId)) {
+      return songRepository.findSongsByUserIdAndInstrumentWithEmpty(userId, instrument, page);
+    } else {
+      return null;
+    }
+  }
+
+  public List<Score4UserResponse> getScoresByUserIdAndJirikiRankWithEmpty(
+      String userId, JirikiRank jiriki, Pageable page) {
+    if (userRepository.existsById(userId)) {
+      return songRepository.findSongsByUserIdAndJirikiRankWithEmpty(userId, jiriki, page);
+    } else {
+      return null;
+    }
+  }
+
   public List<SongsResponse> getAllSongs(Pageable pageable) {
     Page<Songs> songs = songRepository.findAll(pageable);
     List<SongsResponse> songsResponse = new ArrayList<>();
