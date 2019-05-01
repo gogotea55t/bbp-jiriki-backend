@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -46,7 +47,7 @@ public class JirikiServiceTest {
     userRepository.deleteAll();
     songRepository.deleteAll();
     scoreRepository.deleteAll();
-    
+
     userRepository.saveAll(sample.getUsers());
     songRepository.saveAll(sample.getSongs());
     scoreRepository.saveAll(sample.getScores());
@@ -102,11 +103,11 @@ public class JirikiServiceTest {
     List<SongsResponse> songs = jirikiService.getAllSongs(defaultPaging);
     assertThat(songs.size()).isEqualTo(2);
   }
-  
+
   @Test
   public void ページングの設定は正しく反映される() throws Exception {
-	List<SongsResponse> songs = jirikiService.getAllSongs(PageRequest.of(0, 1));
-	assertThat(songs.size()).isEqualTo(1);
+    List<SongsResponse> songs = jirikiService.getAllSongs(PageRequest.of(0, 1));
+    assertThat(songs.size()).isEqualTo(1);
   }
 
   @Test
@@ -132,7 +133,7 @@ public class JirikiServiceTest {
     List<SongsResponse> songs = jirikiService.getSongBySongName("こっち見んな", defaultPaging);
     assertThat(songs.size()).isEqualTo(0);
   }
-  
+
   @Test
   public void 存在しない投稿者名の場合何もないを返す() throws Exception {
     List<SongsResponse> songs = jirikiService.getSongByContributor("ベースしもべ", defaultPaging);
@@ -144,47 +145,98 @@ public class JirikiServiceTest {
     List<SongsResponse> songs = jirikiService.getSongByInstrument("ネンリキ", defaultPaging);
     assertThat(songs.size()).isEqualTo(0);
   }
-  
+
   @Test
   public void 楽曲IDで検索をかけられる() throws Exception {
-	SongsResponse songs = jirikiService.getSongBySongId("001");
-	assertThat(songs.getSongName()).isEqualTo("みてみて☆こっちっち");
+    SongsResponse songs = jirikiService.getSongBySongId("001");
+    assertThat(songs.getSongName()).isEqualTo("みてみて☆こっちっち");
   }
-  
+
   @Test
   public void 存在しない楽曲IDで検索をかけると何もないを返す() throws Exception {
-	SongsResponse songs = jirikiService.getSongBySongId("aaa");
-	assertThat(songs).isNull();
+    SongsResponse songs = jirikiService.getSongBySongId("aaa");
+    assertThat(songs).isNull();
   }
-  
+
   /*
    * スコア系
    */
-//  @Transactional
-//  @Test
-//  public void 楽曲IDからスコアを取得できる() throws Exception {
-//	List<Score4SongResponse> scores = jirikiService.getScoresBySongId("001");
-//	assertThat(scores.size()).isEqualTo(2);
-//	List<Score4SongResponse> scores2 = jirikiService.getScoresBySongId("002");
-//	assertThat(scores2.size()).isEqualTo(1);
-//  }
-//  
-//  @Transactional
-//  @Test
-//  public void ユーザーIDからスコアを取得できる() throws Exception {
-//	List<Score4UserResponse> scores = jirikiService.getScoresByUserId("u001");
-//	assertThat(scores.size()).isEqualTo(2);
-//  }
-  
+
   @Test
   public void 存在しない楽曲IDでスコアを検索すると何もないが返ってくる() throws Exception {
-	List<Score4SongResponse> scores = jirikiService.getScoresBySongId("00000");
-	assertThat(scores).isNull();
+    List<Score4SongResponse> scores = jirikiService.getScoresBySongId("00000");
+    assertThat(scores).isNull();
   }
-  
+
   @Test
-  public void 空行付きリクエストをすると空行も一緒に帰ってくる() throws Exception {
-	List<Score4UserResponse> scores = jirikiService.getScoresByUserIdWithEmpty("u002", defaultPaging);
-	assertThat(scores.size()).isEqualTo(2);
+  public void スコア検索をかけるとスコアが返ってくる() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdWithEmpty("u002", defaultPaging);
+    assertThat(scores.size()).isEqualTo(2);
+  }
+
+  @Test
+  public void 楽曲名でスコア検索ができる() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndSongNameWithEmpty("u001", "ミラクルペイント", defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 楽曲名でスコア検索ができる_部分一致() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndSongNameWithEmpty("u001", "ミ", defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 投稿者名でスコア検索ができる() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndContributorWithEmpty("u001", "エメラル", defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 投稿者名でスコア検索ができる_部分一致() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndContributorWithEmpty("u001", "エメラル", defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 楽器名でスコア情報を検索できる() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndInstrumentWithEmpty("u001", "ピアノ", defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 楽器名でスコア情報を検索できる_部分一致() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndInstrumentWithEmpty("u001", "ピ", defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 地力ランクでスコア情報を検索できる() throws Exception {
+    List<Score4UserResponse> scores =
+        jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
+            "u001", JirikiRank.JIRIKI_A_PLUS, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 存在しないユーザーでスコア検索をかける() throws Exception {
+    assertThat(jirikiService.getScoresByUserIdWithEmpty("uqqqq", defaultPaging)).isNull();
+    assertThat(jirikiService.getScoresByUserIdAndSongNameWithEmpty("uqqqq", "", defaultPaging))
+        .isNull();
+    assertThat(jirikiService.getScoresByUserIdAndContributorWithEmpty("uqqqq", "", defaultPaging))
+        .isNull();
+    assertThat(jirikiService.getScoresByUserIdAndInstrumentWithEmpty("uqqqq", "", defaultPaging))
+        .isNull();
+    assertThat(
+            jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
+                "uqqqq", JirikiRank.UNACCOMPLISHED, defaultPaging))
+        .isNull();
   }
 }

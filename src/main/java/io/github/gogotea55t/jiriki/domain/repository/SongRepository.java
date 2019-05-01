@@ -79,7 +79,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
 
   default List<Score4UserResponse> findSongsByUserIdAndContributorWithEmpty(
       String userId, String contributor, Pageable page) {
-    return findSongsByUserIdAndSongNameWithEmptyRows(userId, contributor, page)
+    return findSongsByUserIdAndContributorWithEmptyRows(userId, contributor, page)
         .stream()
         .map(Score4UserResponse::new)
         .collect(Collectors.toList());
