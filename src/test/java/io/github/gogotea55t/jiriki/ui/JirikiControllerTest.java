@@ -34,6 +34,7 @@ import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -186,5 +187,45 @@ public class JirikiControllerTest {
 
   private String toJson(Object object) throws JsonProcessingException {
     return objectMapper.writeValueAsString(object);
+  }
+  
+  @Test
+  public void プレイヤーIDと楽曲名を指定してスコア情報を取得できる() throws Exception {
+    when(mockService.getScoresByUserIdAndSongNameWithEmpty("u001", "みてみて☆こっちっち", PageRequest.of(0, 20)))
+        .thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/players/u001/scores?name=みてみて☆こっちっち")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void プレイヤーIDを投稿者名を指定してスコア情報を取得できる() throws Exception {
+    when(mockService.getScoresByUserIdAndContributorWithEmpty("u001", "エメラル", PageRequest.of(0, 20)))
+        .thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/players/u001/scores?contributor=エメラル")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void プレイヤーIDと楽器名を指定してスコア情報を取得できる() throws Exception {
+    when(mockService.getScoresByUserIdAndInstrumentWithEmpty("u001", "ピアノ", PageRequest.of(0, 20)))
+        .thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/players/u001/scores?instrument=ピアノ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void プレイヤーIDと地力ランクを指定してスコア情報を取得できる() throws Exception {
+    when(mockService.getScoresByUserIdAndJirikiRankWithEmpty("u001", JirikiRank.JIRIKI_D, PageRequest.of(0, 20)))
+        .thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/players/u001/scores?jiriki=地力Ｄ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
 }

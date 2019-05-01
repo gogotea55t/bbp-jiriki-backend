@@ -18,6 +18,7 @@ import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @Controller
 public class JirikiController {
@@ -81,10 +82,28 @@ public class JirikiController {
   @GetMapping("/players/{id}/scores")
   public ResponseEntity<?> getScoresByPlayerId(
       @PathVariable(name = "id") String id,
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String contributor,
+      @RequestParam(required = false) String instrument,
+      @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
     PageRequest pageReq = PageRequest.of(page, limit);
-    List<Score4UserResponse> response = jirikiService.getScoresByUserIdWithEmpty(id, pageReq);
+    List<Score4UserResponse> response;
+    if (name != null) {
+      System.out.println(name);
+      response = jirikiService.getScoresByUserIdAndSongNameWithEmpty(id, name, pageReq);
+    } else if (contributor != null) {
+      response = jirikiService.getScoresByUserIdAndContributorWithEmpty(id, contributor, pageReq);
+    } else if (instrument != null) {
+      response = jirikiService.getScoresByUserIdAndInstrumentWithEmpty(id, instrument, pageReq);
+    } else if (jiriki != null) {
+      response =
+          jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
+              id, JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+    } else {
+      response = jirikiService.getScoresByUserIdWithEmpty(id, pageReq);
+    }
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
