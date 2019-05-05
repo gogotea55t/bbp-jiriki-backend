@@ -21,6 +21,8 @@ public interface SongRepository extends JpaRepository<Songs, String> {
   public List<Songs> findByContributorContaining(String contributor, Pageable page);
 
   public List<Songs> findByInstrumentContaining(String instrument, Pageable page);
+  
+  public List<Songs> findByJirikiRank(JirikiRank jiriki, Pageable page);
 
   @Query(
       value =

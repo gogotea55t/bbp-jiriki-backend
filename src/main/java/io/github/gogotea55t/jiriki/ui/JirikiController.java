@@ -42,6 +42,7 @@ public class JirikiController {
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String contributor,
       @RequestParam(required = false) String instrument,
+      @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
     Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank")));
@@ -52,6 +53,8 @@ public class JirikiController {
       return ResponseEntity.ok(jirikiService.getSongByContributor(contributor, pageReq));
     } else if (instrument != null) {
       return ResponseEntity.ok(jirikiService.getSongByInstrument(instrument, pageReq));
+    } else if (jiriki != null) {
+      return ResponseEntity.ok(jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
     }
     List<SongsResponse> songs = jirikiService.getAllSongs(pageReq);
 
@@ -91,7 +94,6 @@ public class JirikiController {
     PageRequest pageReq = PageRequest.of(page, limit);
     List<Score4UserResponse> response;
     if (name != null) {
-      System.out.println(name);
       response = jirikiService.getScoresByUserIdAndSongNameWithEmpty(id, name, pageReq);
     } else if (contributor != null) {
       response = jirikiService.getScoresByUserIdAndContributorWithEmpty(id, contributor, pageReq);

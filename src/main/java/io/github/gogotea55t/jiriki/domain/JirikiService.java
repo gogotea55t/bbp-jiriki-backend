@@ -331,6 +331,17 @@ public class JirikiService {
         });
     return songs;
   }
+  
+  public List<SongsResponse> getSongByJiriki(JirikiRank jiriki, Pageable page) {
+	List<SongsResponse> songs = new ArrayList<>();
+	
+	List<Songs> songsResponse = songRepository.findByJirikiRank(jiriki, page);
+	songsResponse.forEach(s -> {
+		songs.add(SongsResponse.of(s));
+	});
+	
+	return songs;
+  }
 
   public List<Score4SongResponse> getScoresBySongId(String songId) {
     Optional<Songs> song = songRepository.findById(songId);
