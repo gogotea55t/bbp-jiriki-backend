@@ -127,6 +127,13 @@ public class JirikiServiceTest {
     List<SongsResponse> songs = jirikiService.getSongByInstrument("ピア", defaultPaging);
     assertThat(songs.size()).isEqualTo(1);
   }
+  
+  @Test
+  public void 地力で検索できる() throws Exception {
+	 List<SongsResponse> songs = jirikiService.getSongByJiriki(JirikiRank.JIRIKI_A_PLUS, defaultPaging);
+	 assertThat(songs.size()).isEqualTo(1);
+	 assertThat(jirikiService.getSongByJiriki(JirikiRank.JIRIKI_F, defaultPaging).size()).isEqualTo(0);
+  }
 
   @Test
   public void 存在しない楽曲名の場合何もないを返す() throws Exception {

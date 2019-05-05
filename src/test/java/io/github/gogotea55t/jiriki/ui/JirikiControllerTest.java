@@ -47,8 +47,8 @@ public class JirikiControllerTest {
   @Autowired ObjectMapper objectMapper;
 
   private JirikiController controller;
-  
-  private Pageable defaultPaging = PageRequest.of(0,20, Sort.by(Order.asc("jirikiRank")));
+
+  private Pageable defaultPaging = PageRequest.of(0, 20, Sort.by(Order.asc("jirikiRank")));
 
   private SampleDatum sample = new SampleDatum();
   List<SongsResponse> mockSongsResponse =
@@ -81,8 +81,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 楽曲名で検索して楽曲情報が取得できる() throws Exception {
-    when(mockService.getSongBySongName("カミサマネジマキ", defaultPaging))
-        .thenReturn(mockSongsResponse);
+    when(mockService.getSongBySongName("カミサマネジマキ", defaultPaging)).thenReturn(mockSongsResponse);
     mockMvc
         .perform(get(new URI("/songs?name=カミサマネジマキ")))
         .andExpect(status().isOk())
@@ -91,8 +90,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 投稿者名で検索して楽曲情報が取得できる() throws Exception {
-    when(mockService.getSongByContributor("ミラ", defaultPaging))
-        .thenReturn(mockSongsResponse);
+    when(mockService.getSongByContributor("ミラ", defaultPaging)).thenReturn(mockSongsResponse);
     mockMvc
         .perform(get(new URI("/songs?contributor=ミラ")))
         .andExpect(status().isOk())
@@ -101,10 +99,29 @@ public class JirikiControllerTest {
 
   @Test
   public void 楽器名で検索して楽曲情報が取得できる() throws Exception {
-    when(mockService.getSongByInstrument("ロックオルガン", defaultPaging))
-        .thenReturn(mockSongsResponse);
+    when(mockService.getSongByInstrument("ロックオルガン", defaultPaging)).thenReturn(mockSongsResponse);
     mockMvc
         .perform(get(new URI("/songs?instrument=ロックオルガン")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockSongsResponse)));
+  }
+
+  @Test
+  public void 地力ランクを指定して検索ができる() throws Exception {
+    when(mockService.getSongByJiriki(JirikiRank.JIRIKI_E, defaultPaging))
+        .thenReturn(mockSongsResponse);
+    mockMvc
+        .perform(get(new URI("/songs?jiriki=地力Ｅ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockSongsResponse)));
+  }
+
+  @Test
+  public void 地力ランクとしてよくわからない文字列が来たら未決定で検索される() throws Exception {
+    when(mockService.getSongByJiriki(JirikiRank.NON_DETERMINED, defaultPaging))
+        .thenReturn(mockSongsResponse);
+    mockMvc
+        .perform(get(new URI("/songs?jiriki=地力A")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -188,27 +205,29 @@ public class JirikiControllerTest {
   private String toJson(Object object) throws JsonProcessingException {
     return objectMapper.writeValueAsString(object);
   }
-  
+
   @Test
   public void プレイヤーIDと楽曲名を指定してスコア情報を取得できる() throws Exception {
-    when(mockService.getScoresByUserIdAndSongNameWithEmpty("u001", "みてみて☆こっちっち", PageRequest.of(0, 20)))
+    when(mockService.getScoresByUserIdAndSongNameWithEmpty(
+            "u001", "みてみて☆こっちっち", PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/players/u001/scores?name=みてみて☆こっちっち")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
-  
+
   @Test
   public void プレイヤーIDを投稿者名を指定してスコア情報を取得できる() throws Exception {
-    when(mockService.getScoresByUserIdAndContributorWithEmpty("u001", "エメラル", PageRequest.of(0, 20)))
+    when(mockService.getScoresByUserIdAndContributorWithEmpty(
+            "u001", "エメラル", PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/players/u001/scores?contributor=エメラル")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
-  
+
   @Test
   public void プレイヤーIDと楽器名を指定してスコア情報を取得できる() throws Exception {
     when(mockService.getScoresByUserIdAndInstrumentWithEmpty("u001", "ピアノ", PageRequest.of(0, 20)))
@@ -218,10 +237,11 @@ public class JirikiControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
-  
+
   @Test
   public void プレイヤーIDと地力ランクを指定してスコア情報を取得できる() throws Exception {
-    when(mockService.getScoresByUserIdAndJirikiRankWithEmpty("u001", JirikiRank.JIRIKI_D, PageRequest.of(0, 20)))
+    when(mockService.getScoresByUserIdAndJirikiRankWithEmpty(
+            "u001", JirikiRank.JIRIKI_D, PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/players/u001/scores?jiriki=地力Ｄ")))
