@@ -74,7 +74,7 @@ public class JirikiControllerTest {
     when(mockService.getAllSongs(defaultPaging)).thenReturn(mockSongsResponse);
 
     mockMvc
-        .perform(get(new URI("/songs")))
+        .perform(get(new URI("/v1/songs")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -83,7 +83,7 @@ public class JirikiControllerTest {
   public void 楽曲名で検索して楽曲情報が取得できる() throws Exception {
     when(mockService.getSongBySongName("カミサマネジマキ", defaultPaging)).thenReturn(mockSongsResponse);
     mockMvc
-        .perform(get(new URI("/songs?name=カミサマネジマキ")))
+        .perform(get(new URI("/v1/songs?name=カミサマネジマキ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -92,7 +92,7 @@ public class JirikiControllerTest {
   public void 投稿者名で検索して楽曲情報が取得できる() throws Exception {
     when(mockService.getSongByContributor("ミラ", defaultPaging)).thenReturn(mockSongsResponse);
     mockMvc
-        .perform(get(new URI("/songs?contributor=ミラ")))
+        .perform(get(new URI("/v1/songs?contributor=ミラ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -101,7 +101,7 @@ public class JirikiControllerTest {
   public void 楽器名で検索して楽曲情報が取得できる() throws Exception {
     when(mockService.getSongByInstrument("ロックオルガン", defaultPaging)).thenReturn(mockSongsResponse);
     mockMvc
-        .perform(get(new URI("/songs?instrument=ロックオルガン")))
+        .perform(get(new URI("/v1/songs?instrument=ロックオルガン")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -111,7 +111,7 @@ public class JirikiControllerTest {
     when(mockService.getSongByJiriki(JirikiRank.JIRIKI_E, defaultPaging))
         .thenReturn(mockSongsResponse);
     mockMvc
-        .perform(get(new URI("/songs?jiriki=地力Ｅ")))
+        .perform(get(new URI("/v1/songs?jiriki=地力Ｅ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -121,7 +121,7 @@ public class JirikiControllerTest {
     when(mockService.getSongByJiriki(JirikiRank.NON_DETERMINED, defaultPaging))
         .thenReturn(mockSongsResponse);
     mockMvc
-        .perform(get(new URI("/songs?jiriki=地力A")))
+        .perform(get(new URI("/v1/songs?jiriki=地力A")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
   }
@@ -129,13 +129,13 @@ public class JirikiControllerTest {
   @Test
   public void 楽曲IDを指定して楽曲情報を取得できる() throws Exception {
     when(mockService.getSongBySongId("001")).thenReturn(SongsResponse.of(sample.getSongs().get(0)));
-    mockMvc.perform(get(new URI("/songs/001"))).andExpect(status().isOk());
+    mockMvc.perform(get(new URI("/v1/songs/001"))).andExpect(status().isOk());
   }
 
   @Test
   public void 存在しない楽曲IDを指定すると楽曲情報が取得できない() throws Exception {
     when(mockService.getSongBySongId("004")).thenReturn(null);
-    mockMvc.perform(get(new URI("/songs/004"))).andExpect(status().is4xxClientError());
+    mockMvc.perform(get(new URI("/v1/songs/004"))).andExpect(status().is4xxClientError());
   }
 
   @Test
@@ -143,7 +143,7 @@ public class JirikiControllerTest {
     when(mockService.getScoresBySongId("001")).thenReturn(mockScore4SongResponse);
 
     mockMvc
-        .perform(get(new URI("/songs/001/scores")))
+        .perform(get(new URI("/v1/songs/001/scores")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4SongResponse)));
   }
@@ -151,14 +151,14 @@ public class JirikiControllerTest {
   @Test
   public void 存在しない楽曲IDを指定するとスコア情報が取得できない() throws Exception {
     when(mockService.getScoresBySongId("004")).thenReturn(null);
-    mockMvc.perform(get(new URI("/songs/004/scores"))).andExpect(status().is4xxClientError());
+    mockMvc.perform(get(new URI("/v1/songs/004/scores"))).andExpect(status().is4xxClientError());
   }
 
   @Test
   public void 全プレイヤー情報を取得できる() throws Exception {
     when(mockService.getAllPlayer()).thenReturn(mockUserResponse);
     mockMvc
-        .perform(get(new URI("/players")))
+        .perform(get(new URI("/v1/players")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockUserResponse)));
   }
@@ -171,7 +171,7 @@ public class JirikiControllerTest {
 
     when(mockService.getPlayerByName("妖怪1")).thenReturn(users);
     mockMvc
-        .perform(get(new URI("/players?name=妖怪1")))
+        .perform(get(new URI("/v1/players?name=妖怪1")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(users)));
   }
@@ -181,7 +181,7 @@ public class JirikiControllerTest {
     UserResponse user = UserResponse.of(sample.getUsers().get(0));
     when(mockService.getPlayerById("u001")).thenReturn(user);
     mockMvc
-        .perform(get(new URI("/players/u001")))
+        .perform(get(new URI("/v1/players/u001")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(user)));
   }
@@ -191,7 +191,7 @@ public class JirikiControllerTest {
     when(mockService.getScoresByUserIdWithEmpty("u001", PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
-        .perform(get(new URI("/players/u001/scores")))
+        .perform(get(new URI("/v1/players/u001/scores")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
@@ -199,7 +199,7 @@ public class JirikiControllerTest {
   @Test
   public void 存在しないプレイヤーIDを指定するとスコア情報が取得できない() throws Exception {
     when(mockService.getScoresByUserIdWithEmpty("human", PageRequest.of(0, 20))).thenReturn(null);
-    mockMvc.perform(get(new URI("/players/human/scores"))).andExpect(status().is4xxClientError());
+    mockMvc.perform(get(new URI("/v1/players/human/scores"))).andExpect(status().is4xxClientError());
   }
 
   private String toJson(Object object) throws JsonProcessingException {
@@ -212,7 +212,7 @@ public class JirikiControllerTest {
             "u001", "みてみて☆こっちっち", PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
-        .perform(get(new URI("/players/u001/scores?name=みてみて☆こっちっち")))
+        .perform(get(new URI("/v1/players/u001/scores?name=みてみて☆こっちっち")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
@@ -223,7 +223,7 @@ public class JirikiControllerTest {
             "u001", "エメラル", PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
-        .perform(get(new URI("/players/u001/scores?contributor=エメラル")))
+        .perform(get(new URI("/v1/players/u001/scores?contributor=エメラル")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
@@ -233,7 +233,7 @@ public class JirikiControllerTest {
     when(mockService.getScoresByUserIdAndInstrumentWithEmpty("u001", "ピアノ", PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
-        .perform(get(new URI("/players/u001/scores?instrument=ピアノ")))
+        .perform(get(new URI("/v1/players/u001/scores?instrument=ピアノ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
@@ -244,7 +244,7 @@ public class JirikiControllerTest {
             "u001", JirikiRank.JIRIKI_D, PageRequest.of(0, 20)))
         .thenReturn(mockScore4UserResponse);
     mockMvc
-        .perform(get(new URI("/players/u001/scores?jiriki=地力Ｄ")))
+        .perform(get(new URI("/v1/players/u001/scores?jiriki=地力Ｄ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
