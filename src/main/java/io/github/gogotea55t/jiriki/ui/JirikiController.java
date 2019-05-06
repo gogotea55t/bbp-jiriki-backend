@@ -37,7 +37,7 @@ public class JirikiController {
     return ResponseEntity.ok().body("ok");
   }
 
-  @GetMapping("/songs")
+  @GetMapping("/v1/songs")
   public ResponseEntity<?> getSong(
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String contributor,
@@ -61,7 +61,7 @@ public class JirikiController {
     return ResponseEntity.ok(songs);
   }
 
-  @GetMapping("/players")
+  @GetMapping("/v1/players")
   public ResponseEntity<?> getPlayer(@RequestParam(required = false) String name) {
     if (name == null) {
       List<UserResponse> result = jirikiService.getAllPlayer();
@@ -72,7 +72,7 @@ public class JirikiController {
     }
   }
 
-  @GetMapping("/players/{id}")
+  @GetMapping("/v1/players/{id}")
   public ResponseEntity<?> getPlayerById(@PathVariable(name = "id") String id) {
     UserResponse response = jirikiService.getPlayerById(id);
     if (response == null) {
@@ -82,7 +82,7 @@ public class JirikiController {
     }
   }
 
-  @GetMapping("/players/{id}/scores")
+  @GetMapping("/v1/players/{id}/scores")
   public ResponseEntity<?> getScoresByPlayerId(
       @PathVariable(name = "id") String id,
       @RequestParam(required = false) String name,
@@ -113,7 +113,7 @@ public class JirikiController {
     }
   }
 
-  @GetMapping("/songs/{id}")
+  @GetMapping("/v1/songs/{id}")
   public ResponseEntity<?> getSongBySongId(@PathVariable(name = "id") String id) {
     SongsResponse response = jirikiService.getSongBySongId(id);
     if (response == null) {
@@ -123,7 +123,7 @@ public class JirikiController {
     }
   }
 
-  @GetMapping("/songs/{id}/scores")
+  @GetMapping("/v1/songs/{id}/scores")
   public ResponseEntity<?> getScoresBySongId(@PathVariable(name = "id") String id) {
     List<Score4SongResponse> response = jirikiService.getScoresBySongId(id);
     if (response == null) {
@@ -133,7 +133,7 @@ public class JirikiController {
     }
   }
 
-  @GetMapping("/jiriki")
+  @GetMapping("/v1/jiriki")
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
   }
