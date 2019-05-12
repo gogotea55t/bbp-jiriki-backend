@@ -28,6 +28,8 @@ import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 @SpringBootTest
 public class JirikiServiceTest {
   @Autowired private GoogleSpreadSheetConfig sheetConfig;
+  
+  @Autowired private GoogleSheetsService sheetService;
 
   @Autowired private UserRepository userRepository;
 
@@ -42,7 +44,7 @@ public class JirikiServiceTest {
   @Transactional
   @Before
   public void init() {
-    jirikiService = new JirikiService(sheetConfig, userRepository, songRepository, scoreRepository);
+    jirikiService = new JirikiService(sheetConfig, sheetService, userRepository, songRepository, scoreRepository);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
