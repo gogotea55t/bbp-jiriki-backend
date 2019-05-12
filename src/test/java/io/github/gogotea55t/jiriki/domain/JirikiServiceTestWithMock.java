@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 
@@ -195,11 +196,18 @@ public class JirikiServiceTestWithMock {
     return valueRanges;
   }
 
+  @Transactional
   @Test
   public void スプレッドシートからの情報をもとにデータベースへの追加をする() throws Exception {
     when(sheetsService.getValuesFromSpreadSheet()).thenReturn(valueRanges());
     jirikiService.doGet();
     assertThat(songRepository.count()).isEqualTo(4);
     assertThat(scoreRepository.count()).isEqualTo(7);
+    Users youkai2 = userRepository.findById("u002").get();
+    assertThat(youkai2.getUserName()).isEqualTo("妖怪2");
+    Songs miraclePaint = songRepository.findById("558").get();
+    assertThat(miraclePaint.getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_A_PLUS);
+    Scores score = scoreRepository.findByUsers_UserIdAndSongs_SongId(youkai2.getUserId(), miraclePaint.getSongId()).get();
+    assertThat(score.getScore()).isEqualTo(90);
   }
 }
