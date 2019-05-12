@@ -184,13 +184,18 @@ public class JirikiService {
                   scoreRepository.findByUsers_UserIdAndSongs_SongId(
                       scoreRows.get(0).get(j).toString(), thisSong.getSongId());
 
-              if (scoreFetched.isPresent() && scoreFetched.get().getScore() == score.getScore()) {
-                // do nothing
+              if (scoreFetched.isPresent()) {
+                if (scoreFetched.get().getScore() == score.getScore()) {
+            	  // do nothing
+                } else {
+                  scoreFetched.get().setScore(score.getScore());
+                } 
               } else {
                 scores.add(score);
               }
             }
           } catch (Exception e) {
+        	System.out.println(e.getMessage()); 
             System.out.println(scoreRow);
             continue;
           }
