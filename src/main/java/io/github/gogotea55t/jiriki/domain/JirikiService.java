@@ -1,10 +1,7 @@
 package io.github.gogotea55t.jiriki.domain;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,20 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.BatchGet;
-import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
@@ -52,99 +39,30 @@ public class JirikiService {
 
   private ScoresRepository scoreRepository;
 
-  /** Directory to store user credentials for this application. */
-  private static final java.io.File DATA_STORE_DIR =
-      new java.io.File(
-          System.getProperty("user.home"), ".credentials/sheets.googleapis.com-java-quickstart");
-
-  /** Global instance of the {@link FileDataStoreFactory}. */
-  private static FileDataStoreFactory DATA_STORE_FACTORY;
-
-  private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
-  private static String APPLICATION_NAME = "jiriki";
-
-  private static JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-
-  private static HttpTransport HTTP_TRANSPORT;
-
-  private static final List<String> SCOPES =
-      Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
-
-  static {
-    try {
-      HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-      DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-    } catch (Throwable t) {
-      t.printStackTrace();
-      System.exit(1);
-    }
-  }
+  private GoogleSheetsService sheetsService;
 
   @Autowired
   public JirikiService(
       GoogleSpreadSheetConfig sheetConfig,
+      GoogleSheetsService sheetsService,
       UserRepository userRepository,
       SongRepository songRepository,
       ScoresRepository scoreRepository) {
     this.sheetConfig = sheetConfig;
+    this.sheetsService = sheetsService;
     this.userRepository = userRepository;
     this.songRepository = songRepository;
     this.scoreRepository = scoreRepository;
   }
 
-  public static Credential authorize() throws IOException {
-    InputStream in = JirikiService.class.getResourceAsStream("/client_secret.json");
-    GoogleClientSecrets clientSecrets =
-        GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-    // Build flow and trigger user authorization request.
-    GoogleAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-            .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-            .setAccessType("offline")
-            .build();
-    LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-    return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-  }
-
-  public static Sheets getSheetsService() throws IOException {
-    Credential credential = authorize();
-    return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
-        .setApplicationName(APPLICATION_NAME)
-        .build();
-  }
-
-  //	@Transactional
+  @Transactional
   public void doGet() {
     try {
-      userRepository.deleteAll();
-      scoreRepository.deleteAll();
-      songRepository.deleteAll();
+//      userRepository.deleteAll();
+//      scoreRepository.deleteAll();
+//      songRepository.deleteAll();
 
-      Sheets service = JirikiService.getSheetsService();
-
-      String spreadSheetId = sheetConfig.getId();
-      String spreadSheetName = sheetConfig.getName();
-
-      BatchGet request = service.spreadsheets().values().batchGet(spreadSheetId);
-
-      List<String> ranges = new ArrayList<>();
-
-      // ユーザー定義
-      ranges.add(spreadSheetName + "!L3:4");
-
-      // 楽曲パート情報
-      ranges.add(spreadSheetName + "!A5:K");
-
-      // 得点
-      ranges.add(spreadSheetName + "!K3:1495");
-
-      request.setRanges(ranges);
-
-      BatchGetValuesResponse response = request.execute();
-
-      List<ValueRange> respList = response.getValueRanges();
+      List<ValueRange> respList = sheetsService.getValuesFromSpreadSheet();
 
       // **************************
       // アカウント情報の取得
@@ -169,7 +87,22 @@ public class JirikiService {
         users.put(userIdStr, user);
       }
 
-      userRepository.saveAll(users.values());
+      for (Users user : users.values()) {
+        // ユーザーが登録済みかどうか調べる
+        Optional<Users> userFetched = userRepository.findById(user.getUserId());
+        if (userFetched.isPresent()) {
+          // 登録済みの場合、登録内容が変わっていないか調べる
+          if (user.equals(userFetched.get())) {
+            // 変わっていなければ何もしない
+          } else {
+            // 変わっていた場合は更新をかける
+            userFetched.get().setUserName(user.getUserName());
+          }
+        } else {
+          // そもそも登録がない場合は新規登録
+          userRepository.save(user);
+        }
+      }
 
       // **************************
       // 楽曲情報の取得
@@ -196,8 +129,21 @@ public class JirikiService {
                 songInfo.get(3).toString());
         songs.put(songInfo.get(10).toString(), song);
       }
+      for (Songs s : songs.values()) {
+        Optional<Songs> songFetched = songRepository.findById(s.getSongId());
+        if (songFetched.isPresent()) {
+          if (s.equals(songFetched.get())) {
 
-      songRepository.saveAll(songs.values());
+          } else {
+            songFetched.get().setJirikiRank(s.getJirikiRank());
+            songFetched.get().setSongName(s.getSongName());
+            songFetched.get().setInstrument(s.getInstrument());
+            songFetched.get().setContributor(s.getContributor());
+          }
+        } else {
+          songRepository.save(s);
+        }
+      }
 
       // **************************
       // 成績情報の取得
@@ -209,9 +155,6 @@ public class JirikiService {
 
       Pattern p = Pattern.compile("^\\d{2}$");
 
-      // 空白行の数
-      int k = 0;
-
       for (int i = 2; i < scoreRows.size(); i++) {
         List<Object> scoreRow = scoreRows.get(i);
 
@@ -219,7 +162,6 @@ public class JirikiService {
         if (scoreRow.size() == 0
             || scoreRow.get(0) == null
             || scoreRow.get(0).toString().equals("")) {
-          k++;
           continue;
         }
 
@@ -238,7 +180,15 @@ public class JirikiService {
               score.setUsers(users.get(scoreRows.get(0).get(j).toString()));
               score.setScore(Integer.parseInt(scoreCol));
 
-              scores.add(score);
+              Optional<Scores> scoreFetched =
+                  scoreRepository.findByUsers_UserIdAndSongs_SongId(
+                      scoreRows.get(0).get(j).toString(), thisSong.getSongId());
+
+              if (scoreFetched.isPresent() && scoreFetched.get().getScore() == score.getScore()) {
+                // do nothing
+              } else {
+                scores.add(score);
+              }
             }
           } catch (Exception e) {
             System.out.println(scoreRow);
@@ -331,16 +281,17 @@ public class JirikiService {
         });
     return songs;
   }
-  
+
   public List<SongsResponse> getSongByJiriki(JirikiRank jiriki, Pageable page) {
-	List<SongsResponse> songs = new ArrayList<>();
-	
-	List<Songs> songsResponse = songRepository.findByJirikiRank(jiriki, page);
-	songsResponse.forEach(s -> {
-		songs.add(SongsResponse.of(s));
-	});
-	
-	return songs;
+    List<SongsResponse> songs = new ArrayList<>();
+
+    List<Songs> songsResponse = songRepository.findByJirikiRank(jiriki, page);
+    songsResponse.forEach(
+        s -> {
+          songs.add(SongsResponse.of(s));
+        });
+
+    return songs;
   }
 
   public List<Score4SongResponse> getScoresBySongId(String songId) {
