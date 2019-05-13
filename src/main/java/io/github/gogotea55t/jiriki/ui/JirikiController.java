@@ -45,7 +45,7 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank")));
+    Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
 
     if (name != null) {
       return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));

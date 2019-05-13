@@ -31,7 +31,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
               + "LEFT OUTER JOIN scores sc "
               + "ON sc.songs_song_id = so.song_id "
               + "AND sc.users_user_id = ?1 "
-              + "ORDER BY so.jiriki_rank asc",
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
       countQuery = "SELECT COUNT(*) FROM songs",
       nativeQuery = true)
   public List<Object[]> findSongsByUserIdWithEmptyRows(String userId, Pageable page);
@@ -51,7 +51,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
               + "ON sc.songs_song_id = so.song_id "
               + "AND sc.users_user_id = :userid "
               + "WHERE so.song_name LIKE %:songname% "
-              + "ORDER BY so.jiriki_rank asc",
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
       countQuery = "SELECT COUNT(*) FROM songs",
       nativeQuery = true)
   public List<Object[]> findSongsByUserIdAndSongNameWithEmptyRows(
@@ -73,7 +73,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
               + "ON sc.songs_song_id = so.song_id "
               + "AND sc.users_user_id = :userid "
               + "WHERE so.contributor LIKE %:contributor% "
-              + "ORDER BY so.jiriki_rank asc",
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
       countQuery = "SELECT COUNT(*) FROM songs",
       nativeQuery = true)
   public List<Object[]> findSongsByUserIdAndContributorWithEmptyRows(
@@ -95,7 +95,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
               + "ON sc.songs_song_id = so.song_id "
               + "AND sc.users_user_id = :userid "
               + "WHERE so.instrument LIKE %:instrument% "
-              + "ORDER BY so.jiriki_rank asc",
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
       countQuery = "SELECT COUNT(*) FROM songs",
       nativeQuery = true)
   public List<Object[]> findSongsByUserIdAndInstrumentWithEmptyRows(
@@ -117,7 +117,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
               + "ON sc.songs_song_id = so.song_id "
               + "AND sc.users_user_id = :userid "
               + "WHERE so.jiriki_rank = :jiriki "
-              + "ORDER BY so.jiriki_rank asc",
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
       countQuery = "SELECT COUNT(*) FROM songs",
       nativeQuery = true)
   public List<Object[]> findSongsByUserIdAndJirikiWithEmptyRows(
