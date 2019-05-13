@@ -48,7 +48,7 @@ public class JirikiControllerTest {
 
   private JirikiController controller;
 
-  private Pageable defaultPaging = PageRequest.of(0, 20, Sort.by(Order.asc("jirikiRank")));
+  private Pageable defaultPaging = PageRequest.of(0, 20, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
 
   private SampleDatum sample = new SampleDatum();
   List<SongsResponse> mockSongsResponse =
