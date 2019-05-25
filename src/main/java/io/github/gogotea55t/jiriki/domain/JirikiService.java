@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
+@EnableScheduling
 @Service
 public class JirikiService {
   private GoogleSpreadSheetConfig sheetConfig;
@@ -55,6 +58,7 @@ public class JirikiService {
     this.scoreRepository = scoreRepository;
   }
 
+  @Scheduled(cron = "0 0 4 * * *")
   @Transactional
   public void doGet() {
     try {
