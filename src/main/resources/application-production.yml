@@ -18,3 +18,6 @@ jasypt:
     property:
       prefix: "ENC@["
       suffix: "]"
+
+cors:
+  origin: https://bbp10-jiriki.cf
