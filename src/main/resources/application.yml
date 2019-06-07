@@ -16,3 +16,6 @@ google:
 logging:
   level:
     org.hibernate.SQL: debug
+
+cors:
+  origin: http://localhost:3000
