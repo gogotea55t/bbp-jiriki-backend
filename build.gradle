@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.1.RELEASE'
+		springBootVersion = '2.1.5.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -17,6 +17,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'com.bmuschko.docker-spring-boot-application'
 
 group = 'com.jiriki.bbp'
 version = '0.0.1-SNAPSHOT'
@@ -31,6 +32,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '2.1.0'
     compile 'com.google.api-client:google-api-client:1.23.0'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     compile 'com.google.apis:google-api-services-sheets:v4-rev516-1.23.0'
@@ -41,6 +43,12 @@ dependencies {
 	runtime('org.springframework.boot:spring-boot-devtools')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+
+jar {
+    baseName = 'demo'
+    archiveName = "${baseName}.jar"
+}
+
 
 jacocoTestReport {
     reports {
@@ -55,13 +63,45 @@ bootRun {
   }
 }
 
-task unpack(type: Copy) {
-    dependsOn bootJar
-    from(zipTree(tasks.bootJar.outputs.files.singleFile))
-    into("build/dependency")
-}
 docker {
-    name "${project.group}/${bootJar.baseName}"
-    copySpec.from(tasks.unpack.outputs).into("dependency")
-    buildArgs(['DEPENDENCY': "dependency"])
+  registryCredentials {
+    url = 'bbp10-jiriki.cf:5000'
+  }
+}
+
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
+task createDockerfile(type: Dockerfile) {
+    destFile = project.file('build/docker/Dockerfile')
+    from 'openjdk:8-jre-alpine'
+    maintainer 'gogotea55t "gogotea55t@github.com'
+    copyFile war.archiveName, '/app/jiriki.war'
+    entryPoint 'java'
+    defaultCommand '-jar', '/app/jiriki.war', '-Dspring.profiles.active=production', "-Djava.security.egd=file:/dev/./urandom"
+    exposePort 8080
+    runCommand 'apk --update --no-cache add curl'
+    instruction 'HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1'
+}
+
+task syncWebAppArchive(type: Sync) {
+    dependsOn assemble
+    from war.archivePath
+    into createDockerfile.destFile.parentFile
+}
+
+createDockerfile.dependsOn syncWebAppArchive
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+task buildImage(type: DockerBuildImage) {
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.parentFile
+    tag = "gogotea55t/jiriki:$war.version"
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
+task pushImage(type: DockerPushImage) {
+    dependsOn buildImage
+    conventionMapping.imageName = { buildImage.getTag() }
 }
