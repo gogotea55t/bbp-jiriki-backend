@@ -12,13 +12,6 @@ buildscript {
 	}
 }
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-
-    }
-}
-
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'eclipse'
