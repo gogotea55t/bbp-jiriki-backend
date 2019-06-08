@@ -1,7 +1,8 @@
-rootProject.name = 'jiriki'
 pluginManagement {
     repositories {
         gradlePluginPortal()
 
     }
 }
+
+rootProject.name = 'jiriki'
