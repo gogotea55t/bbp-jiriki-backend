@@ -20,6 +20,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'com.bmuschko.docker-spring-boot-application'
 
 group = 'com.jiriki.bbp'
 version = '0.0.1-SNAPSHOT'
@@ -47,7 +48,7 @@ dependencies {
 }
 
 jar {
-    baseName = 'demo'
+    baseName = 'jiriki'
     archiveName = "${baseName}.jar"
 }
 
@@ -69,6 +70,10 @@ docker {
   registryCredentials {
     url = 'bbp10-jiriki.cf:5000'
   }
+  springBootApplication {
+    baseImage = 'openjdk:8-alpine'
+    tag = "gogotea55t/jiriki:$jar.version"
+  }
 }
 
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
@@ -76,29 +81,18 @@ import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 task createDockerfile(type: Dockerfile) {
     destFile = project.file('build/docker/Dockerfile')
     from 'openjdk:8-jre-alpine'
-    maintainer 'gogotea55t "gogotea55t@github.com'
-    copyFile war.archiveName, '/app/jiriki.war'
+    copyFile jar.archiveName, '/app/jiriki.jar'
     entryPoint 'java'
-    defaultCommand '-jar', '/app/jiriki.war', '-Dspring.profiles.active=production', "-Djava.security.egd=file:/dev/./urandom"
+    defaultCommand '-jar', '/app/jiriki.jar', '-Dspring.profiles.active=production', "-Djava.security.egd=file:/dev/./urandom"
     exposePort 8080
     runCommand 'apk --update --no-cache add curl'
     instruction 'HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1'
 }
 
-task syncWebAppArchive(type: Sync) {
-    dependsOn assemble
-    from war.archivePath
-    into createDockerfile.destFile.parentFile
-}
-
-createDockerfile.dependsOn syncWebAppArchive
-
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 task buildImage(type: DockerBuildImage) {
     dependsOn createDockerfile
-    inputDir = createDockerfile.destFile.parentFile
-    tag = "gogotea55t/jiriki:$war.version"
 }
 
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
