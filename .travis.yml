@@ -12,8 +12,8 @@ before_install:
   - git add -f gradle/wrapper/gradle-wrapper.jar
 
 after_success:
-  - ./gradlew test jacocoTestReport coveralls
+  - ./gradlew test jacocoTestReport coveralls -Pdocker_username=$DOCKER_USERNAME -Pdocker_password=$DOCKER_PASSWORD -Pjasypt.encryptor.password=$JASYPT_PASSWORD
 
 deploy:
   provider: script
-  script: ./gradlew pushImage
+  script: ./gradlew pushImage -Pdocker_username=$DOCKER_USERNAME -Pdocker_password=$DOCKER_PASSWORD -Pjasypt.encryptor.password=$JASYPT_PASSWORD
