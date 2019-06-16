@@ -72,8 +72,8 @@ bootRun {
 docker {
   registryCredentials {
     url = 'bbp10-jiriki.cf'
-    userName = project.property("docker_username")
-    password = project.property("docker_password")
+    userName = docker_username
+    password = docker_password
   }
 }
 
@@ -84,7 +84,7 @@ task createDockerfile(type: Dockerfile) {
     from 'openjdk:8-jre-alpine'
     copyFile jar.archiveName, '/app/jiriki.jar'
     entryPoint 'java'
-    defaultCommand '-jar', '/app/jiriki.jar', '-Dspring.profiles.active=production', "-Djava.security.egd=file:/dev/./urandom", "-Djasypt.encryptor.password=" + project.property("jasypt_password")
+    defaultCommand '-jar', '/app/jiriki.jar', '-Dspring.profiles.active=production', "-Djava.security.egd=file:/dev/./urandom", "-Djasypt.encryptor.password=" + jasypt.encryptor.password
     exposePort 8080
     runCommand 'apk --update --no-cache add curl'
     instruction 'HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1'
