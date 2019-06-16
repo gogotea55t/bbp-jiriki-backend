@@ -73,6 +73,7 @@ docker {
   springBootApplication {
         baseImage = 'openjdk:8-alpine'
         ports = [9090, 8080]
+        def ver = 'latest'
         if(project.hasProperty('ver')) {
           ver = project.property('ver')
         }
