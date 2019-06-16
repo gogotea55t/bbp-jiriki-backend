@@ -9,7 +9,7 @@ buildscript {
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
 		classpath "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2"
-		classpath 'com.bmuschko:gradle-docker-plugin:4.9.0'
+		classpath 'com.bmuschko:gradle-docker-plugin:4.10.0'
 	}
 }
 
@@ -36,11 +36,11 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '2.1.0'
-    compile 'com.google.api-client:google-api-client:1.23.0'
-    compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
-    compile 'com.google.apis:google-api-services-sheets:v4-rev516-1.23.0'
-    compile 'org.hibernate:hibernate-core:5.2.17.Final'
-	compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+  compile 'com.google.api-client:google-api-client:1.29.2'
+  compile 'com.google.oauth-client:google-oauth-client-jetty:1.30.1'
+  compile 'com.google.apis:google-api-services-sheets:v4-rev516-1.23.0'
+  compile 'org.hibernate:hibernate-core:5.2.17.Final'
+	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
 	compile('com.h2database:h2:1.4.191');
 	annotationProcessor("org.projectlombok:lombok")
 	compileOnly 'org.projectlombok:lombok:1.18.8'
