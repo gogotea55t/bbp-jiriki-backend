@@ -74,7 +74,11 @@ docker {
         baseImage = 'openjdk:8-alpine'
         ports = [9090, 8080]
         tag = 'bbp10-jiriki.cf/bbp-jiriki-backend:${jar.version}'
-        jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m', "-Djava.security.egd=file:/dev/./urandom", "-Djasypt.encryptor.password=" + project.hasProperty('jasypt') ? project.property('jasypt') : 'secret']
+        def jasyptPass = 'secret'
+        if (project.hasProperty('jasypt')) {
+          jasyptPass = project.property('jasypt')
+        }
+        jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m', "-Djava.security.egd=file:/dev/./urandom", "-Djasypt.encryptor.password=" + jasyptPass]
   }
   registryCredentials {
     url = 'bbp10-jiriki.cf'
