@@ -73,7 +73,10 @@ docker {
   springBootApplication {
         baseImage = 'openjdk:8-alpine'
         ports = [9090, 8080]
-        tag = 'bbp10-jiriki.cf/bbp-jiriki-backend:${jar.version}'
+        if(project.hasProperty('ver')) {
+          ver = project.property('ver')
+        }
+        tag = 'bbp10-jiriki.cf/bbp-jiriki-backend:' + ver
         def jasyptPass = 'secret'
         if (project.hasProperty('jasypt')) {
           jasyptPass = project.property('jasypt')
@@ -86,30 +89,3 @@ docker {
     password = project.hasProperty('dockerpassword') ? project.property('dockerpassword') : ''
   }
 }
-
-// import com.bmuschko.gradle.docker.tasks.image.Dockerfile
-
-// task createDockerfile(type: Dockerfile) {
-//     destFile = project.file('build/docker/Dockerfile')
-//     from 'openjdk:8-jre-alpine'
-//     copyFile jar.archiveName, '/app/jiriki.jar'
-//     entryPoint 'java'
-//     defaultCommand '-jar', '/app/jiriki.jar', '-Dspring.profiles.active=production', "-Djava.security.egd=file:/dev/./urandom", "-Djasypt.encryptor.password=" + project.hasProperty('jasypt') ? project.property('jasypt') : 'secret'
-//     exposePort 8080
-//     runCommand 'apk --update --no-cache add curl'
-//     instruction 'HEALTHCHECK CMD curl -f http://localhost:8080/health || exit 1'
-// }
-
-// import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-
-// task buildImage(type: DockerBuildImage) {
-//     dependsOn createDockerfile
-//     tags.add("bbp10-jiriki.cf/bbp-jiriki-backend:$jar.version")
-// }
-
-// import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
-
-// task pushImage(type: DockerPushImage) {
-//     dependsOn buildImage
-//     conventionMapping.imageName = { buildImage.getTag() }
-// }
