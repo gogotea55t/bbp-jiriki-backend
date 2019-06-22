@@ -3,13 +3,20 @@ language: java
 sudo: required
 dist: trusty
 
-jdk: 
+jdk:
   - oraclejdk8
-  
+
 before_install:
   - chmod a+x gradlew
   - chmod +x gradle/wrapper/gradle-wrapper.jar
   - git add -f gradle/wrapper/gradle-wrapper.jar
-  
+
 after_success:
   - ./gradlew test jacocoTestReport coveralls
+
+deploy:
+  provider: script
+  script: ./gradlew pushImage -Pdockerusername=$DOCKER_USERNAME -Pdockerpassword=$DOCKER_PASSWORD -Pjasypt=$JASYPT_PASSWORD -Pver=$TRAVIS_TAG
+  on:
+    tags: true
+    branch: release
