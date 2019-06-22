@@ -6,6 +6,7 @@ spring:
     password: ENC@[ViRdSeAso02m4+wk9vE7izIk7CWNAk/KmJmHrdZyPFI=]
   jpa:
     hibernate:
+      dialect: org.hibernate.dialect.MySQL8Dialect
       ddl-auto: update
 
 google:
