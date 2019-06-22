@@ -1,9 +1,10 @@
 version: '3'
-app:
-  restart: always
-  image: bbp10-jiriki.cf/bbp-jiriki-backend
-  port:
-    - 8080:8080
-  volumes:
-    - ./tokens:/tokens
-    - ./src/main/resources/client_secret.json:/resources/client_secret.json
+services:
+  app:
+    restart: always
+    image: bbp10-jiriki.cf/bbp-jiriki-backend
+    port:
+      - 8080:8080
+    volumes:
+      - ./tokens:/tokens
+      - ./src/main/resources/client_secret.json:/resources/client_secret.json
