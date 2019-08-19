@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_practice
+    url: jdbc:mysql://localhost:3306/db_practice?serverTimezone=JST
     username: mysql
     password: mysql
   jpa:
@@ -16,6 +16,11 @@ google:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.springframework.security: debug
+
+auth0:
+  audience: https://bbp10-jiriki.auth0.com/api/v2/
+  issuer: https://bbp10-jiriki.auth0.com/
 
 cors:
   origin: http://localhost:3000
