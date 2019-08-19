@@ -20,5 +20,9 @@ jasypt:
       prefix: "ENC@["
       suffix: "]"
 
+auth0:
+  audience: https://bbp10-jiriki.auth0.com/api/v2/
+  issuer: https://bbp10-jiriki.auth0.com/
+
 cors:
   origin: https://bbp10-jiriki.cf
