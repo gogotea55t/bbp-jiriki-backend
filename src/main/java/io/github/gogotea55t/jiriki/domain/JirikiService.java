@@ -251,6 +251,11 @@ public class JirikiService {
       return null;
     }
   }
+  
+  public UserResponse findPlayerByTwitterId(String twitterId) {
+	Optional<Users> response = userRepository.findByTwitterUsers_TwitterId(twitterId);
+	return UserResponse.of(response.get());
+  }
 
   public SongsResponse getSongBySongId(String songId) {
     Optional<Songs> response = songRepository.findById(songId);

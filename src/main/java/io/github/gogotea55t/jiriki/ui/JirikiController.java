@@ -45,7 +45,8 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
+    Pageable pageReq =
+        PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
 
     if (name != null) {
       return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));
@@ -54,7 +55,8 @@ public class JirikiController {
     } else if (instrument != null) {
       return ResponseEntity.ok(jirikiService.getSongByInstrument(instrument, pageReq));
     } else if (jiriki != null) {
-      return ResponseEntity.ok(jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
+      return ResponseEntity.ok(
+          jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
     }
     List<SongsResponse> songs = jirikiService.getAllSongs(pageReq);
 
@@ -62,13 +64,18 @@ public class JirikiController {
   }
 
   @GetMapping("/v1/players")
-  public ResponseEntity<?> getPlayer(@RequestParam(required = false) String name) {
-    if (name == null) {
-      List<UserResponse> result = jirikiService.getAllPlayer();
-      return ResponseEntity.ok().body(result);
-    } else {
+  public ResponseEntity<?> getPlayer(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String twitterId) {
+    if (name != null) {
       List<UserResponse> result = jirikiService.getPlayerByName(name);
       return ResponseEntity.ok(result);
+    } else if(twitterId != null) {
+        List<UserResponse> result = jirikiService.findPlayerByTwitterId(twitterId);
+        return ResponseEntity.ok(result);    
+    } else {
+      List<UserResponse> result = jirikiService.getAllPlayer();
+      return ResponseEntity.ok().body(result);
     }
   }
 
@@ -136,5 +143,10 @@ public class JirikiController {
   @GetMapping("/v1/jiriki")
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/v1/players/")
+  public ResponseEntity<?> getPlayerByTwitterId() {
+    throw new Error();
   }
 }
