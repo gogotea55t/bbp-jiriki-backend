@@ -95,6 +95,7 @@ public class JirikiController {
 
   @PutMapping("/v1/players")
   public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(TwitterUsersRequest request) {
+	System.out.println(request);
 	UserResponse response = jirikiService.addNewLinkBetweenUserAndTwitterUser(request);
 	return ResponseEntity.created(URI.create("/v1/players/" + response.getUserId())).body(response);
   }
