@@ -17,6 +17,7 @@ import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.TwitterUserResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
@@ -71,7 +72,7 @@ public class JirikiController {
       List<UserResponse> result = jirikiService.getPlayerByName(name);
       return ResponseEntity.ok(result);
     } else if(twitterId != null) {
-        List<UserResponse> result = jirikiService.findPlayerByTwitterId(twitterId);
+        UserResponse result = jirikiService.findPlayerByTwitterId(twitterId);
         return ResponseEntity.ok(result);    
     } else {
       List<UserResponse> result = jirikiService.getAllPlayer();
