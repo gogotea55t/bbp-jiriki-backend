@@ -3,6 +3,7 @@ package io.github.gogotea55t.jiriki.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,10 +19,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
+import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @RunWith(SpringRunner.class)
@@ -56,6 +60,7 @@ public class JirikiServiceTest {
     userRepository.saveAll(sample.getUsers());
     songRepository.saveAll(sample.getSongs());
     scoreRepository.saveAll(sample.getScores());
+    twiRepository.save(new TwitterUsers("twitterId", sample.getUsers().get(1)));
   }
 
   /*
@@ -97,6 +102,55 @@ public class JirikiServiceTest {
   public void 存在しないユーザーIDで検索をしたら何もないが返ってくる() throws Exception {
     UserResponse searchResult = jirikiService.getPlayerById("human");
     assertThat(searchResult).isNull();
+  }
+  
+  @Test
+  public void twitterのIDとユーザーの紐づけができ登録したものを閲覧できる() throws Exception {
+	TwitterUsersRequest testRequest = new TwitterUsersRequest();
+	String testTwitterId = "aaaaaaaaaa";
+	testRequest.setUserId("u001");
+	testRequest.setTwitterUserId(testTwitterId);
+	jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
+	
+	Optional<TwitterUsers> putResult = twiRepository.findById(testTwitterId);
+	assertThat(putResult.isPresent()).isTrue();
+	assertThat(putResult.get().getTwitterUserId()).isEqualTo(testTwitterId);
+	assertThat(putResult.get().getUsers().getUserId()).isEqualTo("u001");
+	
+	UserResponse getResult = jirikiService.findPlayerByTwitterId(testTwitterId);
+	assertThat(getResult.getUserId()).isEqualTo("u001");
+  }
+  
+  @Test
+  public void 存在しないtwitterアカウントを検索するとnullが返ってくる() throws Exception {
+	assertThat(jirikiService.findPlayerByTwitterId("hogehoge")).isNull();
+  }
+  
+  @Test(expected = NullPointerException.class)
+  public void 存在しないユーザーに対してTwitterアカウントを紐づけようとすると例外が出る() throws Exception {
+	TwitterUsersRequest testRequest = new TwitterUsersRequest();
+	testRequest.setUserId("hogehoge");
+	testRequest.setTwitterUserId("hogehogehoge");
+	
+	jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
+  }
+  
+  @Test
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void すでに登録済みだったTwitterIdを別のアカウントに紐づけようとすると新しいアカウントに紐づく() throws Exception {
+	String testTwitterId = "twitterId";
+	
+	TwitterUsersRequest testRequest = new TwitterUsersRequest();
+	testRequest.setTwitterUserId(testTwitterId);
+	testRequest.setUserId("u001");
+	
+	UserResponse putResult = jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
+	assertThat(putResult.getUserId()).isEqualTo("u001");
+	
+	UserResponse getResult = jirikiService.findPlayerByTwitterId(testTwitterId);
+	assertThat(getResult.getUserId()).isEqualTo("u001");
+	
+	assertThat(userRepository.findById("u002").isPresent()).isTrue();
   }
 
   /*

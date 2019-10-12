@@ -31,6 +31,7 @@ import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @EnableScheduling
@@ -45,7 +46,7 @@ public class JirikiService {
   private ScoresRepository scoreRepository;
 
   private GoogleSheetsService sheetsService;
-  
+
   private TwitterUsersRepository twitterUsersRepository;
 
   @Autowired
@@ -264,6 +265,21 @@ public class JirikiService {
       return UserResponse.of(response.get().getUsers());
     } else {
       return null;
+    }
+  }
+
+  @Transactional
+  public UserResponse addNewLinkBetweenUserAndTwitterUser(TwitterUsersRequest request) {
+    Optional<Users> user = userRepository.findById(request.getUserId());
+    if (user.isPresent()) {
+      Optional<TwitterUsers> tw = twitterUsersRepository.findById(request.getTwitterUserId());
+      if (tw.isPresent()) {
+        twitterUsersRepository.delete(tw.get());
+      }
+      twitterUsersRepository.save(new TwitterUsers(request.getTwitterUserId(), user.get()));
+      return UserResponse.of(user.get());
+    } else {
+      throw new NullPointerException("User Not Found.");
     }
   }
 
