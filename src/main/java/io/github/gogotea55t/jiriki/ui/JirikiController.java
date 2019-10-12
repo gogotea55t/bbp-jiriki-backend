@@ -1,5 +1,6 @@
 package io.github.gogotea55t.jiriki.ui;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.TwitterUserResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @Controller
@@ -45,7 +49,8 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
+    Pageable pageReq =
+        PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
 
     if (name != null) {
       return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));
@@ -54,7 +59,8 @@ public class JirikiController {
     } else if (instrument != null) {
       return ResponseEntity.ok(jirikiService.getSongByInstrument(instrument, pageReq));
     } else if (jiriki != null) {
-      return ResponseEntity.ok(jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
+      return ResponseEntity.ok(
+          jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
     }
     List<SongsResponse> songs = jirikiService.getAllSongs(pageReq);
 
@@ -62,13 +68,18 @@ public class JirikiController {
   }
 
   @GetMapping("/v1/players")
-  public ResponseEntity<?> getPlayer(@RequestParam(required = false) String name) {
-    if (name == null) {
-      List<UserResponse> result = jirikiService.getAllPlayer();
-      return ResponseEntity.ok().body(result);
-    } else {
+  public ResponseEntity<?> getPlayer(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String twitterId) {
+    if (name != null) {
       List<UserResponse> result = jirikiService.getPlayerByName(name);
       return ResponseEntity.ok(result);
+    } else if (twitterId != null) {
+      UserResponse result = jirikiService.findPlayerByTwitterId(twitterId);
+      return ResponseEntity.ok(result);
+    } else {
+      List<UserResponse> result = jirikiService.getAllPlayer();
+      return ResponseEntity.ok().body(result);
     }
   }
 
@@ -80,6 +91,13 @@ public class JirikiController {
     } else {
       return ResponseEntity.ok(response);
     }
+  }
+
+  @PutMapping("/v1/players")
+  public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(TwitterUsersRequest request) {
+	System.out.println(request);
+	UserResponse response = jirikiService.addNewLinkBetweenUserAndTwitterUser(request);
+	return ResponseEntity.created(URI.create("/v1/players/" + response.getUserId())).body(response);
   }
 
   @GetMapping("/v1/players/{id}/scores")
@@ -136,5 +154,10 @@ public class JirikiController {
   @GetMapping("/v1/jiriki")
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/v1/players/")
+  public ResponseEntity<?> getPlayerByTwitterId() {
+    throw new Error();
   }
 }

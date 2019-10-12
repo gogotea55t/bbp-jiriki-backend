@@ -23,7 +23,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       http.authorizeRequests()
 //              .antMatchers(HttpMethod.GET).authenticated()
 //              .antMatchers(HttpMethod.POST).authenticated()
-              .anyRequest().authenticated();
+              .anyRequest().permitAll();
 
       JwtWebSecurityConfigurer
               .forRS256(audience, issuer)   //Request Headers Authorization tokenを検証
