@@ -24,6 +24,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
+import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
@@ -38,6 +39,8 @@ public class JirikiServiceTestWithMock {
   @Autowired private SongRepository songRepository;
 
   @Autowired private ScoresRepository scoreRepository;
+  
+  @Autowired private TwitterUsersRepository twitterUsersRepository;
 
   private JirikiService jirikiService;
 
@@ -48,7 +51,7 @@ public class JirikiServiceTestWithMock {
 	scoreRepository.deleteAll();
     jirikiService =
         new JirikiService(
-            sheetConfig, sheetsService, userRepository, songRepository, scoreRepository);
+            sheetConfig, sheetsService, userRepository, songRepository, scoreRepository, twitterUsersRepository);
     Users sampleUser = new Users();
     sampleUser.setUserId("u001");
     sampleUser.setUserName("妖怪1");

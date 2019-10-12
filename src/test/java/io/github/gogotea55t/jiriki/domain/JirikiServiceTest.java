@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
+import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
@@ -36,6 +37,8 @@ public class JirikiServiceTest {
   @Autowired private SongRepository songRepository;
 
   @Autowired private ScoresRepository scoreRepository;
+  
+  @Autowired private TwitterUsersRepository twiRepository;
 
   private JirikiService jirikiService;
 
@@ -44,7 +47,7 @@ public class JirikiServiceTest {
   @Transactional
   @Before
   public void init() {
-    jirikiService = new JirikiService(sheetConfig, sheetService, userRepository, songRepository, scoreRepository);
+    jirikiService = new JirikiService(sheetConfig, sheetService, userRepository, songRepository, scoreRepository, twiRepository);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
