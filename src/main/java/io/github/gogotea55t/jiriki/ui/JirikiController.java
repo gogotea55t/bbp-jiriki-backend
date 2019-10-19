@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import io.github.gogotea55t.jiriki.domain.JirikiService;
@@ -94,7 +95,7 @@ public class JirikiController {
   }
 
   @PutMapping("/v1/players")
-  public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(TwitterUsersRequest request) {
+  public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(@RequestBody TwitterUsersRequest request) {
 	System.out.println(request);
 	UserResponse response = jirikiService.addNewLinkBetweenUserAndTwitterUser(request);
 	return ResponseEntity.created(URI.create("/v1/players/" + response.getUserId())).body(response);

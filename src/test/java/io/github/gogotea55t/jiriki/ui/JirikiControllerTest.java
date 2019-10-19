@@ -216,9 +216,10 @@ public class JirikiControllerTest {
     mockMvc
         .perform(
             put(new URI("/v1/players"))
-                .param("userId", "u001")
-                .param("twitterUserId", "twitter_id"))
-        .andExpect(status().isCreated());
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+        .andExpect(status().isCreated())
+        .andExpect(content().json(toJson(user)));
   }
 
   @Test
