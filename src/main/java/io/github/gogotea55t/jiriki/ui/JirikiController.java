@@ -80,14 +80,9 @@ public class JirikiController {
   }
 
   @GetMapping("/v1/players")
-  public ResponseEntity<?> getPlayer(
-      @RequestParam(required = false) String name,
-      @RequestParam(required = false) String twitterId) {
+  public ResponseEntity<?> getPlayer(@RequestParam(required = false) String name) {
     if (name != null) {
       List<UserResponse> result = jirikiService.getPlayerByName(name);
-      return ResponseEntity.ok(result);
-    } else if (twitterId != null) {
-      UserResponse result = jirikiService.findPlayerByTwitterId(twitterId);
       return ResponseEntity.ok(result);
     } else {
       List<UserResponse> result = jirikiService.getAllPlayer();
@@ -97,7 +92,7 @@ public class JirikiController {
 
   @GetMapping("/v1/players/auth0")
   public ResponseEntity<?> getPlayerFromAuth0() {
-	String auth0Id = jirikiService.getUserSubjectFromToken();
+    String auth0Id = jirikiService.getUserSubjectFromToken();
     UserResponse result = jirikiService.findPlayerByTwitterId(auth0Id);
     return ResponseEntity.ok(result);
   }
