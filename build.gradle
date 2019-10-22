@@ -48,6 +48,7 @@ dependencies {
 	compile('com.h2database:h2:1.4.191');
 	compile group: 'com.auth0', name: 'auth0', version: '1.14.1'
 	compile group: 'com.auth0', name: 'auth0-spring-security-api', version: '1.2.4'
+	compile group: 'com.auth0', name: 'java-jwt', version: '3.8.3'
 	compile('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.6.RELEASE')
 	annotationProcessor("org.projectlombok:lombok")
 	compileOnly 'org.projectlombok:lombok:1.18.8'
