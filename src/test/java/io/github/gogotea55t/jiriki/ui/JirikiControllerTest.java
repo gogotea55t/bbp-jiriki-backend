@@ -186,10 +186,11 @@ public class JirikiControllerTest {
     UserResponse user = new UserResponse();
     user.setUserId("u001");
     user.setUserName("妖怪1");
+    when(mockService.getUserSubjectFromToken()).thenReturn("twitter_id");
     when(mockService.findPlayerByTwitterId("twitter_id")).thenReturn(user);
 
     mockMvc
-        .perform(get(new URI("/v1/players?twitterId=twitter_id")))
+        .perform(get(new URI("/v1/players/auth0")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(user)));
   }
