@@ -2,31 +2,31 @@ package io.github.gogotea55t.jiriki;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
-import com.auth0.spring.security.api.JwtWebSecurityConfigurer;
 
 @Configuration
-@EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-  @Value("${auth0.audience}")
-  private String audience;
-  
-  @Value("${auth0.issuer}")
-  private String issuer;
+@EnableResourceServer
+public class WebSecurityConfig extends ResourceServerConfigurerAdapter {  
+  @Value("${security.oauth2.resource.id}")
+  private String resourceId;
   
   @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  public void configure(HttpSecurity http) throws Exception {
       http.authorizeRequests()
-//              .antMatchers(HttpMethod.GET).authenticated()
-//              .antMatchers(HttpMethod.POST).authenticated()
+              .antMatchers("/v1/players/auth0").authenticated()
               .anyRequest().permitAll();
 
-      JwtWebSecurityConfigurer
-              .forRS256(audience, issuer)   //Request Headers Authorization tokenを検証
-              .configure(http);
+//      JwtWebSecurityConfigurer
+//              .forRS256(audience, issuer)   //Request Headers Authorization tokenを検証
+//              .configure(http);
+  }
+  
+  @Override
+  public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+    resources.resourceId(resourceId);
   }
 }

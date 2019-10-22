@@ -15,9 +15,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.BatchGet;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
@@ -423,4 +428,11 @@ public class JirikiService {
             });
     return songsResponse;
   }
+  
+  public String getUserSubjectFromToken() {
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+	    DecodedJWT decodedJwt = JWT.decode(details.getTokenValue());
+	    return decodedJwt.getSubject();
+	  }
 }
