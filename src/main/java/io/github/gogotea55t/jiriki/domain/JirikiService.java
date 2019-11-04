@@ -428,11 +428,11 @@ public class JirikiService {
             });
     return songsResponse;
   }
-  
+
   public String getUserSubjectFromToken() {
-	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-	    DecodedJWT decodedJwt = JWT.decode(details.getTokenValue());
-	    return decodedJwt.getSubject();
-	  }
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+    DecodedJWT decodedJwt = JWT.decode(details.getTokenValue());
+    return decodedJwt.getSubject();
+  }
 }

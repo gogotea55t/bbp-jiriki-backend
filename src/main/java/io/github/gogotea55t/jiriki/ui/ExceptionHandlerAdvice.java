@@ -1,8 +1,11 @@
 package io.github.gogotea55t.jiriki.ui;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.auth0.jwt.exceptions.JWTDecodeException;
 
 /**
  * 例外ハンドリング用クラス
@@ -14,5 +17,10 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(value = NullPointerException.class)
   public ResponseEntity<?> userNotFound() {
     return ResponseEntity.badRequest().build();
+  }
+  
+  @ExceptionHandler(value = JWTDecodeException.class)
+  public ResponseEntity<?> aaa() {
+	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
   }
 }

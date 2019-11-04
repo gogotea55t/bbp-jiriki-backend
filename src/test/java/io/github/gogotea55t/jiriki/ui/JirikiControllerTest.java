@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.MultiValueMap;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -50,6 +51,8 @@ public class JirikiControllerTest {
 
   @Autowired ObjectMapper objectMapper;
 
+  @Autowired ExceptionHandlerAdvice exceptionHandler;
+
   private JirikiController controller;
 
   private Pageable defaultPaging =
@@ -71,7 +74,7 @@ public class JirikiControllerTest {
   @Before
   public void init() {
     controller = new JirikiController(mockService);
-    mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(controller, exceptionHandler).build();
   }
 
   @Test
@@ -208,6 +211,7 @@ public class JirikiControllerTest {
   @Test
   public void twitterIdとuserIdの新規紐づけができる() throws Exception {
     TwitterUsersRequest request = new TwitterUsersRequest();
+    when(mockService.getUserSubjectFromToken()).thenReturn("twitter_id");
     request.setTwitterUserId("twitter_id");
     request.setUserId("u001");
     UserResponse user = new UserResponse();
@@ -216,11 +220,43 @@ public class JirikiControllerTest {
     when(mockService.addNewLinkBetweenUserAndTwitterUser(request)).thenReturn(user);
     mockMvc
         .perform(
-            put(new URI("/v1/players"))
+            put(new URI("/v1/players/auth0"))
                 .content(toJson(request))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
         .andExpect(status().isCreated())
         .andExpect(content().json(toJson(user)));
+  }
+
+  @Test
+  public void twitterIdとuserIdの紐づけをしようとしたらトークンがおかしい() throws Exception {
+    TwitterUsersRequest request = new TwitterUsersRequest();
+    when(mockService.getUserSubjectFromToken()).thenThrow(new JWTDecodeException(""));
+    request.setTwitterUserId("twitter_id");
+    request.setUserId("u001");
+    UserResponse user = new UserResponse();
+    user.setUserId("u001");
+    user.setUserName("妖怪1");
+    when(mockService.addNewLinkBetweenUserAndTwitterUser(request)).thenReturn(user);
+    mockMvc
+        .perform(
+            put(new URI("/v1/players/auth0"))
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+        .andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  public void twitterIdとuserIdの紐づけをするが他人名義のものをやろうとする() throws Exception {
+    TwitterUsersRequest request = new TwitterUsersRequest();
+    when(mockService.getUserSubjectFromToken()).thenReturn("twitter_id");
+    request.setTwitterUserId("others_twitter_id");
+    request.setUserId("u004");
+    mockMvc
+        .perform(
+            put(new URI("/v1/players/auth0"))
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+        .andExpect(status().is4xxClientError());
   }
 
   @Test
