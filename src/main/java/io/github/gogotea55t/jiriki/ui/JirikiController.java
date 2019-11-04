@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +27,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.spring.security.api.JwtAuthenticationProvider;
 import com.auth0.spring.security.api.authentication.JwtAuthentication;
 
+import io.github.gogotea55t.jiriki.domain.ErrorResponse;
 import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
@@ -97,6 +99,21 @@ public class JirikiController {
     return ResponseEntity.ok(result);
   }
 
+  @PutMapping("/v1/players/auth0")
+  public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(
+      @RequestBody TwitterUsersRequest request) {
+    String auth0Id = jirikiService.getUserSubjectFromToken();
+    if (auth0Id.equals(request.getTwitterUserId())) {
+      UserResponse response = jirikiService.addNewLinkBetweenUserAndTwitterUser(request);
+      return ResponseEntity.created(URI.create("/v1/players/" + response.getUserId()))
+          .body(response);
+    } else {
+      ErrorResponse error = new ErrorResponse();
+      error.setMessage("ログインしているアカウントの連携情報しか管理できません。");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+  }
+
   @GetMapping("/v1/players/{id}")
   public ResponseEntity<?> getPlayerById(@PathVariable(name = "id") String id) {
     UserResponse response = jirikiService.getPlayerById(id);
@@ -105,14 +122,6 @@ public class JirikiController {
     } else {
       return ResponseEntity.ok(response);
     }
-  }
-
-  @PutMapping("/v1/players")
-  public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(
-      @RequestBody TwitterUsersRequest request) {
-    System.out.println(request);
-    UserResponse response = jirikiService.addNewLinkBetweenUserAndTwitterUser(request);
-    return ResponseEntity.created(URI.create("/v1/players/" + response.getUserId())).body(response);
   }
 
   @GetMapping("/v1/players/{id}/scores")
