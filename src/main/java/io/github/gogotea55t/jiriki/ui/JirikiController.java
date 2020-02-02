@@ -1,29 +1,47 @@
 package io.github.gogotea55t.jiriki.ui;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.spring.security.api.JwtAuthenticationProvider;
+import com.auth0.spring.security.api.authentication.JwtAuthentication;
+
+import io.github.gogotea55t.jiriki.domain.ErrorResponse;
 import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.TwitterUserResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @Controller
 public class JirikiController {
 
   JirikiService jirikiService;
+  JwtAuthenticationProvider provider;
 
   @Autowired
   public JirikiController(JirikiService jirikiService) {
@@ -45,7 +63,8 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq = PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
+    Pageable pageReq =
+        PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
 
     if (name != null) {
       return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));
@@ -54,7 +73,8 @@ public class JirikiController {
     } else if (instrument != null) {
       return ResponseEntity.ok(jirikiService.getSongByInstrument(instrument, pageReq));
     } else if (jiriki != null) {
-      return ResponseEntity.ok(jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
+      return ResponseEntity.ok(
+          jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
     }
     List<SongsResponse> songs = jirikiService.getAllSongs(pageReq);
 
@@ -63,12 +83,34 @@ public class JirikiController {
 
   @GetMapping("/v1/players")
   public ResponseEntity<?> getPlayer(@RequestParam(required = false) String name) {
-    if (name == null) {
-      List<UserResponse> result = jirikiService.getAllPlayer();
-      return ResponseEntity.ok().body(result);
-    } else {
+    if (name != null) {
       List<UserResponse> result = jirikiService.getPlayerByName(name);
       return ResponseEntity.ok(result);
+    } else {
+      List<UserResponse> result = jirikiService.getAllPlayer();
+      return ResponseEntity.ok().body(result);
+    }
+  }
+
+  @GetMapping("/v1/players/auth0")
+  public ResponseEntity<?> getPlayerFromAuth0() {
+    String auth0Id = jirikiService.getUserSubjectFromToken();
+    UserResponse result = jirikiService.findPlayerByTwitterId(auth0Id);
+    return ResponseEntity.ok(result);
+  }
+
+  @PutMapping("/v1/players/auth0")
+  public ResponseEntity<?> addNewLinkBetweenUserAndTwitterUser(
+      @RequestBody TwitterUsersRequest request) {
+    String auth0Id = jirikiService.getUserSubjectFromToken();
+    if (auth0Id.equals(request.getTwitterUserId())) {
+      UserResponse response = jirikiService.addNewLinkBetweenUserAndTwitterUser(request);
+      return ResponseEntity.created(URI.create("/v1/players/" + response.getUserId()))
+          .body(response);
+    } else {
+      ErrorResponse error = new ErrorResponse();
+      error.setMessage("ログインしているアカウントの連携情報しか管理できません。");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
   }
 
@@ -136,5 +178,10 @@ public class JirikiController {
   @GetMapping("/v1/jiriki")
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/v1/players/")
+  public ResponseEntity<?> getPlayerByTwitterId() {
+    throw new Error();
   }
 }

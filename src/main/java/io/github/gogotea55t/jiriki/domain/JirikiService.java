@@ -15,9 +15,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.BatchGet;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
@@ -25,10 +30,13 @@ import com.google.api.services.sheets.v4.model.ValueRange;
 
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
+import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
+import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @EnableScheduling
@@ -44,27 +52,31 @@ public class JirikiService {
 
   private GoogleSheetsService sheetsService;
 
+  private TwitterUsersRepository twitterUsersRepository;
+
   @Autowired
   public JirikiService(
       GoogleSpreadSheetConfig sheetConfig,
       GoogleSheetsService sheetsService,
       UserRepository userRepository,
       SongRepository songRepository,
-      ScoresRepository scoreRepository) {
+      ScoresRepository scoreRepository,
+      TwitterUsersRepository twitterUsersRepository) {
     this.sheetConfig = sheetConfig;
     this.sheetsService = sheetsService;
     this.userRepository = userRepository;
     this.songRepository = songRepository;
     this.scoreRepository = scoreRepository;
+    this.twitterUsersRepository = twitterUsersRepository;
   }
 
   @Scheduled(cron = "0 0 4 * * *")
   @Transactional
   public void doGet() {
     try {
-//      userRepository.deleteAll();
-//      scoreRepository.deleteAll();
-//      songRepository.deleteAll();
+      //      userRepository.deleteAll();
+      //      scoreRepository.deleteAll();
+      //      songRepository.deleteAll();
 
       List<ValueRange> respList = sheetsService.getValuesFromSpreadSheet();
 
@@ -190,16 +202,16 @@ public class JirikiService {
 
               if (scoreFetched.isPresent()) {
                 if (scoreFetched.get().getScore() == score.getScore()) {
-            	  // do nothing
+                  // do nothing
                 } else {
                   scoreFetched.get().setScore(score.getScore());
-                } 
+                }
               } else {
                 scores.add(score);
               }
             }
           } catch (Exception e) {
-        	System.out.println(e.getMessage()); 
+            System.out.println(e.getMessage());
             System.out.println(scoreRow);
             continue;
           }
@@ -249,6 +261,30 @@ public class JirikiService {
       return UserResponse.of(response.get());
     } else {
       return null;
+    }
+  }
+
+  public UserResponse findPlayerByTwitterId(String twitterId) {
+    Optional<TwitterUsers> response = twitterUsersRepository.findById(twitterId);
+    if (response.isPresent()) {
+      return UserResponse.of(response.get().getUsers());
+    } else {
+      return null;
+    }
+  }
+
+  @Transactional
+  public UserResponse addNewLinkBetweenUserAndTwitterUser(TwitterUsersRequest request) {
+    Optional<Users> user = userRepository.findById(request.getUserId());
+    if (user.isPresent()) {
+      Optional<TwitterUsers> tw = twitterUsersRepository.findById(request.getTwitterUserId());
+      if (tw.isPresent()) {
+        twitterUsersRepository.delete(tw.get());
+      }
+      twitterUsersRepository.save(new TwitterUsers(request.getTwitterUserId(), user.get()));
+      return UserResponse.of(user.get());
+    } else {
+      throw new NullPointerException("User Not Found.");
     }
   }
 
@@ -391,5 +427,12 @@ public class JirikiService {
               songsResponse.add(SongsResponse.of(s));
             });
     return songsResponse;
+  }
+
+  public String getUserSubjectFromToken() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+    DecodedJWT decodedJwt = JWT.decode(details.getTokenValue());
+    return decodedJwt.getSubject();
   }
 }

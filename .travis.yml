@@ -15,8 +15,9 @@ after_success:
   - ./gradlew test jacocoTestReport coveralls
 
 deploy:
+  skip_cleanup: true
   provider: script
-  script: ./gradlew pushImage -Pdockerusername=$DOCKER_USERNAME -Pdockerpassword=$DOCKER_PASSWORD -Pjasypt=$JASYPT_PASSWORD -Pver=$TRAVIS_TAG
+  script: ./gradlew dockerPushImage -Pdockerusername=$DOCKER_USERNAME -Pdockerpassword=$DOCKER_PASSWORD -Pjasypt=$JASYPT_PASSWORD -Pver=$TRAVIS_TAG
   on:
     tags: true
     branch: release

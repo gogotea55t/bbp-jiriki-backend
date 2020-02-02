@@ -1,13 +1,20 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_practice
+    url: jdbc:mysql://localhost:3306/db_practice?serverTimezone=JST
     username: mysql
     password: mysql
   jpa:
     hibernate:
       ddl-auto: update
       
+security:
+  oauth2:
+    resource:
+      id: https://bbp10-jiriki.auth0.com/api/v2/
+      jwk:
+        key-set-uri: https://bbp10-jiriki.auth0.com/.well-known/jwks.json
+
 google:
   sheet:
     id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
@@ -16,6 +23,7 @@ google:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.springframework.security: debug
 
 cors:
   origin: http://localhost:3000

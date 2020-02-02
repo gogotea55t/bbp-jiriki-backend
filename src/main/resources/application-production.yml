@@ -20,5 +20,12 @@ jasypt:
       prefix: "ENC@["
       suffix: "]"
 
+security:
+  oauth2:
+    resource:
+      id: https://bbp10-jiriki.auth0.com/api/v2/
+      jwk:
+        key-set-uri: https://bbp10-jiriki.auth0.com/.well-known/jwks.json
+
 cors:
   origin: https://bbp10-jiriki.cf

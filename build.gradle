@@ -35,6 +35,9 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile group: 'org.springframework.security', name: 'spring-security-core', version: '5.1.6.RELEASE'
+	compile group: 'org.springframework.security', name: 'spring-security-web', version: '5.1.6.RELEASE'
+	compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.1.6.RELEASE'
 	compile group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '2.1.0'
     compile 'com.google.api-client:google-api-client:1.29.2'
     compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
@@ -43,6 +46,10 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.4.3.Final'
 	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
 	compile('com.h2database:h2:1.4.191');
+	compile group: 'com.auth0', name: 'auth0', version: '1.14.1'
+	compile group: 'com.auth0', name: 'auth0-spring-security-api', version: '1.2.4'
+	compile group: 'com.auth0', name: 'java-jwt', version: '3.8.3'
+	compile('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.0.6.RELEASE')
 	annotationProcessor("org.projectlombok:lombok")
 	compileOnly 'org.projectlombok:lombok:1.18.8'
 	runtime('org.springframework.boot:spring-boot-devtools')
@@ -78,7 +85,7 @@ docker {
         if(project.hasProperty('ver')) {
           ver = project.property('ver')
         }
-        tag = 'bbp10-jiriki.cf/bbp-jiriki-backend:' + ver
+        tag = 'bbp10-jiriki.cf:5000/bbp-jiriki-backend:' + ver
         def jasyptPass = 'secret'
         if (project.hasProperty('jasypt')) {
           jasyptPass = project.property('jasypt')
