@@ -85,7 +85,7 @@ docker {
         if(project.hasProperty('ver')) {
           ver = project.property('ver')
         }
-        tag = 'bbp10-jiriki.cf/bbp-jiriki-backend:' + ver
+        tag = 'bbp10-jiriki.cf:5000/bbp-jiriki-backend:' + ver
         def jasyptPass = 'secret'
         if (project.hasProperty('jasypt')) {
           jasyptPass = project.property('jasypt')
