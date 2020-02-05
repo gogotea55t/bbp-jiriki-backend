@@ -8,6 +8,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 import lombok.Getter;
 
 @Getter
@@ -42,19 +43,19 @@ public class SampleDatum {
     Scores score1 = new Scores();
     score1.setUsers(user1);
     score1.setSongs(mitemite);
-    score1.setScore(99);
+    score1.setScore(new ScoreValue(99));
     score1.setScoreId(1);
 
     Scores score2 = new Scores();
     score2.setUsers(user2);
     score2.setSongs(mitemite);
-    score2.setScore(94);
+    score2.setScore(new ScoreValue(94));
     score2.setScoreId(2);
 
     Scores score3 = new Scores();
     score3.setUsers(user1);
     score3.setSongs(miraclePaint);
-    score3.setScore(99);
+    score3.setScore(new ScoreValue(99));
     score3.setScoreId(2);
     
     List<Users> users = new ArrayList<Users>();

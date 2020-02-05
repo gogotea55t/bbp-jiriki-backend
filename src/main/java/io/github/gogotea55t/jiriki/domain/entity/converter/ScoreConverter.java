@@ -5,7 +5,7 @@ import javax.persistence.Converter;
 
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class ScoreConverter implements AttributeConverter<ScoreValue, Integer> {
 
   @Override

@@ -10,14 +10,18 @@ import lombok.Data;
 public class ScoreValue {
   @JsonValue private BigDecimal score;
 
-  public ScoreValue(int score) {
-    if (score < 0 || score > 100) {
+  public ScoreValue(Integer score) {
+    if (score == null) {
+      // TODO: 本当にこれでいいか？
+      this.score = null;
+    } else if (score < 0 || score > 100) {
       throw new IllegalArgumentException("得点は0から100までの入力が必要です");
+    } else {
+      this.score = new BigDecimal(score);
     }
-    this.score = new BigDecimal(score);
   }
 
-  public ScoreValue(double score) {
+  public ScoreValue(Double score) {
     if (score < 0 || score > 100) {
       throw new IllegalArgumentException("得点は0から100までの入力が必要です");
     }
