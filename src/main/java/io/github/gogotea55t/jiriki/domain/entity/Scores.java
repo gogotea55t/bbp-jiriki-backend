@@ -32,7 +32,7 @@ public class Scores {
   @JoinColumn(foreignKey = @ForeignKey(name = "songId"), nullable = false)
   private Songs songs;
 
-  @Column
+  @Column(nullable = false)
   @Convert(converter = ScoreConverter.class)
   private ScoreValue score;
 }
