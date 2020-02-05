@@ -3,6 +3,7 @@ package io.github.gogotea55t.jiriki.domain;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,7 @@ public class Score4UserResponse {
 
   private String instrument;
 
-  private Integer score;
+  private ScoreValue score;
 
   public static Score4UserResponse of(Scores score) {
     Score4UserResponse response = new Score4UserResponse();
@@ -41,6 +42,6 @@ public class Score4UserResponse {
 	this.songName = (String)obj[2];
 	this.contributor = (String)obj[3];
 	this.instrument = (String)obj[4];
-	this.score = (Integer)obj[5];
+	this.score = new ScoreValue((Integer)obj[5]);
   }
 }

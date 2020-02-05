@@ -38,6 +38,7 @@ import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @EnableScheduling
 @Service
@@ -194,7 +195,7 @@ public class JirikiService {
 
               score.setSongs(thisSong);
               score.setUsers(users.get(scoreRows.get(0).get(j).toString()));
-              score.setScore(Integer.parseInt(scoreCol));
+              score.setScore(new ScoreValue(Integer.parseInt(scoreCol)));
 
               Optional<Scores> scoreFetched =
                   scoreRepository.findByUsers_UserIdAndSongs_SongId(
