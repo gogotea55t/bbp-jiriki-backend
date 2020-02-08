@@ -18,7 +18,7 @@ public class ScoreValue {
     if (score == null) {
       // TODO: 本当にこれでいいか？
       this.score = null;
-    } else if (score < 0 || score > 100) {
+    } else if (isInvalidRange(score)) {
       throw new IllegalArgumentException("得点は0から100までの入力が必要です");
     } else {
       this.score = new BigDecimal(score);
@@ -28,11 +28,15 @@ public class ScoreValue {
   public ScoreValue(Double score) {
     if (score == null) {
       this.score = null;
-    } else if (score < 0 || score > 100) {
+    } else if (isInvalidRange(score)) {
       throw new IllegalArgumentException("得点は0から100までの入力が必要です");
     } else {
       this.score = BigDecimal.valueOf(score).setScale(2,RoundingMode.HALF_UP);
     }
+  }
+  
+  private boolean isInvalidRange(Number score) {
+	return score.doubleValue() < 0 || score.doubleValue() > 100;
   }
 
   public boolean isInsertableToDB() {
