@@ -31,12 +31,22 @@ public class ScoreValue {
     } else if (isInvalidRange(score)) {
       throw new IllegalArgumentException("得点は0から100までの入力が必要です");
     } else {
-      this.score = BigDecimal.valueOf(score).setScale(2,RoundingMode.HALF_UP);
+      this.score = BigDecimal.valueOf(score).setScale(2, RoundingMode.HALF_UP);
     }
   }
-  
+
+  public ScoreValue(BigDecimal score) {
+    if (score == null) {
+      this.score = null;
+    } else if (isInvalidRange(score)) {
+      throw new IllegalArgumentException("得点は0から100までの入力が必要です");
+    } else {
+      this.score = score.setScale(2, RoundingMode.HALF_UP);
+    }
+  }
+
   private boolean isInvalidRange(Number score) {
-	return score.doubleValue() < 0 || score.doubleValue() > 100;
+    return score.doubleValue() < 0 || score.doubleValue() > 100;
   }
 
   public boolean isInsertableToDB() {

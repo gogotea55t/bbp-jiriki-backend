@@ -417,6 +417,10 @@ public class JirikiService {
       return null;
     }
   }
+  
+  public List<Score4UserResponse> getAverageScores(Pageable page) {
+	return songRepository.findSongsWithAverage(page);
+  }
 
   public List<SongsResponse> getAllSongs(Pageable pageable) {
     Page<Songs> songs = songRepository.findAll(pageable);

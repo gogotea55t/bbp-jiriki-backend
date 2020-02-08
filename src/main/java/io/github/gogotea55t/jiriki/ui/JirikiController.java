@@ -124,6 +124,37 @@ public class JirikiController {
     }
   }
 
+  @GetMapping("/v1/players/average/scores")
+  public ResponseEntity<?> getAverage(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String contributor,
+      @RequestParam(required = false) String instrument,
+      @RequestParam(required = false) String jiriki,
+      @RequestParam(required = false, defaultValue = "0") Integer page,
+      @RequestParam(required = false, defaultValue = "20") Integer limit) {
+    PageRequest pageReq = PageRequest.of(page, limit);
+    List<Score4UserResponse> response;
+    //    if (name != null) {
+    //      response = jirikiService.getScoresByUserIdAndSongNameWithEmpty(name, pageReq);
+    //    } else if (contributor != null) {
+    //      response = jirikiService.getScoresByUserIdAndContributorWithEmpty(contributor, pageReq);
+    //    } else if (instrument != null) {
+    //      response = jirikiService.getScoresByUserIdAndInstrumentWithEmpty(id, instrument,
+    // pageReq);
+    //    } else if (jiriki != null) {
+    //      response =
+    //          jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
+    //              id, JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+    //    } else {
+    response = jirikiService.getAverageScores(pageReq);
+    //    }
+    if (response == null) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.ok(response);
+    }
+  }
+
   @GetMapping("/v1/players/{id}/scores")
   public ResponseEntity<?> getScoresByPlayerId(
       @PathVariable(name = "id") String id,

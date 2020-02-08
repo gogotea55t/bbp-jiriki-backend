@@ -1,5 +1,7 @@
 package io.github.gogotea55t.jiriki.domain;
 
+import java.math.BigDecimal;
+
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Score4UserResponse {
   private String songId;
-  
+
   private String jirikiRank;
 
   private String songName;
@@ -37,11 +39,15 @@ public class Score4UserResponse {
   }
 
   public Score4UserResponse(Object[] obj) {
-	this.songId = (String)obj[0];
-	this.jirikiRank = JirikiRank.getJirikiRankFromId((int)obj[1]).getJirikiRank();
-	this.songName = (String)obj[2];
-	this.contributor = (String)obj[3];
-	this.instrument = (String)obj[4];
-	this.score = new ScoreValue((Integer)obj[5]);
+    this.songId = (String) obj[0];
+    this.jirikiRank = JirikiRank.getJirikiRankFromId((int) obj[1]).getJirikiRank();
+    this.songName = (String) obj[2];
+    this.contributor = (String) obj[3];
+    this.instrument = (String) obj[4];
+    if (obj[5] instanceof BigDecimal) {
+      this.score = new ScoreValue((BigDecimal) obj[5]);
+    } else {
+      this.score = new ScoreValue((Integer) obj[5]);
+    }
   }
 }

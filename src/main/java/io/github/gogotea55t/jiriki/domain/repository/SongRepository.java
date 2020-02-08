@@ -130,4 +130,25 @@ public interface SongRepository extends JpaRepository<Songs, String> {
         .map(Score4UserResponse::new)
         .collect(Collectors.toList());
   }
+  
+  @Query(
+	      value =
+	          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, AVG(sc.score) "
+	              + "FROM songs so "
+	              + "LEFT OUTER JOIN scores sc "
+	              + "ON sc.songs_song_id = so.song_id "
+	              + "GROUP BY so.song_id "
+	              + "ORDER BY so.jiriki_rank, so.song_id asc",
+	      countQuery = "SELECT COUNT(*) FROM songs",
+	      nativeQuery = true)
+	  public List<Object[]> _findSongsWithAverage(Pageable page);
+
+	  default List<Score4UserResponse> findSongsWithAverage(Pageable page) {
+	    return _findSongsWithAverage(page)
+	        .stream()
+	        .map(Score4UserResponse::new)
+	        .collect(Collectors.toList());
+	  }
+  
+  
 }
