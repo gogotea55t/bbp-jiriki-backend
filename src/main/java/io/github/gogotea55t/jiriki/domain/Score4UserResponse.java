@@ -44,7 +44,7 @@ public class Score4UserResponse {
     this.songName = (String) obj[2];
     this.contributor = (String) obj[3];
     this.instrument = (String) obj[4];
-    if (obj[5] instanceof BigDecimal) {
+    if (obj[5] instanceof BigDecimal || obj[5] instanceof Double) {
       this.score = new ScoreValue((BigDecimal) obj[5]);
     } else {
       this.score = new ScoreValue((Integer) obj[5]);

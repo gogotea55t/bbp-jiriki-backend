@@ -56,7 +56,7 @@ public class SampleDatum {
     score3.setUsers(user1);
     score3.setSongs(miraclePaint);
     score3.setScore(new ScoreValue(99));
-    score3.setScoreId(2);
+    score3.setScoreId(3);
     
     List<Users> users = new ArrayList<Users>();
     users.add(user1);

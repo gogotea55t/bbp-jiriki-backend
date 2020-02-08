@@ -3,9 +3,9 @@ spring:
     active: unittest
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:AZ;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE
+    url: jdbc:h2:mem:AZ;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;MODE=MYSQL
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect    
+    database-platform: org.hibernate.dialect.MySQL55Dialect    
 google:
   sheet:
     id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
