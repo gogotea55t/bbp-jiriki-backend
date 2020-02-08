@@ -417,9 +417,25 @@ public class JirikiService {
       return null;
     }
   }
-  
+
   public List<Score4UserResponse> getAverageScores(Pageable page) {
-	return songRepository.findSongsWithAverage(page);
+    return songRepository.findSongsWithAverage(page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresByJiriki(JirikiRank jiriki, Pageable page) {
+    return songRepository.findSongsWithAverageByJirikiRank(jiriki, page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresBySongName(String songName, Pageable page) {
+    return songRepository.findSongsWithAverageBySongName(songName, page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresByInstrument(String instrument, Pageable page) {
+    return songRepository.findSongsWithAverageByInstrument(instrument, page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresByContributor(String contributor, Pageable page) {
+    return songRepository.findSongsWithAverageByContributor(contributor, page);
   }
 
   public List<SongsResponse> getAllSongs(Pageable pageable) {

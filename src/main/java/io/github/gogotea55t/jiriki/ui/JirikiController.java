@@ -134,20 +134,19 @@ public class JirikiController {
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
     PageRequest pageReq = PageRequest.of(page, limit);
     List<Score4UserResponse> response;
-    //    if (name != null) {
-    //      response = jirikiService.getScoresByUserIdAndSongNameWithEmpty(name, pageReq);
-    //    } else if (contributor != null) {
-    //      response = jirikiService.getScoresByUserIdAndContributorWithEmpty(contributor, pageReq);
-    //    } else if (instrument != null) {
-    //      response = jirikiService.getScoresByUserIdAndInstrumentWithEmpty(id, instrument,
-    // pageReq);
-    //    } else if (jiriki != null) {
-    //      response =
-    //          jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
-    //              id, JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
-    //    } else {
-    response = jirikiService.getAverageScores(pageReq);
-    //    }
+    if (name != null) {
+      response = jirikiService.getAverageScoresBySongName(name, pageReq);
+    } else if (contributor != null) {
+      response = jirikiService.getAverageScoresByContributor(contributor, pageReq);
+    } else if (instrument != null) {
+      response = jirikiService.getAverageScoresByInstrument(instrument, pageReq);
+    } else if (jiriki != null) {
+      response =
+          jirikiService.getAverageScoresByJiriki(
+              JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+    } else {
+      response = jirikiService.getAverageScores(pageReq);
+    }
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
