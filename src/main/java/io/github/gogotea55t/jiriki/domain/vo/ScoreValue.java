@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class ScoreValue {
-  @JsonValue private BigDecimal score;
+  @JsonValue private final BigDecimal score;
 
   public ScoreValue(Integer score) {
     if (score == null) {
