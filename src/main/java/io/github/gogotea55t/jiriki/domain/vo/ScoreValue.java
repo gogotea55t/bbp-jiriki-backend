@@ -1,6 +1,10 @@
 package io.github.gogotea55t.jiriki.domain.vo;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -22,10 +26,16 @@ public class ScoreValue {
   }
 
   public ScoreValue(Double score) {
-    if (score < 0 || score > 100) {
+    if (score == null) {
+      this.score = null;
+    } else if (score < 0 || score > 100) {
       throw new IllegalArgumentException("得点は0から100までの入力が必要です");
+    } else {
+      this.score = BigDecimal.valueOf(score).setScale(2,RoundingMode.HALF_UP);
     }
-    this.score = new BigDecimal(score);
-    this.score.setScale(4, 0);
+  }
+
+  public boolean isInsertableToDB() {
+    return (score != null) && !(score.toPlainString().contains("."));
   }
 }
