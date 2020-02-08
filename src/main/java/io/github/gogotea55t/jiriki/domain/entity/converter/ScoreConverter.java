@@ -10,7 +10,11 @@ public class ScoreConverter implements AttributeConverter<ScoreValue, Integer> {
 
   @Override
   public Integer convertToDatabaseColumn(ScoreValue attribute) {
-    return attribute.getScore().intValue();
+    if (attribute.isInsertableToDB()) {
+      return attribute.getScore().intValue();
+    } else {
+      throw new IllegalArgumentException("DBに登録できない成績情報です");
+    }
   }
 
   @Override
