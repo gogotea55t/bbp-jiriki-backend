@@ -2,9 +2,11 @@ package io.github.gogotea55t.jiriki.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +21,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
@@ -27,13 +30,14 @@ import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
 @SpringBootTest
 public class JirikiServiceTest {
   @Autowired private GoogleSpreadSheetConfig sheetConfig;
-  
+
   @Autowired private GoogleSheetsService sheetService;
 
   @Autowired private UserRepository userRepository;
@@ -41,7 +45,7 @@ public class JirikiServiceTest {
   @Autowired private SongRepository songRepository;
 
   @Autowired private ScoresRepository scoreRepository;
-  
+
   @Autowired private TwitterUsersRepository twiRepository;
 
   private JirikiService jirikiService;
@@ -51,7 +55,14 @@ public class JirikiServiceTest {
   @Transactional
   @Before
   public void init() {
-    jirikiService = new JirikiService(sheetConfig, sheetService, userRepository, songRepository, scoreRepository, twiRepository);
+    jirikiService =
+        new JirikiService(
+            sheetConfig,
+            sheetService,
+            userRepository,
+            songRepository,
+            scoreRepository,
+            twiRepository);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
@@ -103,54 +114,54 @@ public class JirikiServiceTest {
     UserResponse searchResult = jirikiService.getPlayerById("human");
     assertThat(searchResult).isNull();
   }
-  
+
   @Test
   public void twitterのIDとユーザーの紐づけができ登録したものを閲覧できる() throws Exception {
-	TwitterUsersRequest testRequest = new TwitterUsersRequest();
-	String testTwitterId = "aaaaaaaaaa";
-	testRequest.setUserId("u001");
-	testRequest.setTwitterUserId(testTwitterId);
-	jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
-	
-	Optional<TwitterUsers> putResult = twiRepository.findById(testTwitterId);
-	assertThat(putResult.isPresent()).isTrue();
-	assertThat(putResult.get().getTwitterUserId()).isEqualTo(testTwitterId);
-	assertThat(putResult.get().getUsers().getUserId()).isEqualTo("u001");
-	
-	UserResponse getResult = jirikiService.findPlayerByTwitterId(testTwitterId);
-	assertThat(getResult.getUserId()).isEqualTo("u001");
+    TwitterUsersRequest testRequest = new TwitterUsersRequest();
+    String testTwitterId = "aaaaaaaaaa";
+    testRequest.setUserId("u001");
+    testRequest.setTwitterUserId(testTwitterId);
+    jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
+
+    Optional<TwitterUsers> putResult = twiRepository.findById(testTwitterId);
+    assertThat(putResult.isPresent()).isTrue();
+    assertThat(putResult.get().getTwitterUserId()).isEqualTo(testTwitterId);
+    assertThat(putResult.get().getUsers().getUserId()).isEqualTo("u001");
+
+    UserResponse getResult = jirikiService.findPlayerByTwitterId(testTwitterId);
+    assertThat(getResult.getUserId()).isEqualTo("u001");
   }
-  
+
   @Test
   public void 存在しないtwitterアカウントを検索するとnullが返ってくる() throws Exception {
-	assertThat(jirikiService.findPlayerByTwitterId("hogehoge")).isNull();
+    assertThat(jirikiService.findPlayerByTwitterId("hogehoge")).isNull();
   }
-  
+
   @Test(expected = NullPointerException.class)
   public void 存在しないユーザーに対してTwitterアカウントを紐づけようとすると例外が出る() throws Exception {
-	TwitterUsersRequest testRequest = new TwitterUsersRequest();
-	testRequest.setUserId("hogehoge");
-	testRequest.setTwitterUserId("hogehogehoge");
-	
-	jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
+    TwitterUsersRequest testRequest = new TwitterUsersRequest();
+    testRequest.setUserId("hogehoge");
+    testRequest.setTwitterUserId("hogehogehoge");
+
+    jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
   }
-  
+
   @Test
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void すでに登録済みだったTwitterIdを別のアカウントに紐づけようとすると新しいアカウントに紐づく() throws Exception {
-	String testTwitterId = "twitterId";
-	
-	TwitterUsersRequest testRequest = new TwitterUsersRequest();
-	testRequest.setTwitterUserId(testTwitterId);
-	testRequest.setUserId("u001");
-	
-	UserResponse putResult = jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
-	assertThat(putResult.getUserId()).isEqualTo("u001");
-	
-	UserResponse getResult = jirikiService.findPlayerByTwitterId(testTwitterId);
-	assertThat(getResult.getUserId()).isEqualTo("u001");
-	
-	assertThat(userRepository.findById("u002").isPresent()).isTrue();
+    String testTwitterId = "twitterId";
+
+    TwitterUsersRequest testRequest = new TwitterUsersRequest();
+    testRequest.setTwitterUserId(testTwitterId);
+    testRequest.setUserId("u001");
+
+    UserResponse putResult = jirikiService.addNewLinkBetweenUserAndTwitterUser(testRequest);
+    assertThat(putResult.getUserId()).isEqualTo("u001");
+
+    UserResponse getResult = jirikiService.findPlayerByTwitterId(testTwitterId);
+    assertThat(getResult.getUserId()).isEqualTo("u001");
+
+    assertThat(userRepository.findById("u002").isPresent()).isTrue();
   }
 
   /*
@@ -186,12 +197,14 @@ public class JirikiServiceTest {
     List<SongsResponse> songs = jirikiService.getSongByInstrument("ピア", defaultPaging);
     assertThat(songs.size()).isEqualTo(1);
   }
-  
+
   @Test
   public void 地力で検索できる() throws Exception {
-	 List<SongsResponse> songs = jirikiService.getSongByJiriki(JirikiRank.JIRIKI_A_PLUS, defaultPaging);
-	 assertThat(songs.size()).isEqualTo(1);
-	 assertThat(jirikiService.getSongByJiriki(JirikiRank.JIRIKI_F, defaultPaging).size()).isEqualTo(0);
+    List<SongsResponse> songs =
+        jirikiService.getSongByJiriki(JirikiRank.JIRIKI_A_PLUS, defaultPaging);
+    assertThat(songs.size()).isEqualTo(1);
+    assertThat(jirikiService.getSongByJiriki(JirikiRank.JIRIKI_F, defaultPaging).size())
+        .isEqualTo(0);
   }
 
   @Test

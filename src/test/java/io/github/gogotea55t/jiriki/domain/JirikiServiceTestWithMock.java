@@ -27,6 +27,7 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -79,14 +80,14 @@ public class JirikiServiceTestWithMock {
     Scores score = new Scores();
     score.setSongs(sampleSong2);
     score.setUsers(sampleUser);
-    score.setScore(93);
+    score.setScore(new ScoreValue(93));
     score.setScoreId(222);
     scoreRepository.save(score);
     Scores score2 = new Scores();
     score2.setScoreId(223);
     score2.setSongs(sampleSong);
     score2.setUsers(sampleUser2);
-    score2.setScore(9);
+    score2.setScore(new ScoreValue(9));
     scoreRepository.save(score2);
   }
 
@@ -211,6 +212,6 @@ public class JirikiServiceTestWithMock {
     Songs miraclePaint = songRepository.findById("558").get();
     assertThat(miraclePaint.getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_A_PLUS);
     Scores score = scoreRepository.findByUsers_UserIdAndSongs_SongId(youkai2.getUserId(), miraclePaint.getSongId()).get();
-    assertThat(score.getScore()).isEqualTo(90);
+    assertThat(score.getScore().getScore().intValue()).isEqualTo(90);
   }
 }
