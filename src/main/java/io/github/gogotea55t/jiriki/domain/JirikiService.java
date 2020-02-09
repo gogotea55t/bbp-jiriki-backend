@@ -38,6 +38,7 @@ import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @EnableScheduling
 @Service
@@ -194,7 +195,7 @@ public class JirikiService {
 
               score.setSongs(thisSong);
               score.setUsers(users.get(scoreRows.get(0).get(j).toString()));
-              score.setScore(Integer.parseInt(scoreCol));
+              score.setScore(new ScoreValue(Integer.parseInt(scoreCol)));
 
               Optional<Scores> scoreFetched =
                   scoreRepository.findByUsers_UserIdAndSongs_SongId(
@@ -415,6 +416,26 @@ public class JirikiService {
     } else {
       return null;
     }
+  }
+
+  public List<Score4UserResponse> getAverageScores(Pageable page) {
+    return songRepository.findSongsWithAverage(page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresByJiriki(JirikiRank jiriki, Pageable page) {
+    return songRepository.findSongsWithAverageByJirikiRank(jiriki, page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresBySongName(String songName, Pageable page) {
+    return songRepository.findSongsWithAverageBySongName(songName, page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresByInstrument(String instrument, Pageable page) {
+    return songRepository.findSongsWithAverageByInstrument(instrument, page);
+  }
+
+  public List<Score4UserResponse> getAverageScoresByContributor(String contributor, Pageable page) {
+    return songRepository.findSongsWithAverageByContributor(contributor, page);
   }
 
   public List<SongsResponse> getAllSongs(Pageable pageable) {

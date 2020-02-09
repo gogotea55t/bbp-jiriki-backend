@@ -323,4 +323,49 @@ public class JirikiControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
+
+  @Test
+  public void 平均点一覧を取得できる() throws Exception {
+    when(mockService.getAverageScores(PageRequest.of(0, 20))).thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/v1/players/average/scores")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void 投稿者名で検索して平均点一覧を取得できる() throws Exception {
+    when(mockService.getAverageScoresByContributor("エメラル", PageRequest.of(0, 20))).thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/v1/players/average/scores?contributor=エメラル")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void 曲名で検索して平均点一覧を取得できる() throws Exception {
+    when(mockService.getAverageScoresBySongName("みてみて☆こっちっち", PageRequest.of(0, 20))).thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/v1/players/average/scores?name=みてみて☆こっちっち")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void 楽器名で検索して平均点一覧を取得できる() throws Exception {
+    when(mockService.getAverageScoresByInstrument("ロックオルガン", PageRequest.of(0, 20))).thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/v1/players/average/scores?instrument=ロックオルガン")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void 地力で検索して平均点一覧を取得できる() throws Exception {
+    when(mockService.getAverageScoresByJiriki(JirikiRank.JIRIKI_A, PageRequest.of(0, 20))).thenReturn(mockScore4UserResponse);
+    mockMvc
+        .perform(get(new URI("/v1/players/average/scores?jiriki=地力Ａ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
 }

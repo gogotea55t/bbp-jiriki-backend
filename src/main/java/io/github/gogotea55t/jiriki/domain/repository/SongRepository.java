@@ -21,7 +21,7 @@ public interface SongRepository extends JpaRepository<Songs, String> {
   public List<Songs> findByContributorContaining(String contributor, Pageable page);
 
   public List<Songs> findByInstrumentContaining(String instrument, Pageable page);
-  
+
   public List<Songs> findByJirikiRank(JirikiRank jiriki, Pageable page);
 
   @Query(
@@ -126,6 +126,112 @@ public interface SongRepository extends JpaRepository<Songs, String> {
   default List<Score4UserResponse> findSongsByUserIdAndJirikiRankWithEmpty(
       String userId, JirikiRank jiriki, Pageable page) {
     return findSongsByUserIdAndJirikiWithEmptyRows(userId, jiriki.getJirikiId(), page)
+        .stream()
+        .map(Score4UserResponse::new)
+        .collect(Collectors.toList());
+  }
+
+  @Query(
+      value =
+          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, AVG(sc.score) "
+              + "FROM songs so "
+              + "LEFT OUTER JOIN scores sc "
+              + "ON sc.songs_song_id = so.song_id "
+              + "GROUP BY so.song_id "
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
+      countQuery = "SELECT COUNT(*) FROM songs",
+      nativeQuery = true)
+  public List<Object[]> _findSongsWithAverage(Pageable page);
+
+  default List<Score4UserResponse> findSongsWithAverage(Pageable page) {
+    return _findSongsWithAverage(page)
+        .stream()
+        .map(Score4UserResponse::new)
+        .collect(Collectors.toList());
+  }
+
+  @Query(
+      value =
+          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, AVG(sc.score) "
+              + "FROM songs so "
+              + "LEFT OUTER JOIN scores sc "
+              + "ON sc.songs_song_id = so.song_id "
+              + "WHERE so.song_name = :songname "
+              + "GROUP BY so.song_id "
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
+      countQuery = "SELECT COUNT(*) FROM songs",
+      nativeQuery = true)
+  public List<Object[]> _findSongsWithAverageBySongName(
+      @Param("songname") String songName, Pageable page);
+
+  default List<Score4UserResponse> findSongsWithAverageBySongName(String songName, Pageable page) {
+    return _findSongsWithAverageBySongName(songName, page)
+        .stream()
+        .map(Score4UserResponse::new)
+        .collect(Collectors.toList());
+  }
+
+  @Query(
+      value =
+          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, AVG(sc.score) "
+              + "FROM songs so "
+              + "LEFT OUTER JOIN scores sc "
+              + "ON sc.songs_song_id = so.song_id "
+              + "WHERE so.jiriki_rank = :jiriki "
+              + "GROUP BY so.song_id "
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
+      countQuery = "SELECT COUNT(*) FROM songs",
+      nativeQuery = true)
+  public List<Object[]> _findSongsWithAverageByJirikiRank(
+      @Param("jiriki") int jiriki, Pageable page);
+
+  default List<Score4UserResponse> findSongsWithAverageByJirikiRank(
+      JirikiRank jiriki, Pageable page) {
+    return _findSongsWithAverageByJirikiRank(jiriki.getJirikiId(), page)
+        .stream()
+        .map(Score4UserResponse::new)
+        .collect(Collectors.toList());
+  }
+
+  @Query(
+      value =
+          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, AVG(sc.score) "
+              + "FROM songs so "
+              + "LEFT OUTER JOIN scores sc "
+              + "ON sc.songs_song_id = so.song_id "
+              + "WHERE so.instrument = :instrument "
+              + "GROUP BY so.song_id "
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
+      countQuery = "SELECT COUNT(*) FROM songs",
+      nativeQuery = true)
+  public List<Object[]> _findSongsWithAverageByInstrument(
+      @Param("instrument") String instrument, Pageable page);
+
+  default List<Score4UserResponse> findSongsWithAverageByInstrument(
+      String instrument, Pageable page) {
+    return _findSongsWithAverageByInstrument(instrument, page)
+        .stream()
+        .map(Score4UserResponse::new)
+        .collect(Collectors.toList());
+  }
+
+  @Query(
+      value =
+          "SELECT so.song_id, so.jiriki_rank, so.song_name, so.contributor, so.instrument, AVG(sc.score) "
+              + "FROM songs so "
+              + "LEFT OUTER JOIN scores sc "
+              + "ON sc.songs_song_id = so.song_id "
+              + "WHERE so.contributor = :contributor "
+              + "GROUP BY so.song_id "
+              + "ORDER BY so.jiriki_rank, so.song_id asc",
+      countQuery = "SELECT COUNT(*) FROM songs",
+      nativeQuery = true)
+  public List<Object[]> _findSongsWithAverageByContributor(
+      @Param("contributor") String contributor, Pageable page);
+
+  default List<Score4UserResponse> findSongsWithAverageByContributor(
+      String contributor, Pageable page) {
+    return _findSongsWithAverageByContributor(contributor, page)
         .stream()
         .map(Score4UserResponse::new)
         .collect(Collectors.toList());
