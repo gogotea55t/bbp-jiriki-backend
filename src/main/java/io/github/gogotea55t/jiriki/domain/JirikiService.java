@@ -202,7 +202,7 @@ public class JirikiService {
                       scoreRows.get(0).get(j).toString(), thisSong.getSongId());
 
               if (scoreFetched.isPresent()) {
-                if (scoreFetched.get().getScore() == score.getScore()) {
+                if (scoreFetched.get().getScore().isEqualTo(score.getScore())) {
                   // do nothing
                 } else {
                   scoreFetched.get().setScore(score.getScore());
@@ -212,7 +212,7 @@ public class JirikiService {
               }
             }
           } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
             System.out.println(scoreRow);
             continue;
           }

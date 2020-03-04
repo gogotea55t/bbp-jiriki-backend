@@ -14,10 +14,6 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
  */
 @ControllerAdvice
 public class ExceptionHandlerAdvice {
-  @ExceptionHandler(value = NullPointerException.class)
-  public ResponseEntity<?> userNotFound() {
-    return ResponseEntity.badRequest().build();
-  }
   
   @ExceptionHandler(value = JWTDecodeException.class)
   public ResponseEntity<?> aaa() {

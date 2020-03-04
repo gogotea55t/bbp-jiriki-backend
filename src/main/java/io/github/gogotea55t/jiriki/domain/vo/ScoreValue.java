@@ -52,4 +52,8 @@ public class ScoreValue {
   public boolean isInsertableToDB() {
     return (score != null) && !(score.toPlainString().contains("."));
   }
+  
+  public boolean isEqualTo(ScoreValue sc) {
+	return this.score.compareTo(sc.getScore()) == 0;
+  }
 }

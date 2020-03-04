@@ -37,8 +37,6 @@ public class ScoreValueTest {
     fail();
   }
 
-  
-
   @Test(expected = IllegalArgumentException.class)
   public void 成績には負の点を付けられない() throws Exception {
     new ScoreValue(-1);
@@ -50,32 +48,47 @@ public class ScoreValueTest {
     ScoreValue s = new ScoreValue(0.01);
     assertThat(s.getScore().toPlainString()).isEqualTo("0.01");
   }
-  
+
   @Test
   public void 細かすぎる小数は打ち切られる() throws Exception {
-	ScoreValue s = new ScoreValue(12.34567);
-	assertThat(s.getScore().toPlainString()).isEqualTo("12.35");
+    ScoreValue s = new ScoreValue(12.34567);
+    assertThat(s.getScore().toPlainString()).isEqualTo("12.35");
   }
-  
+
   @Test
   public void nullはDBに入れられない() throws Exception {
-	Double t = null;
-	ScoreValue s = new ScoreValue(t);
-	assertThat(s.isInsertableToDB()).isFalse();
+    Double t = null;
+    ScoreValue s = new ScoreValue(t);
+    assertThat(s.isInsertableToDB()).isFalse();
   }
-  
+
   @Test
   public void doubleはDBに入れられない() throws Exception {
-	Double t = 12.3456;
-	ScoreValue s = new ScoreValue(t);
-	assertThat(s.isInsertableToDB()).isFalse();
+    Double t = 12.3456;
+    ScoreValue s = new ScoreValue(t);
+    assertThat(s.isInsertableToDB()).isFalse();
   }
-  
+
   @Test
   public void intならDBに入れられる() throws Exception {
-	Integer t = 12;
-	ScoreValue s = new ScoreValue(t);
-	assertThat(s.isInsertableToDB()).isTrue();
+    Integer t = 12;
+    ScoreValue s = new ScoreValue(t);
+    assertThat(s.isInsertableToDB()).isTrue();
   }
-  
+
+  @Test
+  public void 普通に比較すると同じ点数でも違う() {
+    ScoreValue sc1 = new ScoreValue(90);
+    ScoreValue sc2 = new ScoreValue(90);
+    if (sc1 == sc2) {
+      fail();
+    }
+  }
+
+  @Test
+  public void 値が同じかどうかの比較() {
+    ScoreValue sc1 = new ScoreValue(90);
+    ScoreValue sc2 = new ScoreValue(90);
+    assertThat(sc1.isEqualTo(sc2)).isTrue();
+  }
 }
