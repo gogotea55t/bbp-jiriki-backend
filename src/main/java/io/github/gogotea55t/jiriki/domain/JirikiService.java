@@ -280,7 +280,7 @@ public class JirikiService {
     if (user.isPresent()) {
       Optional<TwitterUsers> tw = twitterUsersRepository.findById(request.getTwitterUserId());
       if (tw.isPresent()) {
-        twitterUsersRepository.delete(tw.get());
+        twitterUsersRepository.update(tw.get());
       }
       twitterUsersRepository.save(new TwitterUsers(request.getTwitterUserId(), user.get()));
       return UserResponse.of(user.get());

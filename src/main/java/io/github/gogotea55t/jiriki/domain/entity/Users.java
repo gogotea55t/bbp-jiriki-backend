@@ -32,8 +32,4 @@ public class Users {
   @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @Fetch(FetchMode.SUBSELECT)
   private List<Scores> scores;
-  
-  @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @Fetch(FetchMode.SUBSELECT)
-  private List<TwitterUsers> twitterUsers;
 }
