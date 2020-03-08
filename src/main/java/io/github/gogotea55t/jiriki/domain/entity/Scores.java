@@ -20,7 +20,7 @@ import lombok.Data;
 @Entity
 public class Scores {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column
   private long scoreId;
 
