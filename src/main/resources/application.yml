@@ -1,12 +1,12 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_practice?serverTimezone=JST
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jiriki_db?serverTimezone=JST
     username: mysql
     password: mysql
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       
 security:
   oauth2:
