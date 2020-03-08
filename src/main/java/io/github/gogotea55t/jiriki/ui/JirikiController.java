@@ -210,8 +210,4 @@ public class JirikiController {
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/v1/players/")
-  public ResponseEntity<?> getPlayerByTwitterId() {
-    throw new Error();
-  }
 }

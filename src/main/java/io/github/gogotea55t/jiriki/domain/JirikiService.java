@@ -233,7 +233,7 @@ public class JirikiService {
    */
   public List<UserResponse> getAllPlayer() {
     List<UserResponse> players = new ArrayList<>();
-    List<Users> users = userRepository.findAll(Sort.by(Order.asc("userId")));
+    List<Users> users = userRepository.findAll();
     for (Users user : users) {
       players.add(UserResponse.of(user));
     }

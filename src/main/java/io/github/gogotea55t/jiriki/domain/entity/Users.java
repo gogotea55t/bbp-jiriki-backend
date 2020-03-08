@@ -15,9 +15,9 @@ import org.hibernate.annotations.FetchMode;
 
 import lombok.Data;
 
-@Data
-@Entity
 @Table
+@Entity
+@Data
 public class Users {
   /** ユーザー識別ID */
   @Id
