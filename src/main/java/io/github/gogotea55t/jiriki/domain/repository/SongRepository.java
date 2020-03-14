@@ -33,7 +33,7 @@ public interface SongRepository {
       "<script>"
           + "INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
           + "<foreach item=\"songs\" collection=\"list\" separator=\",\"> "
-          + "( #{songId}, #{jirikiRank}, #{songName}, #{contributor}, #{instrument} )"
+          + "( #{songs.songId}, #{songs.jirikiRank}, #{songs.songName}, #{songs.contributor}, #{songs.instrument} )"
           + "</foreach>"
           + "</script>")
   public void saveAll(List<Songs> songs);

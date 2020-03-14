@@ -32,7 +32,7 @@ public interface UserRepository {
       "<script>"
           + "INSERT INTO USERS (USER_ID, USER_NAME) VALUES "
           + "<foreach item=\"user\" collection=\"list\" separator=\",\"> "
-          + "( #{userId}, #{userName} )"
+          + "( #{user.userId}, #{user.userName} )"
           + "</foreach>"
           + "</script>")
   public void saveAll(List<Users> users);
