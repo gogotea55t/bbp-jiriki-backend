@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -298,7 +298,24 @@ public class JirikiService {
     }
   }
 
-  public List<SongsResponse> getSongBySongName(String songName, Pageable page) {
+  public List<SongsResponse> searchSongsByQuery(Map<String, String> query, RowBounds page) {
+    return songRepository.searchSongsByConditions(query, page);
+  }
+
+  public List<Score4UserResponse> searchAverageScoresByQuery(
+      Map<String, String> query, RowBounds page) {
+    return songRepository.searchAverageByConditions(query, page);
+  }
+
+  public List<Score4UserResponse> searchScoresByQuery(String userId, Map<String, String> query, RowBounds page) {
+	if (userRepository.findById(userId).isPresent()) {
+      return songRepository.searchScoreByConditions(userId, query, page);
+	} else {
+	  throw new IllegalArgumentException("User not found.");
+	}
+  }
+
+  public List<SongsResponse> getSongBySongName(String songName, RowBounds page) {
     List<SongsResponse> songs = new ArrayList<>();
     List<Songs> songsResponse = songRepository.findBySongNameContaining(songName, page);
     songsResponse.forEach(
@@ -308,7 +325,7 @@ public class JirikiService {
     return songs;
   }
 
-  public List<SongsResponse> getSongByContributor(String contributor, Pageable page) {
+  public List<SongsResponse> getSongByContributor(String contributor, RowBounds page) {
     List<SongsResponse> songs = new ArrayList<>();
     List<Songs> songsResponse = songRepository.findByContributorContaining(contributor, page);
     songsResponse.forEach(
@@ -318,7 +335,7 @@ public class JirikiService {
     return songs;
   }
 
-  public List<SongsResponse> getSongByInstrument(String instrument, Pageable page) {
+  public List<SongsResponse> getSongByInstrument(String instrument, RowBounds page) {
     List<SongsResponse> songs = new ArrayList<>();
     List<Songs> songsResponse = songRepository.findByInstrumentContaining(instrument, page);
     songsResponse.forEach(
@@ -328,7 +345,7 @@ public class JirikiService {
     return songs;
   }
 
-  public List<SongsResponse> getSongByJiriki(JirikiRank jiriki, Pageable page) {
+  public List<SongsResponse> getSongByJiriki(JirikiRank jiriki, RowBounds page) {
     List<SongsResponse> songs = new ArrayList<>();
 
     List<Songs> songsResponse = songRepository.findByJirikiRank(jiriki, page);
@@ -374,72 +391,8 @@ public class JirikiService {
     }
   }
 
-  public List<Score4UserResponse> getScoresByUserIdWithEmpty(String userId, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdWithEmpty(userId, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getScoresByUserIdAndSongNameWithEmpty(
-      String userId, String songName, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndSongNameWithEmpty(userId, songName, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getScoresByUserIdAndContributorWithEmpty(
-      String userId, String contributor, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndContributorWithEmpty(userId, contributor, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getScoresByUserIdAndInstrumentWithEmpty(
-      String userId, String instrument, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndInstrumentWithEmpty(userId, instrument, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getScoresByUserIdAndJirikiRankWithEmpty(
-      String userId, JirikiRank jiriki, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndJirikiRankWithEmpty(userId, jiriki, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getAverageScores(Pageable page) {
-    return songRepository.findSongsWithAverage(page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresByJiriki(JirikiRank jiriki, Pageable page) {
-    return songRepository.findSongsWithAverageByJirikiRank(jiriki, page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresBySongName(String songName, Pageable page) {
-    return songRepository.findSongsWithAverageBySongName(songName, page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresByInstrument(String instrument, Pageable page) {
-    return songRepository.findSongsWithAverageByInstrument(instrument, page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresByContributor(String contributor, Pageable page) {
-    return songRepository.findSongsWithAverageByContributor(contributor, page);
-  }
-
-  public List<SongsResponse> getAllSongs(Pageable pageable) {
-    Page<Songs> songs = songRepository.findAll(pageable);
+  public List<SongsResponse> getAllSongs(RowBounds pageable) {
+    List<Songs> songs = songRepository.findAll(pageable);
     List<SongsResponse> songsResponse = new ArrayList<>();
     songs
         .stream()

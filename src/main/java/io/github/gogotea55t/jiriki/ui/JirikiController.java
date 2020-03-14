@@ -1,11 +1,13 @@
 package io.github.gogotea55t.jiriki.ui;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
@@ -63,22 +65,20 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq =
-        PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
-
+    RowBounds pageReq = new RowBounds(page * limit, limit);
+    Map<String, String> query = new HashMap<String,String>();
     if (name != null) {
-      return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));
+      query.put("name", name);
     } else if (contributor != null) {
-      return ResponseEntity.ok(jirikiService.getSongByContributor(contributor, pageReq));
+      query.put("contributor", contributor);
     } else if (instrument != null) {
-      return ResponseEntity.ok(jirikiService.getSongByInstrument(instrument, pageReq));
+      query.put("instrument", instrument);
     } else if (jiriki != null) {
-      return ResponseEntity.ok(
-          jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
+      query.put("jiriki", jiriki);
     }
-    List<SongsResponse> songs = jirikiService.getAllSongs(pageReq);
 
-    return ResponseEntity.ok(songs);
+    return ResponseEntity.ok(jirikiService.searchSongsByQuery(query, pageReq));
+
   }
 
   @GetMapping("/v1/players")
@@ -132,21 +132,19 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    PageRequest pageReq = PageRequest.of(page, limit);
-    List<Score4UserResponse> response;
+    RowBounds pageReq = new RowBounds(page * limit, limit);
+    Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
-      response = jirikiService.getAverageScoresBySongName(name, pageReq);
+      query.put("name", name);
     } else if (contributor != null) {
-      response = jirikiService.getAverageScoresByContributor(contributor, pageReq);
+      query.put("contributor", contributor);
     } else if (instrument != null) {
-      response = jirikiService.getAverageScoresByInstrument(instrument, pageReq);
+      query.put("instrument", instrument);
     } else if (jiriki != null) {
-      response =
-          jirikiService.getAverageScoresByJiriki(
-              JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+      query.put("jiriki", jiriki);
     } else {
-      response = jirikiService.getAverageScores(pageReq);
     }
+    List<Score4UserResponse> response = jirikiService.searchAverageScoresByQuery(query, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
@@ -163,21 +161,19 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    PageRequest pageReq = PageRequest.of(page, limit);
-    List<Score4UserResponse> response;
+    RowBounds pageReq = new RowBounds(page * limit, limit);
+    Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
-      response = jirikiService.getScoresByUserIdAndSongNameWithEmpty(id, name, pageReq);
+      query.put("name", name);
     } else if (contributor != null) {
-      response = jirikiService.getScoresByUserIdAndContributorWithEmpty(id, contributor, pageReq);
+      query.put("contributor", contributor);
     } else if (instrument != null) {
-      response = jirikiService.getScoresByUserIdAndInstrumentWithEmpty(id, instrument, pageReq);
+      query.put("instrument", instrument);
     } else if (jiriki != null) {
-      response =
-          jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
-              id, JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+      query.put("jiriki", jiriki);
     } else {
-      response = jirikiService.getScoresByUserIdWithEmpty(id, pageReq);
     }
+    List<Score4UserResponse> response = jirikiService.searchScoresByQuery(id, query, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
@@ -209,5 +205,4 @@ public class JirikiController {
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
   }
-
 }
