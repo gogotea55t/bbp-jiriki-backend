@@ -315,60 +315,10 @@ public class JirikiService {
 	}
   }
 
-  public List<SongsResponse> getSongBySongName(String songName, RowBounds page) {
-    List<SongsResponse> songs = new ArrayList<>();
-    List<Songs> songsResponse = songRepository.findBySongNameContaining(songName, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-    return songs;
-  }
-
-  public List<SongsResponse> getSongByContributor(String contributor, RowBounds page) {
-    List<SongsResponse> songs = new ArrayList<>();
-    List<Songs> songsResponse = songRepository.findByContributorContaining(contributor, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-    return songs;
-  }
-
-  public List<SongsResponse> getSongByInstrument(String instrument, RowBounds page) {
-    List<SongsResponse> songs = new ArrayList<>();
-    List<Songs> songsResponse = songRepository.findByInstrumentContaining(instrument, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-    return songs;
-  }
-
-  public List<SongsResponse> getSongByJiriki(JirikiRank jiriki, RowBounds page) {
-    List<SongsResponse> songs = new ArrayList<>();
-
-    List<Songs> songsResponse = songRepository.findByJirikiRank(jiriki, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-
-    return songs;
-  }
-
   public List<Score4SongResponse> getScoresBySongId(String songId) {
     Optional<Songs> song = songRepository.findById(songId);
     if (song.isPresent()) {
-      List<Score4SongResponse> response = new ArrayList<>();
-      song.get()
-          .getScores()
-          .stream()
-          .forEach(
-              (sc) -> {
-                response.add(Score4SongResponse.of(sc));
-              });
-      return response;
+      return scoreRepository.findScoresBySongId(songId);
     } else {
       return null;
     }

@@ -20,36 +20,22 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(exclude = "scores")
-@EqualsAndHashCode(exclude = "scores")
-@Table
-@Entity
 public class Songs {
   /** 楽曲ID */
-  @Id
-  @Column(length = 10)
   private String songId;
 
-  @Column(length = 15)
   private JirikiRank jirikiRank;
 
   /** 楽曲名 */
-  @Column(length = 60)
   private String songName;
 
   /** 投稿者名 */
-  @Column(length = 20)
   private String contributor;
 
   /** 楽器 */
-  @Column(length = 15)
   private String instrument;
 
   /** 得点 */
-  @Column
-  @OneToMany(mappedBy = "songs", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @Fetch(FetchMode.SUBSELECT)
-  @OrderBy("score desc")
   private List<Scores> scores;
 
   public static Songs of(

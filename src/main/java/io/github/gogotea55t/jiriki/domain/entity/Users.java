@@ -15,8 +15,6 @@ import org.hibernate.annotations.FetchMode;
 
 import lombok.Data;
 
-@Table
-@Entity
 @Data
 public class Users {
   /** ユーザー識別ID */
@@ -29,7 +27,5 @@ public class Users {
   private String userName;
 
   /** スコア */
-  @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-  @Fetch(FetchMode.SUBSELECT)
   private List<Scores> scores;
 }
