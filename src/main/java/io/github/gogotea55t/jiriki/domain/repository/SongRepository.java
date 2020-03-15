@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.RowBounds;
 
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
@@ -47,6 +48,14 @@ public interface SongRepository {
   @Insert("INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
 		  + "( #{songId}, #{jirikiRank}, #{songName}, #{contributor}, #{instrument} )")
   public int save(Songs song);
+  
+  @Update("UPDATE SONGS SET "
+      + "JIRIKI_RANK = #{jirikiRank}, "
+      + "SONG_NAME = #{songName}, "
+      + "CONTRIBUTOR = #{contributor}, "
+      + "INSTRUMENT = #{instrument} "
+      + "WHERE SONG_ID = #{songId}")
+  public int update(Songs song);
 
   @Delete("DELETE FROM SONGS")
   public void deleteAll();

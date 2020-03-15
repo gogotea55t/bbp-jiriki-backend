@@ -151,6 +151,7 @@ public class JirikiService {
             songFetched.get().setSongName(s.getSongName());
             songFetched.get().setInstrument(s.getInstrument());
             songFetched.get().setContributor(s.getContributor());
+            songRepository.update(songFetched.get());
           }
         } else {
           songRepository.save(s);
@@ -201,6 +202,7 @@ public class JirikiService {
                   // do nothing
                 } else {
                   scoreFetched.get().setScore(score.getScore());
+                  scoreRepository.update(scoreFetched.get());
                 }
               } else {
                 scores.add(score);
@@ -318,23 +320,6 @@ public class JirikiService {
     Optional<Songs> song = songRepository.findById(songId);
     if (song.isPresent()) {
       return scoreRepository.findScoresBySongId(songId);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getScoresByUserId(String userId) {
-    Optional<Users> user = userRepository.findById(userId);
-    if (user.isPresent()) {
-      List<Score4UserResponse> response = new ArrayList<>();
-      user.get()
-          .getScores()
-          .stream()
-          .forEach(
-              (sc) -> {
-                response.add(Score4UserResponse.of(sc));
-              });
-      return response;
     } else {
       return null;
     }

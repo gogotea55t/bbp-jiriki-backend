@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
 
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
@@ -33,6 +34,10 @@ public interface ScoresRepository {
   @Insert(
       "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE) VALUES ( #{users.userId}, #{songs.songId}, #{score} )")
   public int save(Scores score);
+  
+  @Update("UPDATE SCORES SET SCORE = #{score} WHERE USERS_USER_ID = #{users.userId} AND SONGS_SONG_ID = #{songs.songId}")
+  public int update(Scores score);
+  
   
   @Select("SELECT COUNT(*) FROM SCORES")
   public int count();
