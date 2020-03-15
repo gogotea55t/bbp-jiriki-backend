@@ -17,7 +17,7 @@ before_install:
   - mysql -e 'GRANT ALL ON jiriki_db_test.* TO travis'
 
 after_success:
-  - ./gradlew test jacocoTestReport coveralls  --stacktrace
+  - ./gradlew test --scan jacocoTestReport coveralls --stacktrace
 
 deploy:
   skip_cleanup: true
