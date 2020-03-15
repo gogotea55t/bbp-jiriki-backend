@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,6 +29,7 @@ import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.request.PageRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
@@ -108,6 +108,7 @@ public class JirikiService {
           } else {
             // 変わっていた場合は更新をかける
             userFetched.get().setUserName(user.getUserName());
+            userRepository.update(userFetched.get());
           }
         } else {
           // そもそも登録がない場合は新規登録
@@ -274,7 +275,10 @@ public class JirikiService {
     if (user.isPresent()) {
       Optional<TwitterUsers> tw = twitterUsersRepository.findById(request.getTwitterUserId());
       if (tw.isPresent()) {
-        twitterUsersRepository.update(tw.get());
+        TwitterUsers newTwitterUsers = tw.get();
+        newTwitterUsers.setUsers(user.get());
+        twitterUsersRepository.update(newTwitterUsers);
+        return UserResponse.of(user.get());
       }
       twitterUsersRepository.save(new TwitterUsers(request.getTwitterUserId(), user.get()));
       return UserResponse.of(user.get());
@@ -292,21 +296,22 @@ public class JirikiService {
     }
   }
 
-  public List<SongsResponse> searchSongsByQuery(Map<String, String> query, RowBounds page) {
-    return songRepository.searchSongsByConditions(query, page);
+  public List<SongsResponse> searchSongsByQuery(Map<String, String> query, PageRequest page) {
+    return songRepository.searchSongsByConditions(query, page.getRb());
   }
 
   public List<Score4UserResponse> searchAverageScoresByQuery(
-      Map<String, String> query, RowBounds page) {
-    return songRepository.searchAverageByConditions(query, page);
+      Map<String, String> query, PageRequest page) {
+    return songRepository.searchAverageByConditions(query, page.getRb());
   }
 
-  public List<Score4UserResponse> searchScoresByQuery(String userId, Map<String, String> query, RowBounds page) {
-	if (userRepository.findById(userId).isPresent()) {
-      return songRepository.searchScoreByConditions(userId, query, page);
-	} else {
-	  throw new IllegalArgumentException("User not found.");
-	}
+  public List<Score4UserResponse> searchScoresByQuery(
+      String userId, Map<String, String> query, PageRequest page) {
+    if (userRepository.findById(userId).isPresent()) {
+      return songRepository.searchScoreByConditions(userId, query, page.getRb());
+    } else {
+      throw new IllegalArgumentException("User not found.");
+    }
   }
 
   public List<Score4SongResponse> getScoresBySongId(String songId) {
@@ -333,18 +338,6 @@ public class JirikiService {
     } else {
       return null;
     }
-  }
-
-  public List<SongsResponse> getAllSongs(RowBounds pageable) {
-    List<Songs> songs = songRepository.findAll(pageable);
-    List<SongsResponse> songsResponse = new ArrayList<>();
-    songs
-        .stream()
-        .forEach(
-            (s) -> {
-              songsResponse.add(SongsResponse.of(s));
-            });
-    return songsResponse;
   }
 
   public String getUserSubjectFromToken() {

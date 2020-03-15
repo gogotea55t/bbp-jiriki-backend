@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 
@@ -15,7 +16,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Scores;
 @Mapper
 public interface ScoresRepository {
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchSql")
-  public Optional<Scores> findByUsers_UserIdAndSongs_SongId(String userId, String songId);
+  public Optional<Scores> findByUsers_UserIdAndSongs_SongId(@Param("userId") String userId, @Param("songId") String songId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSql")
   public List<Score4SongResponse> findScoresBySongId(String songId);
@@ -32,6 +33,9 @@ public interface ScoresRepository {
   @Insert(
       "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE) VALUES ( #{users.userId}, #{songs.songId}, #{score} )")
   public int save(Scores score);
+  
+  @Select("SELECT COUNT(*) FROM SCORES")
+  public int count();
 
   @Delete("DELETE FROM SCORES")
   public int deleteAll();
