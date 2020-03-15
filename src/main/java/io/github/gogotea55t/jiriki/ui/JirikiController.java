@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,7 @@ import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.request.PageRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 
 @Controller
@@ -52,7 +52,7 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    RowBounds pageReq = new RowBounds(page * limit, limit);
+    PageRequest pageReq = new PageRequest(page, limit);
     Map<String, String> query = new HashMap<String,String>();
     if (name != null) {
       query.put("name", name);
@@ -63,8 +63,9 @@ public class JirikiController {
     } else if (jiriki != null) {
       query.put("jiriki", jiriki);
     }
-
-    return ResponseEntity.ok(jirikiService.searchSongsByQuery(query, pageReq));
+    Object result = jirikiService.searchSongsByQuery(query, pageReq);
+    System.out.println(result);
+    return ResponseEntity.ok(result);
 
   }
 
@@ -119,7 +120,7 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    RowBounds pageReq = new RowBounds(page * limit, limit);
+    PageRequest pageReq = new PageRequest(page * limit, limit);
     Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
       query.put("name", name);
@@ -148,7 +149,7 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    RowBounds pageReq = new RowBounds(page * limit, limit);
+    PageRequest pageReq = new PageRequest(page, limit);
     Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
       query.put("name", name);
