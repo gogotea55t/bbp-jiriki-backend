@@ -15,7 +15,7 @@ before_install:
   - git add -f gradle/wrapper/gradle-wrapper.jar
   - mysql -e 'CREATE DATABASE jiriki_db_test;'
   - mysql -e 'CREATE USER "jiriki" identified by "jiriki"'
-  - mysql -e 'GRANT ALL ON jiriki_db_test.* TO jiriki'
+  - sudo mysql -e 'GRANT ALL ON jiriki_db_test.* TO jiriki'
 
 after_success:
   - ./gradlew test jacocoTestReport coveralls
