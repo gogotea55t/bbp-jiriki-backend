@@ -8,9 +8,11 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/jiriki_db_test?serverTimezone=JST
     username: root
     password: 
-  h2:
-    console:
-      enabled: true
+  flyway:
+    url: jdbc:mysql://127.0.0.1:3306/jiriki_db_test?serverTimezone=JST
+    username: root
+    password: 
+
 google:
   sheet:
     id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
