@@ -3,6 +3,9 @@ language: java
 sudo: required
 dist: trusty
 
+services:
+  - mysql
+
 jdk:
   - oraclejdk8
 
@@ -10,6 +13,7 @@ before_install:
   - chmod a+x gradlew
   - chmod +x gradle/wrapper/gradle-wrapper.jar
   - git add -f gradle/wrapper/gradle-wrapper.jar
+  - mysql -e 'CREATE DATABASE jiriki_db_test;'
 
 after_success:
   - ./gradlew test jacocoTestReport coveralls
