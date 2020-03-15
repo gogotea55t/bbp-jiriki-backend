@@ -40,4 +40,8 @@ public class ScoreValueHandler extends BaseTypeHandler<ScoreValue> {
     BigDecimal result = cs.getBigDecimal(columnIndex);
     return new ScoreValue(result);
   }
+  
+  private void intOrDecimal() {
+	  
+  }
 }

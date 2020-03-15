@@ -36,7 +36,7 @@ public class SongsSqlBuilder {
   public static String buildAverageScoreSearchSql(final Map<String, String> searchConditions) {
     return new SQL() {
       {
-        SELECT(SONG_ALL_PARAMS + ", AVG(sc.score) as score");
+        SELECT(SONG_ALL_PARAMS + ", ROUND(AVG(sc.score), 2) as score");
         FROM("songs so");
         LEFT_OUTER_JOIN("scores sc ON sc.songs_song_id = so.song_id");
         AND();
