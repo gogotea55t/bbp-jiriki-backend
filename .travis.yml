@@ -14,10 +14,9 @@ before_install:
   - chmod +x gradle/wrapper/gradle-wrapper.jar
   - git add -f gradle/wrapper/gradle-wrapper.jar
   - mysql -e 'CREATE DATABASE jiriki_db_test;'
-  - mysql -e 'GRANT ALL ON jiriki_db_test.* TO travis'
 
 after_success:
-  - ./gradlew test --scan jacocoTestReport coveralls --stacktrace
+  - ./gradlew test jacocoTestReport coveralls
 
 deploy:
   skip_cleanup: true
