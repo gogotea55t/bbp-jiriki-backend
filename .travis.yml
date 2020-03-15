@@ -13,6 +13,7 @@ before_install:
   - chmod a+x gradlew
   - chmod +x gradle/wrapper/gradle-wrapper.jar
   - git add -f gradle/wrapper/gradle-wrapper.jar
+  - mysql -e 'DROP DATABASE jiriki_db_test;'
   - mysql -e 'CREATE DATABASE jiriki_db_test;'
 
 after_success:
