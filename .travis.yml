@@ -14,6 +14,7 @@ before_install:
   - chmod +x gradle/wrapper/gradle-wrapper.jar
   - git add -f gradle/wrapper/gradle-wrapper.jar
   - mysql -e 'CREATE DATABASE jiriki_db_test;'
+  - mysql -e 'SELECT USER, HOST FROM mysql.USER;'
 
 after_success:
   - ./gradlew test jacocoTestReport coveralls
