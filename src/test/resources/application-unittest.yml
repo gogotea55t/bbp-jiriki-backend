@@ -6,11 +6,11 @@ spring:
     #url: jdbc:h2:mem:jiriki_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;MODE=MYSQL;DATABASE_TO_UPPER=false;INIT=CREATE SCHEMA IF NOT EXISTS JIRIKI_DB;
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/jiriki_db_test?serverTimezone=JST
-    username: root
+    username: travis
     password: 
   flyway:
     url: jdbc:mysql://127.0.0.1:3306/jiriki_db_test?serverTimezone=JST
-    username: root
+    username: travis
     password: 
 
 google:
