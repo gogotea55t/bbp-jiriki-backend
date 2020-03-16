@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/jiriki_db?serverTimezone=JST
+    url: jdbc:mysql://localhost:3306/jiriki_db?serverTimezone=JST&lower_case_table_names=1
     username: mysql
     password: mysql
 
