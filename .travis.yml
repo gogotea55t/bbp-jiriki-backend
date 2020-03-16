@@ -22,6 +22,9 @@ before_install:
 after_success:
   - ./gradlew test jacocoTestReport coveralls
 
+after_failure:
+  - mysql -e 'SHOW ENGINE INNODB STATUS;'
+
 deploy:
   skip_cleanup: true
   provider: script
