@@ -17,6 +17,7 @@ before_install:
   - mysql -e 'CREATE USER "jiriki" identified by "jiriki"'
   - sudo mysql -e 'GRANT ALL ON jiriki_db.* TO jiriki'
   - mysql -e 'USE jiriki_db; SHOW VARIABLES LIKE "chara%"'
+  - sudo cp $TRAVIS_BUILD_DIR/_travis/mysql.cnf /etc/mysql/conf.d/
   - sudo service mysql restart
 
 after_success:
