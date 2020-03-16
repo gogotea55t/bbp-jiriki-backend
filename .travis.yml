@@ -16,7 +16,8 @@ before_install:
   - mysql -e 'CREATE DATABASE jiriki_db;'
   - mysql -e 'CREATE USER "jiriki" identified by "jiriki"'
   - sudo mysql -e 'GRANT ALL ON jiriki_db.* TO jiriki'
-  - rm -f ~/.my.cnf
+  - echo "[mysqld]" > $HOME/.my.cnf
+  - echo "lower-case-table-names = 1" >> $HOME/.my.cnf
   - sudo service mysql restart
 
 after_success:
