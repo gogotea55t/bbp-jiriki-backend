@@ -15,6 +15,7 @@ before_install:
   - git add -f gradle/wrapper/gradle-wrapper.jar
   - sudo cat $TRAVIS_BUILD_DIR/_travis/my.cnf | tee -a ~/.my.cnf
   - cat ~/.my.cnf
+  - mysql -e 'SET character_set_server=utf8mb4;'
   - sudo service mysql restart
   - mysql -e 'CREATE DATABASE jiriki_db CHARACTER SET utf8mb4;'
   - mysql -e 'CREATE USER "jiriki" identified by "jiriki"'
