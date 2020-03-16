@@ -12,6 +12,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/jiriki_db_test?serverTimezone=JST
     username: jiriki
     password: jiriki
+    schemas: jiriki_db_test
 
 google:
   sheet:
