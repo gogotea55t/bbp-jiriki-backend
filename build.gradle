@@ -77,6 +77,13 @@ bootRun {
   }
 }
 
+test {
+	testLogging {
+		events "failed"
+		exceptionFormat "full"
+	}
+}
+
 docker {
   springBootApplication {
         baseImage = 'openjdk:8-alpine'
