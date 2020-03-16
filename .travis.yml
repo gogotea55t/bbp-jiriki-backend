@@ -16,6 +16,7 @@ before_install:
   - mysql -e 'CREATE DATABASE jiriki_db_test;'
   - mysql -e 'CREATE USER "jiriki" identified by "jiriki"'
   - sudo mysql -e 'GRANT ALL ON jiriki_db_test.* TO jiriki'
+  - rm -f ~/.my.cnf
   - sudo service mysql restart
 
 after_success:
