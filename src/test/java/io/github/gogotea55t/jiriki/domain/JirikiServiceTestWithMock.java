@@ -164,7 +164,7 @@ public class JirikiServiceTestWithMock {
     Object[] row1 = {"", "u001", "u002", "u003", "", ""};
     Object[] row2 = {"", "妖怪1", "妖怪2", "妖怪3", "", ""};
     Object[] row3 = {"4", "91", "93", "96", "", ""};
-    Object[] row4 = {"558", "93", "90", "96", "", ""};
+    Object[] row4 = {"558", "93", "90", "96", "", "."};
     Object[] row5 = {"567", "100", "たぶん100", "", "", ""};
     Object[] row6 = {"3467", "", "", "", "", ""};
     Object[] row7 = {};

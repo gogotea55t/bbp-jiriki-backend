@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Score4UserResponse {
   private String songId;
 
-  private String jirikiRank;
+  private JirikiRank jirikiRank;
 
   private String songName;
 
@@ -29,7 +29,7 @@ public class Score4UserResponse {
     Songs song = score.getSongs();
 
     response.setSongId(song.getSongId());
-    response.setJirikiRank(song.getJirikiRank().getJirikiRank());
+    response.setJirikiRank(song.getJirikiRank());
     response.setContributor(song.getContributor());
     response.setSongName(song.getSongName());
     response.setInstrument(song.getInstrument());
@@ -40,7 +40,7 @@ public class Score4UserResponse {
 
   public Score4UserResponse(Object[] obj) {
     this.songId = (String) obj[0];
-    this.jirikiRank = JirikiRank.getJirikiRankFromId((int) obj[1]).getJirikiRank();
+    this.jirikiRank = JirikiRank.getJirikiRankFromId((int) obj[1]);
     this.songName = (String) obj[2];
     this.contributor = (String) obj[3];
     this.instrument = (String) obj[4];

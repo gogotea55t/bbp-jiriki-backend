@@ -1,13 +1,47 @@
 package io.github.gogotea55t.jiriki.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
 
+import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 
-@Repository
-public interface ScoresRepository extends JpaRepository<Scores, Long> {
-  Optional<Scores> findByUsers_UserIdAndSongs_SongId(String userId, String songId);
+@Mapper
+public interface ScoresRepository {
+  @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchSql")
+  public Optional<Scores> findByUsers_UserIdAndSongs_SongId(@Param("userId") String userId, @Param("songId") String songId);
+
+  @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSql")
+  public List<Score4SongResponse> findScoresBySongId(String songId);
+
+  @Insert(
+      "<script>"
+          + "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE) VALUES "
+          + "<foreach item=\"scores\" collection=\"list\" separator=\",\"> "
+          + "( #{scores.users.userId}, #{scores.songs.songId}, #{scores.score} )"
+          + "</foreach>"
+          + "</script>")
+  public int saveAll(List<Scores> scores);
+
+  @Insert(
+      "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE) VALUES ( #{users.userId}, #{songs.songId}, #{score} )")
+  public int save(Scores score);
+  
+  @Update("UPDATE SCORES SET SCORE = #{score} WHERE USERS_USER_ID = #{users.userId} AND SONGS_SONG_ID = #{songs.songId}")
+  public int update(Scores score);
+  
+  
+  @Select("SELECT COUNT(*) FROM SCORES")
+  public int count();
+
+  @Delete("DELETE FROM SCORES")
+  public int deleteAll();
 }
