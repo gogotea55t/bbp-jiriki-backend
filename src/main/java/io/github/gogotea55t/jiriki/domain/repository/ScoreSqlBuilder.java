@@ -15,9 +15,9 @@ public class ScoreSqlBuilder {
     return new SQL() {
       {
         SELECT(SCORE_ALL_PARAMS);
-        FROM("scores sc");
-        INNER_JOIN("songs so ON sc.songs_song_id = so.song_id");
-        INNER_JOIN("users us ON sc.users_user_id = us.user_id");
+        FROM("SCORES sc");
+        INNER_JOIN("SONGS so ON sc.songs_song_id = so.song_id");
+        INNER_JOIN("USERS us ON sc.users_user_id = us.user_id");
         WHERE("us.user_id = #{userId}");
         AND();
         WHERE("so.song_id = #{songId}");
@@ -29,9 +29,9 @@ public class ScoreSqlBuilder {
     return new SQL() {
       {
         SELECT("us.user_name, sc.score");
-        FROM("scores sc");
-        INNER_JOIN("songs so ON sc.songs_song_id = so.song_id");
-        INNER_JOIN("users us ON sc.users_user_id = us.user_id");
+        FROM("SCORES sc");
+        INNER_JOIN("SONGS so ON sc.songs_song_id = so.song_id");
+        INNER_JOIN("USERS us ON sc.users_user_id = us.user_id");
         WHERE("so.song_id = #{songId}");
       }
     }.toString();
