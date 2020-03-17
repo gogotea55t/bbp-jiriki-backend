@@ -14,7 +14,7 @@ public class SongsSqlBuilder {
     return new SQL() {
       {
         SELECT(SONG_ALL_PARAMS);
-        FROM("songs so");
+        FROM("SONGS so");
         if (searchConditions.containsKey("name")) {
           WHERE("SONG_NAME like '%" + searchConditions.get("name") + "%'");
         } else if (searchConditions.containsKey("jiriki")) {
@@ -37,8 +37,8 @@ public class SongsSqlBuilder {
     return new SQL() {
       {
         SELECT(SONG_ALL_PARAMS + ", ROUND(AVG(sc.score), 2) as score");
-        FROM("songs so");
-        LEFT_OUTER_JOIN("scores sc ON sc.songs_song_id = so.song_id");
+        FROM("SONGS so");
+        LEFT_OUTER_JOIN("SCORES sc ON sc.songs_song_id = so.song_id");
         AND();
         if (searchConditions.containsKey("name")) {
           WHERE("SONG_NAME like '%" + searchConditions.get("name") + "%'");
@@ -65,9 +65,9 @@ public class SongsSqlBuilder {
     return new SQL() {
       {
         SELECT(SONG_ALL_PARAMS + ", sc.score as score");
-        FROM("songs so");
+        FROM("SONGS so");
         LEFT_OUTER_JOIN(
-            "scores sc ON sc.songs_song_id = so.song_id AND sc.users_user_id = '" + userId + "'");
+            "SCORES sc ON sc.songs_song_id = so.song_id AND sc.users_user_id = '" + userId + "'");
         AND();
         if (searchConditions.containsKey("name")) {
           WHERE("SONG_NAME like '%" + searchConditions.get("name") + "%'");
