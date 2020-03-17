@@ -20,7 +20,7 @@ before_install:
   - mysql -e 'CREATE DATABASE jiriki_db CHARACTER SET utf8mb4;'
   - mysql -e 'CREATE USER "jiriki" identified by "jiriki"'
   - sudo mysql -e 'GRANT ALL ON jiriki_db.* TO jiriki'
-  - mysql -e 'USE jiriki_db;SET character_set_server=utf8mb4;SET character_set_client=utf8mb4;SET character_set_connection=utf8mb4;SET character_set_system=utf8mb4;SET character_set_results=utf8mb4;SHOW VARIABLES LIKE "chara%"'
+  - mysql -e 'USE jiriki_db;SET character_set_server=utf8mb4;SET character_set_client=utf8mb4;SET character_set_connection=utf8mb4;SET character_set_results=utf8mb4;SHOW VARIABLES LIKE "chara%"'
 
 after_success:
   - ./gradlew test jacocoTestReport coveralls
