@@ -2,6 +2,7 @@ package io.github.gogotea55t.jiriki.domain.repository;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
 
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
@@ -16,16 +17,16 @@ public class SongsSqlBuilder {
         SELECT(SONG_ALL_PARAMS);
         FROM("SONGS so");
         if (searchConditions.containsKey("name")) {
-          WHERE("SONG_NAME like '%" + searchConditions.get("name") + "%'");
+          WHERE("SONG_NAME like CONCAT('%', #{name}, '%')");
         } else if (searchConditions.containsKey("jiriki")) {
           WHERE(
               "JIRIKI_RANK = "
                   + JirikiRank.getJirikiRankFromRankName(searchConditions.get("jiriki"))
                       .getJirikiId());
         } else if (searchConditions.containsKey("contributor")) {
-          WHERE("CONTRIBUTOR like '%" + searchConditions.get("contributor") + "%'");
+          WHERE("CONTRIBUTOR like CONCAT('%', #{contributor}, '%')");
         } else if (searchConditions.containsKey("instrument")) {
-          WHERE("INSTRUMENT like '%" + searchConditions.get("instrument") + "%'");
+          WHERE("INSTRUMENT like CONCAT('%', #{instrument},'%')");
         }
 
         ORDER_BY("so.jiriki_Rank", "so.song_Id");
@@ -41,16 +42,16 @@ public class SongsSqlBuilder {
         LEFT_OUTER_JOIN("SCORES sc ON sc.songs_song_id = so.song_id");
         AND();
         if (searchConditions.containsKey("name")) {
-          WHERE("SONG_NAME like '%" + searchConditions.get("name") + "%'");
+          WHERE("SONG_NAME like CONCAT('%', #{name}, '%')");
         } else if (searchConditions.containsKey("jiriki")) {
           WHERE(
               "JIRIKI_RANK = "
                   + JirikiRank.getJirikiRankFromRankName(searchConditions.get("jiriki"))
                       .getJirikiId());
         } else if (searchConditions.containsKey("contributor")) {
-          WHERE("CONTRIBUTOR like '%" + searchConditions.get("contributor") + "%'");
+          WHERE("CONTRIBUTOR like CONCAT('%', #{contributor}, '%')");
         } else if (searchConditions.containsKey("instrument")) {
-          WHERE("INSTRUMENT like '%" + searchConditions.get("instrument") + "%'");
+          WHERE("INSTRUMENT like CONCAT('%', #{instrument},'%')");
         } else {
           WHERE("TRUE");
         }
@@ -61,25 +62,25 @@ public class SongsSqlBuilder {
   }
 
   public static String buildScoreSearchSql(
-      final String userId, final Map<String, String> searchConditions) {
+      final Map<String, String> searchConditions) {
     return new SQL() {
       {
         SELECT(SONG_ALL_PARAMS + ", sc.score as score");
         FROM("SONGS so");
         LEFT_OUTER_JOIN(
-            "SCORES sc ON sc.songs_song_id = so.song_id AND sc.users_user_id = '" + userId + "'");
+            "SCORES sc ON sc.songs_song_id = so.song_id AND sc.users_user_id = #{userId}");
         AND();
         if (searchConditions.containsKey("name")) {
-          WHERE("SONG_NAME like '%" + searchConditions.get("name") + "%'");
+          WHERE("SONG_NAME like CONCAT('%', #{name}, '%')");
         } else if (searchConditions.containsKey("jiriki")) {
           WHERE(
               "JIRIKI_RANK = "
                   + JirikiRank.getJirikiRankFromRankName(searchConditions.get("jiriki"))
                       .getJirikiId());
         } else if (searchConditions.containsKey("contributor")) {
-          WHERE("CONTRIBUTOR like '%" + searchConditions.get("contributor") + "%'");
+          WHERE("CONTRIBUTOR like CONCAT('%', #{contributor}, '%')");
         } else if (searchConditions.containsKey("instrument")) {
-          WHERE("INSTRUMENT like '%" + searchConditions.get("instrument") + "%'");
+          WHERE("INSTRUMENT like CONCAT('%', #{instrument},'%')");
         } else {
           WHERE("TRUE");
         }
