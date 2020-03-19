@@ -28,7 +28,7 @@ public interface SongRepository {
 
   @SelectProvider(type = SongsSqlBuilder.class, method = "buildScoreSearchSql")
   public List<Score4UserResponse> searchScoreByConditions(
-      String userId, Map<String, String> searchConditions, RowBounds rb);
+      Map<String, String> searchConditions, RowBounds rb);
 
   @Insert(
       "<script>"
@@ -41,20 +41,22 @@ public interface SongRepository {
 
   @Select("SELECT * FROM SONGS")
   public List<Songs> findAll(RowBounds page);
-  
+
   @Select("SELECT COUNT(*) FROM SONGS")
   public int count();
 
-  @Insert("INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
-		  + "( #{songId}, #{jirikiRank}, #{songName}, #{contributor}, #{instrument} )")
+  @Insert(
+      "INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
+          + "( #{songId}, #{jirikiRank}, #{songName}, #{contributor}, #{instrument} )")
   public int save(Songs song);
-  
-  @Update("UPDATE SONGS SET "
-      + "JIRIKI_RANK = #{jirikiRank}, "
-      + "SONG_NAME = #{songName}, "
-      + "CONTRIBUTOR = #{contributor}, "
-      + "INSTRUMENT = #{instrument} "
-      + "WHERE SONG_ID = #{songId}")
+
+  @Update(
+      "UPDATE SONGS SET "
+          + "JIRIKI_RANK = #{jirikiRank}, "
+          + "SONG_NAME = #{songName}, "
+          + "CONTRIBUTOR = #{contributor}, "
+          + "INSTRUMENT = #{instrument} "
+          + "WHERE SONG_ID = #{songId}")
   public int update(Songs song);
 
   @Delete("DELETE FROM SONGS")

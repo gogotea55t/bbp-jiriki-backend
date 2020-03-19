@@ -13,7 +13,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Users;
 
 @Mapper
 public interface UserRepository {
-  @Select("SELECT USER_ID, USER_NAME FROM USERS WHERE USER_NAME LIKE '%${userName}%'")
+  @Select("SELECT USER_ID, USER_NAME FROM USERS WHERE USER_NAME LIKE CONCAT('%', #{userName}, '%')")
   public List<Users> findByUserNameLike(String userName);
 
   @Select("SELECT USER_ID, USER_NAME FROM USERS WHERE USER_ID = #{userId}")

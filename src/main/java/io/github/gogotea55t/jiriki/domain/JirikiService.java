@@ -310,7 +310,8 @@ public class JirikiService {
   public List<Score4UserResponse> searchScoresByQuery(
       String userId, Map<String, String> query, PageRequest page) {
     if (userRepository.findById(userId).isPresent()) {
-      return songRepository.searchScoreByConditions(userId, query, page.getRb());
+      query.put("userId", userId);
+      return songRepository.searchScoreByConditions(query, page.getRb());
     } else {
       throw new IllegalArgumentException("User not found.");
     }
