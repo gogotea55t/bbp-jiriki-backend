@@ -24,6 +24,7 @@ import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 
 @Controller
@@ -192,5 +193,11 @@ public class JirikiController {
   @GetMapping("/v1/jiriki")
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
+  }
+  
+  @PutMapping("/v1/scores")
+  public ResponseEntity<?> registerScore(ScoreRequest request) {
+	jirikiService.registerScore(request);
+	return ResponseEntity.ok().build();
   }
 }

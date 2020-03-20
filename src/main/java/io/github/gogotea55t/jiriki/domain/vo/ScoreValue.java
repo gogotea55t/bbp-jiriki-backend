@@ -42,6 +42,23 @@ public class ScoreValue {
     }
   }
 
+  public ScoreValue(String score) {
+    try {
+      if (score == null) {
+        this.score = null;
+      } else {
+        BigDecimal sc = new BigDecimal(score).setScale(2);
+        if (isInvalidRange(sc)) {
+          throw new IllegalArgumentException("得点は0から100までの入力が必要です");
+        } else {
+          this.score = sc;
+        }
+      }
+    } catch (NumberFormatException ne) {
+      throw new IllegalArgumentException("半角数字のみ入力可能です。");
+    }
+  }
+
   private boolean isInvalidRange(Number score) {
     return score.doubleValue() < 0 || score.doubleValue() > 100;
   }
@@ -49,8 +66,8 @@ public class ScoreValue {
   public boolean isInsertableToDB() {
     return (score != null) && !(score.toPlainString().contains("."));
   }
-  
+
   public boolean isEqualTo(ScoreValue sc) {
-	return this.score.compareTo(sc.getScore()) == 0;
+    return this.score.compareTo(sc.getScore()) == 0;
   }
 }
