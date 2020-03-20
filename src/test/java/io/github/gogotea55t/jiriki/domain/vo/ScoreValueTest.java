@@ -77,13 +77,36 @@ public class ScoreValueTest {
   }
 
   @Test
+  public void 文字列でも数値ならOK() {
+	ScoreValue sc = new ScoreValue("36");
+	assertThat(sc.isInsertableToDB());
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void 文字列で数値じゃないものはNG() {
+	ScoreValue sc = new ScoreValue("あああ");
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void 文字列の内容が数値でも100点以上はNG() {
+	ScoreValue sc = new ScoreValue("55555");
+  }
+  
+  @Test
+  public void nullは入る() {
+	String aa = null;
+	ScoreValue sc = new ScoreValue(aa);
+  }
+  
+  
+  @Test
   public void 普通に比較すると同じ点数でも違う() {
     ScoreValue sc1 = new ScoreValue(90);
     ScoreValue sc2 = new ScoreValue(90);
     if (sc1 == sc2) {
       fail();
     }
-  }
+  }  
 
   @Test
   public void 値が同じかどうかの比較() {

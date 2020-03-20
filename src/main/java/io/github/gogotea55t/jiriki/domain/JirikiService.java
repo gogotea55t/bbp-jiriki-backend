@@ -25,11 +25,13 @@ import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
+import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
@@ -48,6 +50,8 @@ public class JirikiService {
   private GoogleSheetsService sheetsService;
 
   private TwitterUsersRepository twitterUsersRepository;
+  
+  private ScoresFactory scoreFactory;
 
   @Autowired
   public JirikiService(
@@ -56,13 +60,15 @@ public class JirikiService {
       UserRepository userRepository,
       SongRepository songRepository,
       ScoresRepository scoreRepository,
-      TwitterUsersRepository twitterUsersRepository) {
+      TwitterUsersRepository twitterUsersRepository,
+      ScoresFactory scoreFactory) {
     this.sheetConfig = sheetConfig;
     this.sheetsService = sheetsService;
     this.userRepository = userRepository;
     this.songRepository = songRepository;
     this.scoreRepository = scoreRepository;
     this.twitterUsersRepository = twitterUsersRepository;
+    this.scoreFactory = scoreFactory;
   }
 
   @Scheduled(cron = "0 0 4 * * *")
@@ -324,6 +330,15 @@ public class JirikiService {
     } else {
       return null;
     }
+  }
+  
+  public void registerScore(ScoreRequest request) {
+	Scores score = scoreFactory.generateScoreFrom(request);
+	if (scoreRepository.findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId()).isPresent()) {
+	  scoreRepository.update(score);
+	} else {
+	  scoreRepository.save(score);
+	}
   }
 
   public String getUserSubjectFromToken() {

@@ -2,6 +2,7 @@ package io.github.gogotea55t.jiriki.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
+import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -42,9 +47,10 @@ public class JirikiServiceTest {
   @Autowired private ScoresRepository scoreRepository;
 
   @Autowired private TwitterUsersRepository twiRepository;
-  
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+
+  @Autowired private ScoresFactory scoreFactory;
+
+  @Rule public ExpectedException expectedException = ExpectedException.none();
 
   private JirikiService jirikiService;
 
@@ -61,7 +67,8 @@ public class JirikiServiceTest {
             userRepository,
             songRepository,
             scoreRepository,
-            twiRepository);
+            twiRepository,
+            scoreFactory);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
@@ -72,7 +79,7 @@ public class JirikiServiceTest {
     songRepository.saveAll(sample.getSongs());
     scoreRepository.saveAll(sample.getScores());
     twiRepository.save(new TwitterUsers("twitterId", sample.getUsers().get(1)));
-    query = new HashMap<String,String>();
+    query = new HashMap<String, String>();
   }
 
   /*
@@ -326,7 +333,63 @@ public class JirikiServiceTest {
 
   @Test
   public void 存在しないユーザーでスコア検索をかける() throws Exception {
-	expectedException.expect(IllegalArgumentException.class);
-    jirikiService.searchScoresByQuery("uqqqq",query, defaultPaging);
+    expectedException.expect(IllegalArgumentException.class);
+    jirikiService.searchScoresByQuery("uqqqq", query, defaultPaging);
+  }
+
+  @Test
+  public void スコアの登録ができる() throws Exception {
+    ScoreRequest request = new ScoreRequest();
+    request.setSongId("002");
+    request.setUserId("u002");
+    request.setScore(new ScoreValue(38));
+
+    jirikiService.registerScore(request);
+    Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u002", "002");
+    assertThat(score.isPresent()).isTrue();
+    assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(38)));
+  }
+
+  @Test
+  public void スコアの更新ができる() throws Exception {
+    ScoreRequest request = new ScoreRequest();
+    request.setSongId("001");
+    request.setUserId("u001");
+    request.setScore(new ScoreValue(90));
+
+    jirikiService.registerScore(request);
+    Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u001", "001");
+    assertThat(score.isPresent()).isTrue();
+    assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(90)));
+  }
+
+  @Test
+  public void 存在しない楽曲のスコアの更新はできない() throws Exception {
+    expectedException.expect(IllegalArgumentException.class);
+    ScoreRequest request = new ScoreRequest();
+    request.setSongId("901");
+    request.setUserId("u001");
+    request.setScore(new ScoreValue(90));
+    jirikiService.registerScore(request);
+  }
+  
+  @Test
+  public void 存在しないユーザのスコアの更新はできない() throws Exception {
+    expectedException.expect(IllegalArgumentException.class);
+    ScoreRequest request = new ScoreRequest();
+    request.setSongId("001");
+    request.setUserId("u901");
+    request.setScore(new ScoreValue(90));
+    jirikiService.registerScore(request);
+  }
+  
+  @Test
+  public void 小数点以下のスコアの更新はできない() throws Exception {
+    expectedException.expect(IllegalArgumentException.class);
+    ScoreRequest request = new ScoreRequest();
+    request.setSongId("001");
+    request.setUserId("u001");
+    request.setScore(new ScoreValue(90.66));
+    jirikiService.registerScore(request);
   }
 }

@@ -38,8 +38,10 @@ import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -81,7 +83,7 @@ public class JirikiControllerTest {
 
   @Test
   public void 楽曲情報が取得できる() throws Exception {
-    when(mockService.searchSongsByQuery(query,defaultPaging)).thenReturn(mockSongsResponse);
+    when(mockService.searchSongsByQuery(query, defaultPaging)).thenReturn(mockSongsResponse);
 
     mockMvc
         .perform(get(new URI("/v1/songs")))
@@ -382,13 +384,23 @@ public class JirikiControllerTest {
 
   @Test
   public void 地力で検索して平均点一覧を取得できる() throws Exception {
-	    query.put("jiriki", "地力Ａ");
+    query.put("jiriki", "地力Ａ");
 
-	    when(mockService.searchAverageScoresByQuery(query, defaultPaging))
-	        .thenReturn(mockScore4UserResponse);
+    when(mockService.searchAverageScoresByQuery(query, defaultPaging))
+        .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/v1/players/average/scores?jiriki=地力Ａ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
+  public void スコアの登録ができる() throws Exception {
+    ScoreRequest request = new ScoreRequest();
+    request.setScore(new ScoreValue(44));
+    request.setUserId("u001");
+    request.setSongId("001");
+
+    mockMvc.perform(put(new URI("/v1/scores"))).andExpect(status().isOk());
   }
 }
