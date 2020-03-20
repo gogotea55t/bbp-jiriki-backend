@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
+import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
@@ -42,6 +43,8 @@ public class JirikiServiceTest_Average {
 
   @Autowired private TwitterUsersRepository twiRepository;
 
+  @Autowired private ScoresFactory scoreFactory;
+
   private JirikiService jirikiService;
 
   PageRequest defaultPaging = new PageRequest(0, 20);
@@ -58,7 +61,8 @@ public class JirikiServiceTest_Average {
             userRepository,
             songRepository,
             scoreRepository,
-            twiRepository);
+            twiRepository,
+            scoreFactory);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
@@ -123,6 +127,6 @@ public class JirikiServiceTest_Average {
     assertThat(scores.size()).isEqualTo(1);
     // ↓なぜか失敗する
     assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("99.00")));
-    //assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(96));
+    // assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(96));
   }
 }
