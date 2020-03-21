@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -50,8 +51,10 @@ public class JirikiService {
   private GoogleSheetsService sheetsService;
 
   private TwitterUsersRepository twitterUsersRepository;
-  
+
   private ScoresFactory scoreFactory;
+
+  private RabbitTemplate rabbitTemplate;
 
   @Autowired
   public JirikiService(
@@ -61,7 +64,8 @@ public class JirikiService {
       SongRepository songRepository,
       ScoresRepository scoreRepository,
       TwitterUsersRepository twitterUsersRepository,
-      ScoresFactory scoreFactory) {
+      ScoresFactory scoreFactory,
+      RabbitTemplate rabbitTemplate) {
     this.sheetConfig = sheetConfig;
     this.sheetsService = sheetsService;
     this.userRepository = userRepository;
@@ -69,6 +73,7 @@ public class JirikiService {
     this.scoreRepository = scoreRepository;
     this.twitterUsersRepository = twitterUsersRepository;
     this.scoreFactory = scoreFactory;
+    this.rabbitTemplate = rabbitTemplate;
   }
 
   @Scheduled(cron = "0 0 4 * * *")
@@ -331,14 +336,20 @@ public class JirikiService {
       return null;
     }
   }
-  
+
   public void registerScore(ScoreRequest request) {
-	Scores score = scoreFactory.generateScoreFrom(request);
-	if (scoreRepository.findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId()).isPresent()) {
-	  scoreRepository.update(score);
-	} else {
-	  scoreRepository.save(score);
-	}
+    Scores score = scoreFactory.generateScoreFrom(request);
+    if (scoreRepository
+        .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
+        .isPresent()) {
+      scoreRepository.update(score);
+    } else {
+      scoreRepository.save(score);
+    }
+  }
+
+  public void messagingTest(String request) {
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", request);
   }
 
   public String getUserSubjectFromToken() {
