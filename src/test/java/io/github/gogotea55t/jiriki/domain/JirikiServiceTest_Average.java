@@ -10,6 +10,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -44,6 +45,8 @@ public class JirikiServiceTest_Average {
   @Autowired private TwitterUsersRepository twiRepository;
 
   @Autowired private ScoresFactory scoreFactory;
+  
+  @Autowired private RabbitTemplate rabbitTemplate;
 
   private JirikiService jirikiService;
 
@@ -62,7 +65,8 @@ public class JirikiServiceTest_Average {
             songRepository,
             scoreRepository,
             twiRepository,
-            scoreFactory);
+            scoreFactory,
+            rabbitTemplate);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();

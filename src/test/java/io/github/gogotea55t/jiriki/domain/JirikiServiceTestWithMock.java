@@ -10,6 +10,7 @@ import org.assertj.core.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,6 +46,8 @@ public class JirikiServiceTestWithMock {
   @Autowired private TwitterUsersRepository twitterUsersRepository;
 
   @Autowired private ScoresFactory scoreFactory;
+  
+  @Autowired private RabbitTemplate rabbitTemplate;
 
   private JirikiService jirikiService;
 
@@ -61,7 +64,8 @@ public class JirikiServiceTestWithMock {
             songRepository,
             scoreRepository,
             twitterUsersRepository,
-            scoreFactory);
+            scoreFactory,
+            rabbitTemplate);
     Users sampleUser = new Users();
     sampleUser.setUserId("u001");
     sampleUser.setUserName("妖怪1");

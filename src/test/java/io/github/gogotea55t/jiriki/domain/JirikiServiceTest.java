@@ -13,8 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Propagation;
@@ -49,6 +51,8 @@ public class JirikiServiceTest {
   @Autowired private TwitterUsersRepository twiRepository;
 
   @Autowired private ScoresFactory scoreFactory;
+  
+  @MockBean private RabbitTemplate rabbitTemplate;
 
   @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -68,7 +72,8 @@ public class JirikiServiceTest {
             songRepository,
             scoreRepository,
             twiRepository,
-            scoreFactory);
+            scoreFactory,
+            rabbitTemplate);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
@@ -391,5 +396,10 @@ public class JirikiServiceTest {
     request.setUserId("u001");
     request.setScore(new ScoreValue(90.66));
     jirikiService.registerScore(request);
+  }
+  
+  @Test
+  public void メッセージを送ってもエラーが出ない() {
+	jirikiService.messagingTest("aaa");
   }
 }
