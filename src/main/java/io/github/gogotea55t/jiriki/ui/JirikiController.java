@@ -200,4 +200,10 @@ public class JirikiController {
 	jirikiService.registerScore(request);
 	return ResponseEntity.ok().build();
   }
+  
+  @GetMapping("/v1/scores/test")
+  public ResponseEntity<?> testMessaging(@RequestParam("user") String userId) {
+	jirikiService.messagingTest(userId);
+	return ResponseEntity.accepted().build();
+  }
 }

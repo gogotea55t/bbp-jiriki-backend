@@ -44,6 +44,7 @@ dependencies {
     compile 'com.google.apis:google-api-services-sheets:v4-rev516-1.23.0'
     compile "org.flywaydb:flyway-core"
     compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1")
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
 	compile('com.h2database:h2:1.4.191');
 	compile group: 'com.auth0', name: 'auth0', version: '1.14.1'
@@ -54,6 +55,10 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.8'
 	runtime('org.springframework.boot:spring-boot-devtools')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
 	testCompileOnly 'org.projectlombok:lombok:1.18.8'
 	testAnnotationProcessor("org.projectlombok:lombok")
 }
