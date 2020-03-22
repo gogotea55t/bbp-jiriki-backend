@@ -63,8 +63,16 @@ public class ScoreValue {
     return score.doubleValue() < 0 || score.doubleValue() > 100;
   }
 
+  /**
+   * DBへ登録可能な得点の条件は
+   * 1. nullではない
+   * 2. 小数点以下が0
+   * 
+   * @return DBに登録可能な値であるときtrue
+   */
   public boolean isInsertableToDB() {
-    return (score != null) && !(score.toPlainString().contains("."));
+    return (score != null)
+        && (score.subtract(new BigDecimal(score.intValue())).compareTo(BigDecimal.ZERO) == 0);
   }
 
   public boolean isEqualTo(ScoreValue sc) {
