@@ -1,5 +1,6 @@
 package io.github.gogotea55t.jiriki.domain.vo;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -80,8 +81,7 @@ public class ScoreValueTestWithDB {
   }
 
   @Test
-  public void 小数点以下があるとキリが良くても登録できない() {
-    expectedException.expect(MyBatisSystemException.class);
+  public void 小数点以下があってもキリが良ければ登録OK() {
 
     Scores score = new Scores();
     score.setScoreId(6);
@@ -91,6 +91,12 @@ public class ScoreValueTestWithDB {
     BigDecimal test = BigDecimal.valueOf(23.00);
     score.setScore(new ScoreValue(test));
     scoreRepository.save(score);
+    assertThat(
+            scoreRepository
+                .findByUsers_UserIdAndSongs_SongId(
+                    sample.getUsers().get(1).getUserId(), sample.getSongs().get(1).getSongId())
+                .isPresent())
+        .isTrue();
   }
 
   @Test
