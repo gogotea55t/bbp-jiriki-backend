@@ -199,6 +199,6 @@ public class JirikiController {
   public ResponseEntity<?> registerScore(ScoreRequest request) {
 	jirikiService.registerScore(request);
 	jirikiService.messagingTest(request);
-	return ResponseEntity.ok().build();
+	return ResponseEntity.accepted().build();
   }
 }
