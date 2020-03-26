@@ -198,12 +198,7 @@ public class JirikiController {
   @PutMapping("/v1/scores")
   public ResponseEntity<?> registerScore(ScoreRequest request) {
 	jirikiService.registerScore(request);
-	return ResponseEntity.ok().build();
-  }
-  
-  @GetMapping("/v1/scores/test")
-  public ResponseEntity<?> testMessaging(@RequestParam("user") String userId) {
-	jirikiService.messagingTest(userId);
+	jirikiService.messagingTest(request);
 	return ResponseEntity.accepted().build();
   }
 }

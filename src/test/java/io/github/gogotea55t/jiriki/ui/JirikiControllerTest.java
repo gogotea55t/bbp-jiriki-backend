@@ -401,11 +401,6 @@ public class JirikiControllerTest {
     request.setUserId("u001");
     request.setSongId("001");
 
-    mockMvc.perform(put(new URI("/v1/scores"))).andExpect(status().isOk());
-  }
-
-  @Test
-  public void messagingTest() throws Exception {
-    mockMvc.perform(get(new URI("/v1/scores/test?user=user"))).andExpect(status().isAccepted());
+    mockMvc.perform(put(new URI("/v1/scores"))).andExpect(status().isAccepted());
   }
 }

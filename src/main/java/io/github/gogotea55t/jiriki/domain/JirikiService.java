@@ -348,8 +348,12 @@ public class JirikiService {
     }
   }
 
-  public void messagingTest(String request) {
-    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", request);
+  public void messagingTest(ScoreRequest request) {
+	
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", request);//, m -> {
+//    	m.getMessageProperties().getHeaders().remove("__TypeId__");
+//    	return m;
+//    });
   }
 
   public String getUserSubjectFromToken() {
