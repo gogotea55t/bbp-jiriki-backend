@@ -51,7 +51,7 @@ public class JirikiServiceTest {
   @Autowired private TwitterUsersRepository twiRepository;
 
   @Autowired private ScoresFactory scoreFactory;
-  
+
   @MockBean private RabbitTemplate rabbitTemplate;
 
   @Rule public ExpectedException expectedException = ExpectedException.none();
@@ -377,7 +377,7 @@ public class JirikiServiceTest {
     request.setScore(new ScoreValue(90));
     jirikiService.registerScore(request);
   }
-  
+
   @Test
   public void 存在しないユーザのスコアの更新はできない() throws Exception {
     expectedException.expect(IllegalArgumentException.class);
@@ -387,7 +387,7 @@ public class JirikiServiceTest {
     request.setScore(new ScoreValue(90));
     jirikiService.registerScore(request);
   }
-  
+
   @Test
   public void 小数点以下のスコアの更新はできない() throws Exception {
     expectedException.expect(IllegalArgumentException.class);
@@ -397,9 +397,14 @@ public class JirikiServiceTest {
     request.setScore(new ScoreValue(90.66));
     jirikiService.registerScore(request);
   }
-  
+
   @Test
   public void メッセージを送ってもエラーが出ない() {
-	jirikiService.messagingTest("aaa");
+    ScoreRequest request = new ScoreRequest();
+    request.setSongId("001");
+    request.setUserId("u001");
+    request.setScore(new ScoreValue(90));
+
+    jirikiService.messagingTest(request);
   }
 }
