@@ -401,6 +401,6 @@ public class JirikiControllerTest {
     request.setUserId("u001");
     request.setSongId("001");
 
-    mockMvc.perform(put(new URI("/v1/scores"))).andExpect(status().isAccepted());
+    mockMvc.perform(put(new URI("/v1/scores")).contentType(MediaType.APPLICATION_JSON).content(toJson(request))).andExpect(status().isAccepted());
   }
 }
