@@ -54,7 +54,7 @@ public class JirikiController {
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
     PageRequest pageReq = new PageRequest(page, limit);
-    Map<String, String> query = new HashMap<String,String>();
+    Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
       query.put("name", name);
     } else if (contributor != null) {
@@ -67,7 +67,6 @@ public class JirikiController {
     Object result = jirikiService.searchSongsByQuery(query, pageReq);
     System.out.println(result);
     return ResponseEntity.ok(result);
-
   }
 
   @GetMapping("/v1/players")
@@ -194,11 +193,12 @@ public class JirikiController {
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
   }
-  
+
   @PutMapping("/v1/scores")
-  public ResponseEntity<?> registerScore(ScoreRequest request) {
-	jirikiService.registerScore(request);
-	jirikiService.messagingTest(request);
-	return ResponseEntity.accepted().build();
+  public ResponseEntity<?> registerScore(@RequestBody ScoreRequest request) {
+    System.out.println(request);
+    jirikiService.registerScore(request);
+    jirikiService.messagingTest(request);
+    return ResponseEntity.accepted().build();
   }
 }
