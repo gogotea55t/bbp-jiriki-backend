@@ -356,6 +356,14 @@ public class JirikiService {
       scoreRepository.save(score);
     }
   }
+  
+  public int deleteScore(ScoreRequest request) {
+    if(scoreRepository.findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId()).isPresent()) {
+      return scoreRepository.delete(request.getSongId(), request.getUserId());
+    } else {
+      return 0;
+    }
+  }
 
   public void messagingTest(ScoreRequest request) {
 
@@ -363,6 +371,10 @@ public class JirikiService {
     //    	m.getMessageProperties().getHeaders().remove("__TypeId__");
     //    	return m;
     //    });
+  }
+  
+  public void deleteRequest(ScoreRequest request) {
+	// TODO まだ出来ない
   }
 
   public String getUserSubjectFromToken() {
