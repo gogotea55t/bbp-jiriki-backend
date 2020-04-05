@@ -20,6 +20,7 @@ import com.auth0.spring.security.api.JwtAuthenticationProvider;
 import io.github.gogotea55t.jiriki.domain.ErrorResponse;
 import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
@@ -187,6 +188,16 @@ public class JirikiController {
     } else {
       return ResponseEntity.ok(response);
     }
+  }
+  
+  @GetMapping("/v2/songs/{id}/scores")
+  public ResponseEntity<?> getScoresBySongIdV2(@PathVariable(name = "id") String id) {
+	List<Score4SongResponseV2> response = jirikiService.getScoresBySongIdV2(id);
+	if (response == null) {
+	  return ResponseEntity.notFound().build();
+	} else {
+	  return ResponseEntity.ok(response);
+	}
   }
 
   @GetMapping("/v1/jiriki")

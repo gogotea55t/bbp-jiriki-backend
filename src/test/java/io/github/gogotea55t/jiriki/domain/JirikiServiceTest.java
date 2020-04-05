@@ -272,6 +272,23 @@ public class JirikiServiceTest {
     List<Score4SongResponse> scores = jirikiService.getScoresBySongId("00000");
     assertThat(scores).isNull();
   }
+  
+  @Test
+  public void 存在する楽曲IDでスコアを検索できる() throws Exception {
+    List<Score4SongResponse> scores = jirikiService.getScoresBySongId("001");
+    assertThat(scores.size()).isEqualTo(2);
+  }
+  @Test
+  public void 存在しない楽曲IDでスコアを検索すると何もないが返ってくるV2() throws Exception {
+    List<Score4SongResponseV2> scores = jirikiService.getScoresBySongIdV2("00000");
+    assertThat(scores).isNull();
+  }
+
+  @Test
+  public void 存在する楽曲IDでスコアを検索できるV2() throws Exception {
+    List<Score4SongResponseV2> scores = jirikiService.getScoresBySongIdV2("001");
+    assertThat(scores.size()).isEqualTo(2);
+  }
 
   @Test
   public void スコア検索をかけるとスコアが返ってくる() throws Exception {

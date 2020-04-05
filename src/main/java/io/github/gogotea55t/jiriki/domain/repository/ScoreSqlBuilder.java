@@ -36,4 +36,16 @@ public class ScoreSqlBuilder {
       }
     }.toString();
   }
+  
+  public static final String buildScoreFetchBySongIdSqlV2(String songId) {
+	    return new SQL() {
+	      {
+	        SELECT("us.user_id, us.user_name, sc.score");
+	        FROM("SCORES sc");
+	        INNER_JOIN("SONGS so ON sc.songs_song_id = so.song_id");
+	        INNER_JOIN("USERS us ON sc.users_user_id = us.user_id");
+	        WHERE("so.song_id = #{songId}");
+	      }
+	    }.toString();
+	  }
 }
