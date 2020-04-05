@@ -34,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.SampleDatum;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
@@ -73,6 +74,20 @@ public class JirikiControllerTest {
 
   List<UserResponse> mockUserResponse =
       sample.getUsers().stream().map(u -> UserResponse.of(u)).collect(Collectors.toList());
+
+  List<Score4SongResponseV2> mockScore4SongResponseV2 =
+      sample
+          .getScores()
+          .stream()
+          .map(
+              u -> {
+                Score4SongResponseV2 sc = new Score4SongResponseV2();
+                sc.setUserId(u.getUsers().getUserId());
+                sc.setUserName(u.getUsers().getUserName());
+                sc.setScore(u.getScore());
+                return sc;
+              })
+          .collect(Collectors.toList());
 
   @Before
   public void init() {
@@ -167,6 +182,24 @@ public class JirikiControllerTest {
         .andExpect(content().json(toJson(mockScore4SongResponse)));
   }
 
+  @Test
+  public void 楽曲IDを指定してスコア情報を取得できるv2() throws Exception {
+    when(mockService.getScoresBySongIdV2("001")).thenReturn(mockScore4SongResponseV2);
+
+    mockMvc
+        .perform(get(new URI("/v2/songs/001/scores")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4SongResponseV2)));
+  }
+  
+  @Test
+  public void 存在しない楽曲IDを指定するとスコア情報が虚無v2() throws Exception {
+    when(mockService.getScoresBySongIdV2("004")).thenReturn(null);
+
+    mockMvc
+        .perform(get(new URI("/v2/songs/004/scores")))
+        .andExpect(status().is(404));
+  }
   @Test
   public void 存在しない楽曲IDを指定するとスコア情報が取得できない() throws Exception {
     when(mockService.getScoresBySongId("004")).thenReturn(null);
@@ -401,6 +434,11 @@ public class JirikiControllerTest {
     request.setUserId("u001");
     request.setSongId("001");
 
-    mockMvc.perform(put(new URI("/v1/scores")).contentType(MediaType.APPLICATION_JSON).content(toJson(request))).andExpect(status().isAccepted());
+    mockMvc
+        .perform(
+            put(new URI("/v1/scores"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(request)))
+        .andExpect(status().isAccepted());
   }
 }
