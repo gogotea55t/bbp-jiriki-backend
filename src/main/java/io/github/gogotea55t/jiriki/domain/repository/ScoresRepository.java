@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 
 @Mapper
@@ -22,6 +23,9 @@ public interface ScoresRepository {
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSql")
   public List<Score4SongResponse> findScoresBySongId(String songId);
 
+  @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSqlV2")
+  public List<Score4SongResponseV2> findScoresBySongIdV2(String songId);  
+  
   @Insert(
       "<script>"
           + "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE) VALUES "

@@ -337,6 +337,15 @@ public class JirikiService {
     }
   }
 
+  public List<Score4SongResponseV2> getScoresBySongIdV2(String songId) {
+    Optional<Songs> song = songRepository.findById(songId);
+    if (song.isPresent()) {
+      return scoreRepository.findScoresBySongIdV2(songId);
+    } else {
+      return null;
+    }
+  }
+
   public void registerScore(ScoreRequest request) {
     Scores score = scoreFactory.generateScoreFrom(request);
     if (scoreRepository
@@ -349,11 +358,11 @@ public class JirikiService {
   }
 
   public void messagingTest(ScoreRequest request) {
-	
-    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", request);//, m -> {
-//    	m.getMessageProperties().getHeaders().remove("__TypeId__");
-//    	return m;
-//    });
+
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", request); // , m -> {
+    //    	m.getMessageProperties().getHeaders().remove("__TypeId__");
+    //    	return m;
+    //    });
   }
 
   public String getUserSubjectFromToken() {
