@@ -30,6 +30,7 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
@@ -272,12 +273,13 @@ public class JirikiServiceTest {
     List<Score4SongResponse> scores = jirikiService.getScoresBySongId("00000");
     assertThat(scores).isNull();
   }
-  
+
   @Test
   public void 存在する楽曲IDでスコアを検索できる() throws Exception {
     List<Score4SongResponse> scores = jirikiService.getScoresBySongId("001");
     assertThat(scores.size()).isEqualTo(2);
   }
+
   @Test
   public void 存在しない楽曲IDでスコアを検索すると何もないが返ってくるV2() throws Exception {
     List<Score4SongResponseV2> scores = jirikiService.getScoresBySongIdV2("00000");
@@ -423,5 +425,34 @@ public class JirikiServiceTest {
     request.setScore(new ScoreValue(90));
 
     jirikiService.messagingTest(request);
+  }
+
+  @Test
+  public void スコアの削除ができる() throws Exception {
+    ScoreDeleteRequest request = new ScoreDeleteRequest();
+    request.setSongId("001");
+    request.setUserId("u001");
+
+    assertThat(jirikiService.deleteScore(request)).isEqualTo(1);
+    assertThat(scoreRepository.findByUsers_UserIdAndSongs_SongId("u001", "001").isPresent())
+        .isFalse();
+  }
+
+  @Test
+  public void 存在しないスコアの削除はしない() throws Exception {
+    ScoreDeleteRequest request = new ScoreDeleteRequest();
+    request.setUserId("u009");
+    request.setSongId("004");
+
+    assertThat(jirikiService.deleteScore(request)).isEqualTo(0);
+  }
+
+  @Test
+  public void 削除用のメッセージを送ってもエラーにならない() throws Exception {
+    ScoreDeleteRequest request = new ScoreDeleteRequest();
+    request.setSongId("001");
+    request.setUserId("u001");
+
+    jirikiService.deleteRequest(request);
   }
 }

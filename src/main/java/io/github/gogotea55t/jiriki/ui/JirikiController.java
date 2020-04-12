@@ -222,7 +222,9 @@ public class JirikiController {
     if (deleted == 1) {
       // 実際に削除した時はスプレッドシートからも消そうとする
       jirikiService.deleteRequest(request);
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.noContent().build();
   }
 }
