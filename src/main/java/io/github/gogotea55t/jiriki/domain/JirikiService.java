@@ -32,6 +32,7 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
@@ -356,13 +357,26 @@ public class JirikiService {
       scoreRepository.save(score);
     }
   }
+  
+  public int deleteScore(ScoreDeleteRequest request) {
+    if(scoreRepository.findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId()).isPresent()) {
+      scoreRepository.delete(request.getSongId(), request.getUserId());
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
   public void messagingTest(ScoreRequest request) {
 
-    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", request); // , m -> {
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "update" , request); // , m -> {
     //    	m.getMessageProperties().getHeaders().remove("__TypeId__");
     //    	return m;
     //    });
+  }
+  
+  public void deleteRequest(ScoreDeleteRequest request) {
+	rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "delete" , request);
   }
 
   public String getUserSubjectFromToken() {

@@ -1,6 +1,7 @@
 package io.github.gogotea55t.jiriki.ui;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -39,6 +40,7 @@ import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
@@ -191,15 +193,14 @@ public class JirikiControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4SongResponseV2)));
   }
-  
+
   @Test
   public void 存在しない楽曲IDを指定するとスコア情報が虚無v2() throws Exception {
     when(mockService.getScoresBySongIdV2("004")).thenReturn(null);
 
-    mockMvc
-        .perform(get(new URI("/v2/songs/004/scores")))
-        .andExpect(status().is(404));
+    mockMvc.perform(get(new URI("/v2/songs/004/scores"))).andExpect(status().is(404));
   }
+
   @Test
   public void 存在しない楽曲IDを指定するとスコア情報が取得できない() throws Exception {
     when(mockService.getScoresBySongId("004")).thenReturn(null);
@@ -440,5 +441,35 @@ public class JirikiControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
         .andExpect(status().isAccepted());
+  }
+
+  @Test
+  public void スコアの削除ができる() throws Exception {
+    ScoreDeleteRequest request = new ScoreDeleteRequest();
+    request.setSongId("001");
+    request.setUserId("u001");
+    when(mockService.deleteScore(request)).thenReturn(1);
+
+    mockMvc
+        .perform(
+            delete(new URI("/v1/scores"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(request)))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  public void スコアの削除がされない() throws Exception {
+    ScoreDeleteRequest request = new ScoreDeleteRequest();
+    request.setSongId("001");
+    request.setUserId("u006");
+    when(mockService.deleteScore(request)).thenReturn(0);
+
+    mockMvc
+        .perform(
+            delete(new URI("/v1/scores"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(request)))
+        .andExpect(status().isNotFound());
   }
 }

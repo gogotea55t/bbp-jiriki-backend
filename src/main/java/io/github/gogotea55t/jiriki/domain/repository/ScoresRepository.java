@@ -45,6 +45,9 @@ public interface ScoresRepository {
   
   @Select("SELECT COUNT(*) FROM SCORES")
   public int count();
+  
+  @Select("DELETE FROM SCORES WHERE USERS_USER_ID = #{userId} AND SONGS_SONG_ID = #{songId}")
+  public void delete(@Param("songId") String songId, @Param("userId") String userId);
 
   @Delete("DELETE FROM SCORES")
   public int deleteAll();
