@@ -21,7 +21,7 @@ security:
 
 google:
   sheet:
-    id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
+    id: 1hC3kvvKKZItaKX2yu1Kd7xqpoFgHcu6ri5nk7c6ZTuc
     name: 2. 得点表
     
 logging:

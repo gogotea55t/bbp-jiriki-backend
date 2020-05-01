@@ -123,7 +123,7 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    PageRequest pageReq = new PageRequest(page * limit, limit);
+    PageRequest pageReq = new PageRequest(page, limit);
     Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
       query.put("name", name);
