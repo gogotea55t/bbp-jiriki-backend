@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
@@ -48,6 +49,8 @@ public class JirikiServiceTestWithMock {
   @Autowired private ScoresFactory scoreFactory;
   
   @Autowired private RabbitTemplate rabbitTemplate;
+  
+  @MockBean private AuthService authService;
 
   private JirikiService jirikiService;
 
@@ -65,7 +68,8 @@ public class JirikiServiceTestWithMock {
             scoreRepository,
             twitterUsersRepository,
             scoreFactory,
-            rabbitTemplate);
+            rabbitTemplate,
+            authService);
     Users sampleUser = new Users();
     sampleUser.setUserId("u001");
     sampleUser.setUserName("妖怪1");
