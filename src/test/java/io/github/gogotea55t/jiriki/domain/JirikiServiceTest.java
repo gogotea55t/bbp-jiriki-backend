@@ -1,6 +1,7 @@
 package io.github.gogotea55t.jiriki.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -19,9 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
@@ -54,6 +55,8 @@ public class JirikiServiceTest {
   @Autowired private ScoresFactory scoreFactory;
 
   @MockBean private RabbitTemplate rabbitTemplate;
+  
+  @MockBean private AuthService mockAuthService;
 
   @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -74,7 +77,8 @@ public class JirikiServiceTest {
             scoreRepository,
             twiRepository,
             scoreFactory,
-            rabbitTemplate);
+            rabbitTemplate,
+            mockAuthService);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
@@ -367,11 +371,13 @@ public class JirikiServiceTest {
     request.setSongId("002");
     request.setUserId("u002");
     request.setScore(new ScoreValue(38));
+    when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
 
     jirikiService.registerScore(request);
     Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u002", "002");
     assertThat(score.isPresent()).isTrue();
     assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(38)));
+    score.ifPresent(sc -> {assertThat(sc.getUpdatedBy()).isEqualTo("tw|00022323");});
   }
 
   @Test
@@ -380,11 +386,14 @@ public class JirikiServiceTest {
     request.setSongId("001");
     request.setUserId("u001");
     request.setScore(new ScoreValue(90));
+    when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
 
     jirikiService.registerScore(request);
     Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u001", "001");
     assertThat(score.isPresent()).isTrue();
     assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(90)));
+    score.ifPresent(sc -> {assertThat(sc.getCreatedBy()).isEqualTo("ANONYMOUS");});
+    score.ifPresent(sc -> {assertThat(sc.getUpdatedBy()).isEqualTo("tw|00022323");});
   }
 
   @Test
@@ -394,6 +403,7 @@ public class JirikiServiceTest {
     request.setSongId("901");
     request.setUserId("u001");
     request.setScore(new ScoreValue(90));
+    when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
     jirikiService.registerScore(request);
   }
 
@@ -404,6 +414,7 @@ public class JirikiServiceTest {
     request.setSongId("001");
     request.setUserId("u901");
     request.setScore(new ScoreValue(90));
+    when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
     jirikiService.registerScore(request);
   }
 
@@ -414,6 +425,7 @@ public class JirikiServiceTest {
     request.setSongId("001");
     request.setUserId("u001");
     request.setScore(new ScoreValue(90.66));
+    when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
     jirikiService.registerScore(request);
   }
 

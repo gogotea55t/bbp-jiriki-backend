@@ -8,7 +8,7 @@ public class ScoreSqlBuilder {
       "so.SONG_ID,  so.JIRIKI_RANK, so.SONG_NAME, so.CONTRIBUTOR, so.INSTRUMENT";
   private static final String USER_ALL_PARAMS = "us.USER_ID, us.USER_NAME";
   private static final String SCORE_ALL_PARAMS =
-      SONG_ALL_PARAMS + " , " + USER_ALL_PARAMS + " , sc.SCORE_ID, sc.SCORE ";
+      SONG_ALL_PARAMS + " , " + USER_ALL_PARAMS + " , sc.SCORE_ID, sc.SCORE, sc.CREATED_AT, sc.CREATED_BY, sc.UPDATED_AT, sc.UPDATED_BY ";
 
   public static final String buildScoreFetchSql(
       @Param("userId") String userId, @Param("songId") String songId) {

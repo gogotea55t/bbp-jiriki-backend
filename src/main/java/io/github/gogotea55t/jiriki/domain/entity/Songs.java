@@ -1,5 +1,6 @@
 package io.github.gogotea55t.jiriki.domain.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
@@ -22,6 +23,14 @@ public class Songs {
 
   /** 得点 */
   private List<Scores> scores;
+  
+  private LocalDateTime createdAt;
+  
+  private String createdBy;
+  
+  private LocalDateTime updatedAt;
+  
+  private String updatedBy;
 
   public static Songs of(
       String songId, JirikiRank jirikiRank, String songName, String contributor, String instrument) {

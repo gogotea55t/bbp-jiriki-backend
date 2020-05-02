@@ -1,14 +1,23 @@
 package io.github.gogotea55t.jiriki.domain.entity;
 
-import lombok.AllArgsConstructor;
+import java.time.LocalDateTime;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class TwitterUsers {
   private String twitterUserId;
 
   private Users users;
+
+  private LocalDateTime createdAt;
+
+  private LocalDateTime updatedAt;
+
+  public TwitterUsers(String twitterUserId, Users users) {
+    this.twitterUserId = twitterUserId;
+    this.users = users;
+  }
 }

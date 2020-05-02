@@ -36,10 +36,10 @@ public interface ScoresRepository {
   public int saveAll(List<Scores> scores);
 
   @Insert(
-      "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE) VALUES ( #{users.userId}, #{songs.songId}, #{score} )")
+      "INSERT INTO SCORES (USERS_USER_ID, SONGS_SONG_ID, SCORE, CREATED_BY, UPDATED_BY) VALUES ( #{users.userId}, #{songs.songId}, #{score}, #{createdBy}, #{updatedBy} )")
   public int save(Scores score);
   
-  @Update("UPDATE SCORES SET SCORE = #{score} WHERE USERS_USER_ID = #{users.userId} AND SONGS_SONG_ID = #{songs.songId}")
+  @Update("UPDATE SCORES SET SCORE = #{score}, UPDATED_BY = #{updatedBy} WHERE USERS_USER_ID = #{users.userId} AND SONGS_SONG_ID = #{songs.songId}")
   public int update(Scores score);
   
   

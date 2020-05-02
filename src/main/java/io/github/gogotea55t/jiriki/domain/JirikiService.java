@@ -12,16 +12,12 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
@@ -56,6 +52,8 @@ public class JirikiService {
   private ScoresFactory scoreFactory;
 
   private RabbitTemplate rabbitTemplate;
+  
+  private AuthService authService;
 
   @Autowired
   public JirikiService(
@@ -66,7 +64,8 @@ public class JirikiService {
       ScoresRepository scoreRepository,
       TwitterUsersRepository twitterUsersRepository,
       ScoresFactory scoreFactory,
-      RabbitTemplate rabbitTemplate) {
+      RabbitTemplate rabbitTemplate,
+      AuthService authService) {
     this.sheetConfig = sheetConfig;
     this.sheetsService = sheetsService;
     this.userRepository = userRepository;
@@ -75,6 +74,7 @@ public class JirikiService {
     this.twitterUsersRepository = twitterUsersRepository;
     this.scoreFactory = scoreFactory;
     this.rabbitTemplate = rabbitTemplate;
+    this.authService = authService;
   }
 
   @Scheduled(cron = "0 0 4 * * *")
@@ -352,14 +352,19 @@ public class JirikiService {
     if (scoreRepository
         .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
         .isPresent()) {
+      score.setUpdatedBy(getUserSubjectFromToken());
       scoreRepository.update(score);
     } else {
+      score.setCreatedBy(getUserSubjectFromToken());
+      score.setUpdatedBy(getUserSubjectFromToken());
       scoreRepository.save(score);
     }
   }
-  
+
   public int deleteScore(ScoreDeleteRequest request) {
-    if(scoreRepository.findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId()).isPresent()) {
+    if (scoreRepository
+        .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
+        .isPresent()) {
       scoreRepository.delete(request.getSongId(), request.getUserId());
       return 1;
     } else {
@@ -369,20 +374,17 @@ public class JirikiService {
 
   public void messagingTest(ScoreRequest request) {
 
-    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "update" , request); // , m -> {
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "update", request); // , m -> {
     //    	m.getMessageProperties().getHeaders().remove("__TypeId__");
     //    	return m;
     //    });
   }
-  
+
   public void deleteRequest(ScoreDeleteRequest request) {
-	rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "delete" , request);
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "delete", request);
   }
 
   public String getUserSubjectFromToken() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-    DecodedJWT decodedJwt = JWT.decode(details.getTokenValue());
-    return decodedJwt.getSubject();
+    return authService.getUserSubjectFromToken();
   }
 }

@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
@@ -47,6 +48,8 @@ public class JirikiServiceTest_Average {
   @Autowired private ScoresFactory scoreFactory;
   
   @Autowired private RabbitTemplate rabbitTemplate;
+  
+  @Autowired private AuthService authService;
 
   private JirikiService jirikiService;
 
@@ -66,7 +69,8 @@ public class JirikiServiceTest_Average {
             scoreRepository,
             twiRepository,
             scoreFactory,
-            rabbitTemplate);
+            rabbitTemplate,
+            authService);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
