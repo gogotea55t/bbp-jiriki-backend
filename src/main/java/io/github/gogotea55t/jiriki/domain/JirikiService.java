@@ -352,14 +352,19 @@ public class JirikiService {
     if (scoreRepository
         .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
         .isPresent()) {
+      score.setUpdatedBy(getUserSubjectFromToken());
       scoreRepository.update(score);
     } else {
+      score.setCreatedBy(getUserSubjectFromToken());
+      score.setUpdatedBy(getUserSubjectFromToken());
       scoreRepository.save(score);
     }
   }
-  
+
   public int deleteScore(ScoreDeleteRequest request) {
-    if(scoreRepository.findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId()).isPresent()) {
+    if (scoreRepository
+        .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
+        .isPresent()) {
       scoreRepository.delete(request.getSongId(), request.getUserId());
       return 1;
     } else {
@@ -369,14 +374,14 @@ public class JirikiService {
 
   public void messagingTest(ScoreRequest request) {
 
-    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "update" , request); // , m -> {
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "update", request); // , m -> {
     //    	m.getMessageProperties().getHeaders().remove("__TypeId__");
     //    	return m;
     //    });
   }
-  
+
   public void deleteRequest(ScoreDeleteRequest request) {
-	rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "delete" , request);
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "delete", request);
   }
 
   public String getUserSubjectFromToken() {
