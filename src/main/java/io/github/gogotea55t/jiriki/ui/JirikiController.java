@@ -209,7 +209,10 @@ public class JirikiController {
 
   @PutMapping("/v1/scores")
   public ResponseEntity<?> registerScore(@RequestBody ScoreRequest request) {
-    System.out.println(request);
+    if (!request.getUserId().equals(loginUserId())) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
     jirikiService.registerScore(request);
     jirikiService.messagingTest(request);
     return ResponseEntity.accepted().build();
@@ -217,6 +220,9 @@ public class JirikiController {
 
   @DeleteMapping("/v1/scores")
   public ResponseEntity<?> deleteScore(@RequestBody ScoreDeleteRequest request) {
+    if (!request.getUserId().equals(loginUserId())) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
     int deleted = jirikiService.deleteScore(request);
 
     if (deleted == 1) {
@@ -226,5 +232,10 @@ public class JirikiController {
     } else {
       return ResponseEntity.notFound().build();
     }
+  }
+
+  private String loginUserId() {
+    String auth0UserId = jirikiService.getUserSubjectFromToken();
+    return jirikiService.findPlayerByTwitterId(auth0UserId).getUserId();
   }
 }
