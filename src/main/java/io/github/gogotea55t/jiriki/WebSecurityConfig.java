@@ -2,6 +2,7 @@ package io.github.gogotea55t.jiriki;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
@@ -18,6 +19,8 @@ public class WebSecurityConfig extends ResourceServerConfigurerAdapter {
   public void configure(HttpSecurity http) throws Exception {
       http.authorizeRequests()
               .antMatchers("/v1/players/auth0").authenticated()
+              .antMatchers(HttpMethod.PUT).authenticated()
+              .antMatchers(HttpMethod.DELETE).authenticated()
               .anyRequest().permitAll();
 
 //      JwtWebSecurityConfigurer
