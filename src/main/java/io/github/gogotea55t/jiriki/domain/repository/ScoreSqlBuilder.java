@@ -33,6 +33,7 @@ public class ScoreSqlBuilder {
         INNER_JOIN("SONGS so ON sc.songs_song_id = so.song_id");
         INNER_JOIN("USERS us ON sc.users_user_id = us.user_id");
         WHERE("so.song_id = #{songId}");
+        ORDER_BY("sc.score desc, us.user_id");
       }
     }.toString();
   }
@@ -45,6 +46,7 @@ public class ScoreSqlBuilder {
 	        INNER_JOIN("SONGS so ON sc.songs_song_id = so.song_id");
 	        INNER_JOIN("USERS us ON sc.users_user_id = us.user_id");
 	        WHERE("so.song_id = #{songId}");
+	        ORDER_BY("sc.score desc, us.user_id");
 	      }
 	    }.toString();
 	  }
