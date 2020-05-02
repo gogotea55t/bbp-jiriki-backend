@@ -434,6 +434,10 @@ public class JirikiControllerTest {
     request.setScore(new ScoreValue(44));
     request.setUserId("u001");
     request.setSongId("001");
+    when(mockService.getUserSubjectFromToken()).thenReturn("token");
+    UserResponse response = new UserResponse();
+    response.setUserId("u001");
+    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
 
     mockMvc
         .perform(
@@ -442,6 +446,25 @@ public class JirikiControllerTest {
                 .content(toJson(request)))
         .andExpect(status().isAccepted());
   }
+  
+  @Test
+  public void ログインしているユーザ以外のスコアの登録はできない() throws Exception {
+    ScoreRequest request = new ScoreRequest();
+    request.setScore(new ScoreValue(44));
+    request.setUserId("u001");
+    request.setSongId("001");
+    when(mockService.getUserSubjectFromToken()).thenReturn("token");
+    UserResponse response = new UserResponse();
+    response.setUserId("u004");
+    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
+
+    mockMvc
+        .perform(
+            put(new URI("/v1/scores"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(toJson(request)))
+        .andExpect(status().isUnauthorized());
+  }
 
   @Test
   public void スコアの削除ができる() throws Exception {
@@ -449,7 +472,10 @@ public class JirikiControllerTest {
     request.setSongId("001");
     request.setUserId("u001");
     when(mockService.deleteScore(request)).thenReturn(1);
-
+    when(mockService.getUserSubjectFromToken()).thenReturn("token");
+    UserResponse response = new UserResponse();
+    response.setUserId("u001");
+    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
     mockMvc
         .perform(
             delete(new URI("/v1/scores"))
@@ -464,12 +490,33 @@ public class JirikiControllerTest {
     request.setSongId("001");
     request.setUserId("u006");
     when(mockService.deleteScore(request)).thenReturn(0);
-
+    when(mockService.getUserSubjectFromToken()).thenReturn("token");
+    UserResponse response = new UserResponse();
+    response.setUserId("u006");
+    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
     mockMvc
         .perform(
             delete(new URI("/v1/scores"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
         .andExpect(status().isNotFound());
+  }
+  
+  @Test
+  public void 自分以外のスコアの削除はできない() throws Exception {
+	    ScoreDeleteRequest request = new ScoreDeleteRequest();
+	    request.setSongId("001");
+	    request.setUserId("u006");
+	    when(mockService.deleteScore(request)).thenReturn(0);
+	    when(mockService.getUserSubjectFromToken()).thenReturn("token");
+	    UserResponse response = new UserResponse();
+	    response.setUserId("u001");
+	    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
+	    mockMvc
+	        .perform(
+	            delete(new URI("/v1/scores"))
+	                .contentType(MediaType.APPLICATION_JSON)
+	                .content(toJson(request)))
+	        .andExpect(status().isUnauthorized());	  
   }
 }
