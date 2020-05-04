@@ -39,6 +39,13 @@ public class SampleDatum {
     miraclePaint.setSongName("ミラクルペイント");
     miraclePaint.setContributor("タタナミ");
     miraclePaint.setInstrument("ピアノ①");
+    
+    Songs gensokyo = new Songs();
+    gensokyo.setSongId("003");
+    gensokyo.setJirikiRank(JirikiRank.JIRIKI_B_PLUS);
+    gensokyo.setSongName("千年幻想郷 〜 History of the Moon");
+    gensokyo.setInstrument("E・ギター");
+    gensokyo.setContributor("DXいしょく＠ばけばけ");
 
     Scores score1 = new Scores();
     score1.setUsers(user1);
@@ -58,6 +65,12 @@ public class SampleDatum {
     score3.setScore(new ScoreValue(99));
     score3.setScoreId(3);
     
+    Scores score4 = new Scores();
+    score4.setUsers(user2);
+    score4.setSongs(gensokyo);
+    score4.setScore(new ScoreValue(83));
+    score4.setScoreId(4);
+    
     List<Users> users = new ArrayList<Users>();
     users.add(user1);
     users.add(user2);
@@ -65,11 +78,13 @@ public class SampleDatum {
     List<Songs> songs = new ArrayList<Songs>();
     songs.add(mitemite);
     songs.add(miraclePaint);
+    songs.add(gensokyo);
 
     List<Scores> scores = new ArrayList<Scores>();
     scores.add(score1);
     scores.add(score2);
     scores.add(score3);
+    scores.add(score4);
 
     this.users = users;
     this.songs = songs;
