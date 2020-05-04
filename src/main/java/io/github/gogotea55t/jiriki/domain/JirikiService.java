@@ -52,7 +52,7 @@ public class JirikiService {
   private ScoresFactory scoreFactory;
 
   private RabbitTemplate rabbitTemplate;
-  
+
   private AuthService authService;
 
   @Autowired
@@ -227,9 +227,10 @@ public class JirikiService {
           }
         }
       }
-
-      scoreRepository.saveAll(scores);
-
+      if (!scores.isEmpty()) {
+    	// saveAllは一件もないときエラーになる
+        scoreRepository.saveAll(scores);
+      }
     } catch (IOException ie) {
       ie.printStackTrace();
     }
