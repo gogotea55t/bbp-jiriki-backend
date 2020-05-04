@@ -188,7 +188,7 @@ public class JirikiServiceTest {
   @Test
   public void 全曲取得できる() throws Exception {
     List<SongsResponse> songs = jirikiService.searchSongsByQuery(query, defaultPaging);
-    assertThat(songs.size()).isEqualTo(2);
+    assertThat(songs.size()).isEqualTo(3);
   }
 
   @Test
@@ -300,7 +300,7 @@ public class JirikiServiceTest {
   public void スコア検索をかけるとスコアが返ってくる() throws Exception {
     List<Score4UserResponse> scores =
         jirikiService.searchScoresByQuery("u002", query, defaultPaging);
-    assertThat(scores.size()).isEqualTo(2);
+    assertThat(scores.size()).isEqualTo(3);
   }
 
   @Test
@@ -317,6 +317,14 @@ public class JirikiServiceTest {
     List<Score4UserResponse> scores =
         jirikiService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
+  }
+  
+  @Test
+  public void 楽曲名でスコア検索ができる_大文字小文字() throws Exception {
+	query.put("name", "hISTory");
+    List<Score4UserResponse> scores =
+            jirikiService.searchScoresByQuery("u002", query, defaultPaging);
+        assertThat(scores.size()).isEqualTo(1);	
   }
 
   @Test

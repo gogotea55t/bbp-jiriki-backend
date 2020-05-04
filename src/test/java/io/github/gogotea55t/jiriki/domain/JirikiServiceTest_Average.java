@@ -88,7 +88,7 @@ public class JirikiServiceTest_Average {
   public void 平均点を計算できる() throws Exception {
     List<Score4UserResponse> scores =
         jirikiService.searchAverageScoresByQuery(query, defaultPaging);
-    assertThat(scores.size()).isEqualTo(2);
+    assertThat(scores.size()).isEqualTo(3);
     // ↓なぜか失敗する
     // assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("96.50")));
     assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(96.50));
