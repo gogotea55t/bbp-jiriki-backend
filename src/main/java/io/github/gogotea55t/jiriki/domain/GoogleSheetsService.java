@@ -102,7 +102,7 @@ public class GoogleSheetsService {
     ranges.add(spreadSheetName + "!A5:K");
 
     // 得点
-    ranges.add(spreadSheetName + "!K3:1495");
+    ranges.add(spreadSheetName + "!K3:2100");
 
     request.setRanges(ranges);
 

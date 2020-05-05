@@ -1,14 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://160.16.80.177:3306/jiriki
+    url: jdbc:mysql://160.16.80.177:3306/jiriki_db
     username: jiriki
     password: ENC@[ViRdSeAso02m4+wk9vE7izIk7CWNAk/KmJmHrdZyPFI=]
   rabbitmq:
     host: rabbitmq
     port: 5672
     username: jiriki_rabbit
-    password: ENC@[TeFG0rp0t1irX+fnG8+WmmCLQDmSqdIdPzN1hIQd0pnZjZf6vcp1fw==]
+    password: ENC@[kOGAYqzRI+kxRx7jgimT5kLdOBvOlFv/S5wpEG//lQ3nmnXHpCZhvA==]
 
 mybatis:
   configuration:
