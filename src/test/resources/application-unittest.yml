@@ -13,3 +13,6 @@ google:
     id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
     name: 2. 得点表
     
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
