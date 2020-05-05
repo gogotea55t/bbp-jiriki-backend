@@ -29,7 +29,7 @@ public class SongsSqlBuilder {
           WHERE("INSTRUMENT like CONCAT('%', #{instrument},'%')");
         }
 
-        ORDER_BY("so.jiriki_Rank", "so.song_Id");
+        ORDER_BY("so.jiriki_Rank", "CAST(so.song_Id AS SIGNED)");
       }
     }.toString();
   }
@@ -56,7 +56,7 @@ public class SongsSqlBuilder {
           WHERE("TRUE");
         }
         GROUP_BY("so.SONG_ID");
-        ORDER_BY("so.jiriki_rank", "so.song_id");
+        ORDER_BY("so.jiriki_rank", "CAST(so.song_id AS SIGNED)");
       }
     }.toString();
   }
@@ -84,7 +84,7 @@ public class SongsSqlBuilder {
         } else {
           WHERE("TRUE");
         }
-        ORDER_BY("so.jiriki_rank", "so.song_id");
+        ORDER_BY("so.jiriki_rank", "CAST(so.song_id AS SIGNED)");
       }
     }.toString();
   }
