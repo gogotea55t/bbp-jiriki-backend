@@ -10,6 +10,7 @@ import org.assertj.core.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
+import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
@@ -40,19 +43,33 @@ public class JirikiServiceTestWithMock {
   @Autowired private SongRepository songRepository;
 
   @Autowired private ScoresRepository scoreRepository;
-  
+
   @Autowired private TwitterUsersRepository twitterUsersRepository;
+
+  @Autowired private ScoresFactory scoreFactory;
+  
+  @Autowired private RabbitTemplate rabbitTemplate;
+  
+  @MockBean private AuthService authService;
 
   private JirikiService jirikiService;
 
   @Before
   public void init() {
-	userRepository.deleteAll();
-	songRepository.deleteAll();
-	scoreRepository.deleteAll();
+    userRepository.deleteAll();
+    songRepository.deleteAll();
+    scoreRepository.deleteAll();
     jirikiService =
         new JirikiService(
-            sheetConfig, sheetsService, userRepository, songRepository, scoreRepository, twitterUsersRepository);
+            sheetConfig,
+            sheetsService,
+            userRepository,
+            songRepository,
+            scoreRepository,
+            twitterUsersRepository,
+            scoreFactory,
+            rabbitTemplate,
+            authService);
     Users sampleUser = new Users();
     sampleUser.setUserId("u001");
     sampleUser.setUserName("妖怪1");
@@ -61,7 +78,7 @@ public class JirikiServiceTestWithMock {
     sampleUser2.setUserId("u002");
     sampleUser2.setUserName("妖怪b");
     userRepository.save(sampleUser2);
-    
+
     Songs sampleSong = new Songs();
     sampleSong.setJirikiRank(JirikiRank.JIRIKI_S_PLUS);
     sampleSong.setSongName("みてみて☆こっちっち");
@@ -69,7 +86,7 @@ public class JirikiServiceTestWithMock {
     sampleSong.setContributor("エメラル");
     sampleSong.setInstrument("チェンバロ");
     songRepository.save(sampleSong);
-    
+
     Songs sampleSong2 = new Songs();
     sampleSong2.setJirikiRank(JirikiRank.JIRIKI_B_PLUS);
     sampleSong2.setSongId("558");
@@ -117,7 +134,7 @@ public class JirikiServiceTestWithMock {
       "4"
     };
     Object[] row2 = {
-      "地力Ａ＋", "ミラクルペイント", "タタナミ", "ピアノ①", "82.94", "96","", "12", "ミラクルペイントタタナミピアノ①", "a31", "558"
+      "地力Ａ＋", "ミラクルペイント", "タタナミ", "ピアノ①", "82.94", "96", "", "12", "ミラクルペイントタタナミピアノ①", "a31", "558"
     };
     Object[] row3 = {
       "地力Ｅ",
@@ -164,7 +181,7 @@ public class JirikiServiceTestWithMock {
     Object[] row1 = {"", "u001", "u002", "u003", "", ""};
     Object[] row2 = {"", "妖怪1", "妖怪2", "妖怪3", "", ""};
     Object[] row3 = {"4", "91", "93", "96", "", ""};
-    Object[] row4 = {"558", "93", "90", "96", "", ""};
+    Object[] row4 = {"558", "93", "90", "96", "", "."};
     Object[] row5 = {"567", "100", "たぶん100", "", "", ""};
     Object[] row6 = {"3467", "", "", "", "", ""};
     Object[] row7 = {};
@@ -211,7 +228,10 @@ public class JirikiServiceTestWithMock {
     assertThat(youkai2.getUserName()).isEqualTo("妖怪2");
     Songs miraclePaint = songRepository.findById("558").get();
     assertThat(miraclePaint.getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_A_PLUS);
-    Scores score = scoreRepository.findByUsers_UserIdAndSongs_SongId(youkai2.getUserId(), miraclePaint.getSongId()).get();
+    Scores score =
+        scoreRepository
+            .findByUsers_UserIdAndSongs_SongId(youkai2.getUserId(), miraclePaint.getSongId())
+            .get();
     assertThat(score.getScore().getScore().intValue()).isEqualTo(90);
   }
 }

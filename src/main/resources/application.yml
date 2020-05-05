@@ -1,12 +1,21 @@
 spring:
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/db_practice?serverTimezone=JST
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/jiriki_db?serverTimezone=JST
     username: mysql
     password: mysql
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
       
 security:
   oauth2:
@@ -17,7 +26,7 @@ security:
 
 google:
   sheet:
-    id: 1YBCP7kBrhCha5v8RRklTwXs0rbS437EG1yLNdwFm634
+    id: 1hC3kvvKKZItaKX2yu1Kd7xqpoFgHcu6ri5nk7c6ZTuc
     name: 2. 得点表
     
 logging:

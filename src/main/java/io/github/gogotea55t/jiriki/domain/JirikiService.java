@@ -8,34 +8,28 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.Sheets.Spreadsheets.Values.BatchGet;
-import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
+import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
+import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
@@ -55,6 +49,12 @@ public class JirikiService {
 
   private TwitterUsersRepository twitterUsersRepository;
 
+  private ScoresFactory scoreFactory;
+
+  private RabbitTemplate rabbitTemplate;
+
+  private AuthService authService;
+
   @Autowired
   public JirikiService(
       GoogleSpreadSheetConfig sheetConfig,
@@ -62,13 +62,19 @@ public class JirikiService {
       UserRepository userRepository,
       SongRepository songRepository,
       ScoresRepository scoreRepository,
-      TwitterUsersRepository twitterUsersRepository) {
+      TwitterUsersRepository twitterUsersRepository,
+      ScoresFactory scoreFactory,
+      RabbitTemplate rabbitTemplate,
+      AuthService authService) {
     this.sheetConfig = sheetConfig;
     this.sheetsService = sheetsService;
     this.userRepository = userRepository;
     this.songRepository = songRepository;
     this.scoreRepository = scoreRepository;
     this.twitterUsersRepository = twitterUsersRepository;
+    this.scoreFactory = scoreFactory;
+    this.rabbitTemplate = rabbitTemplate;
+    this.authService = authService;
   }
 
   @Scheduled(cron = "0 0 4 * * *")
@@ -114,6 +120,7 @@ public class JirikiService {
           } else {
             // 変わっていた場合は更新をかける
             userFetched.get().setUserName(user.getUserName());
+            userRepository.update(userFetched.get());
           }
         } else {
           // そもそも登録がない場合は新規登録
@@ -156,6 +163,7 @@ public class JirikiService {
             songFetched.get().setSongName(s.getSongName());
             songFetched.get().setInstrument(s.getInstrument());
             songFetched.get().setContributor(s.getContributor());
+            songRepository.update(songFetched.get());
           }
         } else {
           songRepository.save(s);
@@ -206,6 +214,7 @@ public class JirikiService {
                   // do nothing
                 } else {
                   scoreFetched.get().setScore(score.getScore());
+                  scoreRepository.update(scoreFetched.get());
                 }
               } else {
                 scores.add(score);
@@ -218,9 +227,10 @@ public class JirikiService {
           }
         }
       }
-
-      scoreRepository.saveAll(scores);
-
+      if (!scores.isEmpty()) {
+    	// saveAllは一件もないときエラーになる
+        scoreRepository.saveAll(scores);
+      }
     } catch (IOException ie) {
       ie.printStackTrace();
     }
@@ -233,7 +243,7 @@ public class JirikiService {
    */
   public List<UserResponse> getAllPlayer() {
     List<UserResponse> players = new ArrayList<>();
-    List<Users> users = userRepository.findAll(Sort.by(Order.asc("userId")));
+    List<Users> users = userRepository.findAll();
     for (Users user : users) {
       players.add(UserResponse.of(user));
     }
@@ -280,7 +290,10 @@ public class JirikiService {
     if (user.isPresent()) {
       Optional<TwitterUsers> tw = twitterUsersRepository.findById(request.getTwitterUserId());
       if (tw.isPresent()) {
-        twitterUsersRepository.delete(tw.get());
+        TwitterUsers newTwitterUsers = tw.get();
+        newTwitterUsers.setUsers(user.get());
+        twitterUsersRepository.update(newTwitterUsers);
+        return UserResponse.of(user.get());
       }
       twitterUsersRepository.save(new TwitterUsers(request.getTwitterUserId(), user.get()));
       return UserResponse.of(user.get());
@@ -298,162 +311,81 @@ public class JirikiService {
     }
   }
 
-  public List<SongsResponse> getSongBySongName(String songName, Pageable page) {
-    List<SongsResponse> songs = new ArrayList<>();
-    List<Songs> songsResponse = songRepository.findBySongNameContaining(songName, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-    return songs;
+  public List<SongsResponse> searchSongsByQuery(Map<String, String> query, PageRequest page) {
+    return songRepository.searchSongsByConditions(query, page.getRb());
   }
 
-  public List<SongsResponse> getSongByContributor(String contributor, Pageable page) {
-    List<SongsResponse> songs = new ArrayList<>();
-    List<Songs> songsResponse = songRepository.findByContributorContaining(contributor, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-    return songs;
+  public List<Score4UserResponse> searchAverageScoresByQuery(
+      Map<String, String> query, PageRequest page) {
+    return songRepository.searchAverageByConditions(query, page.getRb());
   }
 
-  public List<SongsResponse> getSongByInstrument(String instrument, Pageable page) {
-    List<SongsResponse> songs = new ArrayList<>();
-    List<Songs> songsResponse = songRepository.findByInstrumentContaining(instrument, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-    return songs;
-  }
-
-  public List<SongsResponse> getSongByJiriki(JirikiRank jiriki, Pageable page) {
-    List<SongsResponse> songs = new ArrayList<>();
-
-    List<Songs> songsResponse = songRepository.findByJirikiRank(jiriki, page);
-    songsResponse.forEach(
-        s -> {
-          songs.add(SongsResponse.of(s));
-        });
-
-    return songs;
+  public List<Score4UserResponse> searchScoresByQuery(
+      String userId, Map<String, String> query, PageRequest page) {
+    if (userRepository.findById(userId).isPresent()) {
+      query.put("userId", userId);
+      return songRepository.searchScoreByConditions(query, page.getRb());
+    } else {
+      throw new IllegalArgumentException("User not found.");
+    }
   }
 
   public List<Score4SongResponse> getScoresBySongId(String songId) {
     Optional<Songs> song = songRepository.findById(songId);
     if (song.isPresent()) {
-      List<Score4SongResponse> response = new ArrayList<>();
-      song.get()
-          .getScores()
-          .stream()
-          .forEach(
-              (sc) -> {
-                response.add(Score4SongResponse.of(sc));
-              });
-      return response;
+      return scoreRepository.findScoresBySongId(songId);
     } else {
       return null;
     }
   }
 
-  public List<Score4UserResponse> getScoresByUserId(String userId) {
-    Optional<Users> user = userRepository.findById(userId);
-    if (user.isPresent()) {
-      List<Score4UserResponse> response = new ArrayList<>();
-      user.get()
-          .getScores()
-          .stream()
-          .forEach(
-              (sc) -> {
-                response.add(Score4UserResponse.of(sc));
-              });
-      return response;
+  public List<Score4SongResponseV2> getScoresBySongIdV2(String songId) {
+    Optional<Songs> song = songRepository.findById(songId);
+    if (song.isPresent()) {
+      return scoreRepository.findScoresBySongIdV2(songId);
     } else {
       return null;
     }
   }
 
-  public List<Score4UserResponse> getScoresByUserIdWithEmpty(String userId, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdWithEmpty(userId, page);
+  public void registerScore(ScoreRequest request) {
+    Scores score = scoreFactory.generateScoreFrom(request);
+    if (scoreRepository
+        .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
+        .isPresent()) {
+      score.setUpdatedBy(getUserSubjectFromToken());
+      scoreRepository.update(score);
     } else {
-      return null;
+      score.setCreatedBy(getUserSubjectFromToken());
+      score.setUpdatedBy(getUserSubjectFromToken());
+      scoreRepository.save(score);
     }
   }
 
-  public List<Score4UserResponse> getScoresByUserIdAndSongNameWithEmpty(
-      String userId, String songName, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndSongNameWithEmpty(userId, songName, page);
+  public int deleteScore(ScoreDeleteRequest request) {
+    if (scoreRepository
+        .findByUsers_UserIdAndSongs_SongId(request.getUserId(), request.getSongId())
+        .isPresent()) {
+      scoreRepository.delete(request.getSongId(), request.getUserId());
+      return 1;
     } else {
-      return null;
+      return 0;
     }
   }
 
-  public List<Score4UserResponse> getScoresByUserIdAndContributorWithEmpty(
-      String userId, String contributor, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndContributorWithEmpty(userId, contributor, page);
-    } else {
-      return null;
-    }
+  public void messagingTest(ScoreRequest request) {
+
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "update", request); // , m -> {
+    //    	m.getMessageProperties().getHeaders().remove("__TypeId__");
+    //    	return m;
+    //    });
   }
 
-  public List<Score4UserResponse> getScoresByUserIdAndInstrumentWithEmpty(
-      String userId, String instrument, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndInstrumentWithEmpty(userId, instrument, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getScoresByUserIdAndJirikiRankWithEmpty(
-      String userId, JirikiRank jiriki, Pageable page) {
-    if (userRepository.existsById(userId)) {
-      return songRepository.findSongsByUserIdAndJirikiRankWithEmpty(userId, jiriki, page);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Score4UserResponse> getAverageScores(Pageable page) {
-    return songRepository.findSongsWithAverage(page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresByJiriki(JirikiRank jiriki, Pageable page) {
-    return songRepository.findSongsWithAverageByJirikiRank(jiriki, page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresBySongName(String songName, Pageable page) {
-    return songRepository.findSongsWithAverageBySongName(songName, page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresByInstrument(String instrument, Pageable page) {
-    return songRepository.findSongsWithAverageByInstrument(instrument, page);
-  }
-
-  public List<Score4UserResponse> getAverageScoresByContributor(String contributor, Pageable page) {
-    return songRepository.findSongsWithAverageByContributor(contributor, page);
-  }
-
-  public List<SongsResponse> getAllSongs(Pageable pageable) {
-    Page<Songs> songs = songRepository.findAll(pageable);
-    List<SongsResponse> songsResponse = new ArrayList<>();
-    songs
-        .stream()
-        .forEach(
-            (s) -> {
-              songsResponse.add(SongsResponse.of(s));
-            });
-    return songsResponse;
+  public void deleteRequest(ScoreDeleteRequest request) {
+    rabbitTemplate.convertAndSend("jiriki-bbp-spreadsheet", "delete", request);
   }
 
   public String getUserSubjectFromToken() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-    DecodedJWT decodedJwt = JWT.decode(details.getTokenValue());
-    return decodedJwt.getSubject();
+    return authService.getUserSubjectFromToken();
   }
 }

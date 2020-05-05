@@ -1,41 +1,34 @@
 package io.github.gogotea55t.jiriki.ui;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.spring.security.api.JwtAuthenticationProvider;
-import com.auth0.spring.security.api.authentication.JwtAuthentication;
 
 import io.github.gogotea55t.jiriki.domain.ErrorResponse;
 import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.SongsResponse;
-import io.github.gogotea55t.jiriki.domain.TwitterUserResponse;
 import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.request.PageRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
+import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
-import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 
 @Controller
 public class JirikiController {
@@ -63,22 +56,20 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    Pageable pageReq =
-        PageRequest.of(page, limit, Sort.by(Order.asc("jirikiRank"), Order.asc("songId")));
-
+    PageRequest pageReq = new PageRequest(page, limit);
+    Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
-      return ResponseEntity.ok(jirikiService.getSongBySongName(name, pageReq));
+      query.put("name", name);
     } else if (contributor != null) {
-      return ResponseEntity.ok(jirikiService.getSongByContributor(contributor, pageReq));
+      query.put("contributor", contributor);
     } else if (instrument != null) {
-      return ResponseEntity.ok(jirikiService.getSongByInstrument(instrument, pageReq));
+      query.put("instrument", instrument);
     } else if (jiriki != null) {
-      return ResponseEntity.ok(
-          jirikiService.getSongByJiriki(JirikiRank.getJirikiRankFromRankName(jiriki), pageReq));
+      query.put("jiriki", jiriki);
     }
-    List<SongsResponse> songs = jirikiService.getAllSongs(pageReq);
-
-    return ResponseEntity.ok(songs);
+    Object result = jirikiService.searchSongsByQuery(query, pageReq);
+    System.out.println(result);
+    return ResponseEntity.ok(result);
   }
 
   @GetMapping("/v1/players")
@@ -132,21 +123,19 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    PageRequest pageReq = PageRequest.of(page, limit);
-    List<Score4UserResponse> response;
+    PageRequest pageReq = new PageRequest(page, limit);
+    Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
-      response = jirikiService.getAverageScoresBySongName(name, pageReq);
+      query.put("name", name);
     } else if (contributor != null) {
-      response = jirikiService.getAverageScoresByContributor(contributor, pageReq);
+      query.put("contributor", contributor);
     } else if (instrument != null) {
-      response = jirikiService.getAverageScoresByInstrument(instrument, pageReq);
+      query.put("instrument", instrument);
     } else if (jiriki != null) {
-      response =
-          jirikiService.getAverageScoresByJiriki(
-              JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+      query.put("jiriki", jiriki);
     } else {
-      response = jirikiService.getAverageScores(pageReq);
     }
+    List<Score4UserResponse> response = jirikiService.searchAverageScoresByQuery(query, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
@@ -163,21 +152,19 @@ public class JirikiController {
       @RequestParam(required = false) String jiriki,
       @RequestParam(required = false, defaultValue = "0") Integer page,
       @RequestParam(required = false, defaultValue = "20") Integer limit) {
-    PageRequest pageReq = PageRequest.of(page, limit);
-    List<Score4UserResponse> response;
+    PageRequest pageReq = new PageRequest(page, limit);
+    Map<String, String> query = new HashMap<String, String>();
     if (name != null) {
-      response = jirikiService.getScoresByUserIdAndSongNameWithEmpty(id, name, pageReq);
+      query.put("name", name);
     } else if (contributor != null) {
-      response = jirikiService.getScoresByUserIdAndContributorWithEmpty(id, contributor, pageReq);
+      query.put("contributor", contributor);
     } else if (instrument != null) {
-      response = jirikiService.getScoresByUserIdAndInstrumentWithEmpty(id, instrument, pageReq);
+      query.put("instrument", instrument);
     } else if (jiriki != null) {
-      response =
-          jirikiService.getScoresByUserIdAndJirikiRankWithEmpty(
-              id, JirikiRank.getJirikiRankFromRankName(jiriki), pageReq);
+      query.put("jiriki", jiriki);
     } else {
-      response = jirikiService.getScoresByUserIdWithEmpty(id, pageReq);
     }
+    List<Score4UserResponse> response = jirikiService.searchScoresByQuery(id, query, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
@@ -205,13 +192,50 @@ public class JirikiController {
     }
   }
 
+  @GetMapping("/v2/songs/{id}/scores")
+  public ResponseEntity<?> getScoresBySongIdV2(@PathVariable(name = "id") String id) {
+    List<Score4SongResponseV2> response = jirikiService.getScoresBySongIdV2(id);
+    if (response == null) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.ok(response);
+    }
+  }
+
   @GetMapping("/v1/jiriki")
   public ResponseEntity<?> getSongByJiriki() {
     return ResponseEntity.ok().build();
   }
 
-  @GetMapping("/v1/players/")
-  public ResponseEntity<?> getPlayerByTwitterId() {
-    throw new Error();
+  @PutMapping("/v1/scores")
+  public ResponseEntity<?> registerScore(@RequestBody ScoreRequest request) {
+    if (!request.getUserId().equals(loginUserId())) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    jirikiService.registerScore(request);
+    jirikiService.messagingTest(request);
+    return ResponseEntity.accepted().build();
+  }
+
+  @DeleteMapping("/v1/scores")
+  public ResponseEntity<?> deleteScore(@RequestBody ScoreDeleteRequest request) {
+    if (!request.getUserId().equals(loginUserId())) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    int deleted = jirikiService.deleteScore(request);
+
+    if (deleted == 1) {
+      // 実際に削除した時はスプレッドシートからも消そうとする
+      jirikiService.deleteRequest(request);
+      return ResponseEntity.noContent().build();
+    } else {
+      return ResponseEntity.notFound().build();
+    }
+  }
+
+  private String loginUserId() {
+    String auth0UserId = jirikiService.getUserSubjectFromToken();
+    return jirikiService.findPlayerByTwitterId(auth0UserId).getUserId();
   }
 }

@@ -2,9 +2,6 @@ package io.github.gogotea55t.jiriki.domain.vo;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -45,15 +42,40 @@ public class ScoreValue {
     }
   }
 
+  public ScoreValue(String score) {
+    try {
+      if (score == null) {
+        this.score = null;
+      } else {
+        BigDecimal sc = new BigDecimal(score).setScale(2);
+        if (isInvalidRange(sc)) {
+          throw new IllegalArgumentException("得点は0から100までの入力が必要です");
+        } else {
+          this.score = sc;
+        }
+      }
+    } catch (NumberFormatException ne) {
+      throw new IllegalArgumentException("半角数字のみ入力可能です。");
+    }
+  }
+
   private boolean isInvalidRange(Number score) {
     return score.doubleValue() < 0 || score.doubleValue() > 100;
   }
 
+  /**
+   * DBへ登録可能な得点の条件は
+   * 1. nullではない
+   * 2. 小数点以下が0
+   * 
+   * @return DBに登録可能な値であるときtrue
+   */
   public boolean isInsertableToDB() {
-    return (score != null) && !(score.toPlainString().contains("."));
+    return (score != null)
+        && (score.subtract(new BigDecimal(score.intValue())).compareTo(BigDecimal.ZERO) == 0);
   }
-  
+
   public boolean isEqualTo(ScoreValue sc) {
-	return this.score.compareTo(sc.getScore()) == 0;
+    return this.score.compareTo(sc.getScore()) == 0;
   }
 }

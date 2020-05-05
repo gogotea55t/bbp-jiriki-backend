@@ -1,56 +1,36 @@
 package io.github.gogotea55t.jiriki.domain.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 @Data
-@ToString(exclude = "scores")
-@EqualsAndHashCode(exclude = "scores")
-@Table
-@Entity
 public class Songs {
   /** 楽曲ID */
-  @Id
-  @Column(length = 10)
   private String songId;
 
-  @Column(length = 15)
   private JirikiRank jirikiRank;
 
   /** 楽曲名 */
-  @Column(length = 60)
   private String songName;
 
   /** 投稿者名 */
-  @Column(length = 20)
   private String contributor;
 
   /** 楽器 */
-  @Column(length = 15)
   private String instrument;
 
   /** 得点 */
-  @Column
-  @OneToMany(mappedBy = "songs", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @Fetch(FetchMode.SUBSELECT)
-  @OrderBy("score desc")
   private List<Scores> scores;
+  
+  private LocalDateTime createdAt;
+  
+  private String createdBy;
+  
+  private LocalDateTime updatedAt;
+  
+  private String updatedBy;
 
   public static Songs of(
       String songId, JirikiRank jirikiRank, String songName, String contributor, String instrument) {
