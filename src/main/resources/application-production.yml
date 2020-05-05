@@ -8,7 +8,7 @@ spring:
     host: rabbitmq
     port: 5672
     username: jiriki_rabbit
-    password: ENC@[TeFG0rp0t1irX+fnG8+WmmCLQDmSqdIdPzN1hIQd0pnZjZf6vcp1fw==]
+    password: ENC@[kOGAYqzRI+kxRx7jgimT5kLdOBvOlFv/S5wpEG//lQ3nmnXHpCZhvA==]
 
 mybatis:
   configuration:
