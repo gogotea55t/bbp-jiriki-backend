@@ -372,6 +372,83 @@ public class JirikiServiceTest {
     expectedException.expect(IllegalArgumentException.class);
     jirikiService.searchScoresByQuery("uqqqq", query, defaultPaging);
   }
+  
+  @Test
+  public void スコア検索をかけるとスコアが返ってくるV2() throws Exception {
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u002", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(3);
+  }
+
+  @Test
+  public void 楽曲名でスコア検索ができるV2() throws Exception {
+    query.put("name", "ミラクルペイント");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 楽曲名でスコア検索ができるV2_部分一致() throws Exception {
+    query.put("name", "ミ");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+  
+  @Test
+  public void 楽曲名でスコア検索ができるV2_大文字小文字() throws Exception {
+	query.put("name", "hISTory");
+    List<Score4UserResponseV2> scores =
+            jirikiService.searchScoresByQueryV2("u002", query, defaultPaging);
+        assertThat(scores.size()).isEqualTo(1);	
+  }
+
+  @Test
+  public void 投稿者名でスコア検索ができるV2() throws Exception {
+    query.put("contributor", "エメラル");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 投稿者名でスコア検索ができるV2_部分一致() throws Exception {
+    query.put("contributor", "エメ");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 楽器名でスコア情報を検索できるV2() throws Exception {
+    query.put("instrument", "ピアノ");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 楽器名でスコア情報を検索できるV2_部分一致() throws Exception {
+    query.put("instrument", "ピ");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 地力ランクでスコア情報を検索できるV2() throws Exception {
+    query.put("jiriki", "地力Ａ＋");
+    List<Score4UserResponseV2> scores =
+        jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 存在しないユーザーでスコア検索をかけるV2() throws Exception {
+    expectedException.expect(IllegalArgumentException.class);
+    jirikiService.searchScoresByQueryV2("uqqqq", query, defaultPaging);
+  }
 
   @Test
   public void スコアの登録ができる() throws Exception {

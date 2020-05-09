@@ -228,7 +228,7 @@ public class JirikiService {
         }
       }
       if (!scores.isEmpty()) {
-    	// saveAllは一件もないときエラーになる
+        // saveAllは一件もないときエラーになる
         scoreRepository.saveAll(scores);
       }
     } catch (IOException ie) {
@@ -325,6 +325,16 @@ public class JirikiService {
     if (userRepository.findById(userId).isPresent()) {
       query.put("userId", userId);
       return songRepository.searchScoreByConditions(query, page.getRb());
+    } else {
+      throw new IllegalArgumentException("User not found.");
+    }
+  }
+
+  public List<Score4UserResponseV2> searchScoresByQueryV2(
+      String userId, Map<String, String> query, PageRequest page) {
+    if (userRepository.findById(userId).isPresent()) {
+      query.put("userId", userId);
+      return songRepository.searchScoreByConditionsV2(query, page.getRb());
     } else {
       throw new IllegalArgumentException("User not found.");
     }
