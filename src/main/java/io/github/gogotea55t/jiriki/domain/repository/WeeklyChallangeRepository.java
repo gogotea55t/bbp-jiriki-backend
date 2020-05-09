@@ -1,5 +1,8 @@
 package io.github.gogotea55t.jiriki.domain.repository;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Result;
@@ -28,4 +31,10 @@ public interface WeeklyChallangeRepository {
         @Result(column = "INSTRUMENT", property = "songs.instrument")
       })
   public WeeklyChallange findLatest();
+  
+  @SelectProvider(type = WeeklyChallangeSqlBuilder.class, method = "buildfindAllSql")
+  public List<WeeklyChallange> findAll();
+  
+  @Delete("DELETE FROM WEEKLY_CHALLANGE")
+  public void deleteAll();
 }
