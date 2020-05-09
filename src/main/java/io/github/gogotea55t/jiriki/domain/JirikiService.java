@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -309,6 +310,13 @@ public class JirikiService {
     } else {
       return null;
     }
+  }
+  
+  public SongsResponse getSongByRandom() {
+	int numberOfSongs = songRepository.count();
+	Random random = new Random();
+	Songs response = songRepository.findSongByRandom(random.nextInt(numberOfSongs));
+	return SongsResponse.of(response);
   }
 
   public List<SongsResponse> searchSongsByQuery(Map<String, String> query, PageRequest page) {

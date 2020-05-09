@@ -172,7 +172,7 @@ public class JirikiController {
       return ResponseEntity.ok(response);
     }
   }
-  
+
   @GetMapping("/v2/players/{id}/scores")
   public ResponseEntity<?> getScoresByPlayerIdV2(
       @PathVariable(name = "id") String id,
@@ -205,6 +205,16 @@ public class JirikiController {
   @GetMapping("/v1/songs/{id}")
   public ResponseEntity<?> getSongBySongId(@PathVariable(name = "id") String id) {
     SongsResponse response = jirikiService.getSongBySongId(id);
+    if (response == null) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.ok(response);
+    }
+  }
+
+  @GetMapping("/v1/songs/random")
+  public ResponseEntity<?> getSongByRandom() {
+    SongsResponse response = jirikiService.getSongByRandom();
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {

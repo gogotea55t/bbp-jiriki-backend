@@ -55,7 +55,7 @@ public class JirikiServiceTest {
   @Autowired private ScoresFactory scoreFactory;
 
   @MockBean private RabbitTemplate rabbitTemplate;
-  
+
   @MockBean private AuthService mockAuthService;
 
   @Rule public ExpectedException expectedException = ExpectedException.none();
@@ -192,6 +192,14 @@ public class JirikiServiceTest {
   }
 
   @Test
+  public void ランダムに1曲取得できる() throws Exception {
+    for (int i = 0; i < 100; i++) {
+      SongsResponse songs = jirikiService.getSongByRandom();
+      assertThat(songs).isNotNull();
+    }
+  }
+
+  @Test
   public void ページングの設定は正しく反映される() throws Exception {
     List<SongsResponse> songs = jirikiService.searchSongsByQuery(query, new PageRequest(0, 1));
     assertThat(songs.size()).isEqualTo(1);
@@ -318,13 +326,13 @@ public class JirikiServiceTest {
         jirikiService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
-  
+
   @Test
   public void 楽曲名でスコア検索ができる_大文字小文字() throws Exception {
-	query.put("name", "hISTory");
+    query.put("name", "hISTory");
     List<Score4UserResponse> scores =
-            jirikiService.searchScoresByQuery("u002", query, defaultPaging);
-        assertThat(scores.size()).isEqualTo(1);	
+        jirikiService.searchScoresByQuery("u002", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
@@ -372,7 +380,7 @@ public class JirikiServiceTest {
     expectedException.expect(IllegalArgumentException.class);
     jirikiService.searchScoresByQuery("uqqqq", query, defaultPaging);
   }
-  
+
   @Test
   public void スコア検索をかけるとスコアが返ってくるV2() throws Exception {
     List<Score4UserResponseV2> scores =
@@ -395,13 +403,13 @@ public class JirikiServiceTest {
         jirikiService.searchScoresByQueryV2("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
-  
+
   @Test
   public void 楽曲名でスコア検索ができるV2_大文字小文字() throws Exception {
-	query.put("name", "hISTory");
+    query.put("name", "hISTory");
     List<Score4UserResponseV2> scores =
-            jirikiService.searchScoresByQueryV2("u002", query, defaultPaging);
-        assertThat(scores.size()).isEqualTo(1);	
+        jirikiService.searchScoresByQueryV2("u002", query, defaultPaging);
+    assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
@@ -462,7 +470,10 @@ public class JirikiServiceTest {
     Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u002", "002");
     assertThat(score.isPresent()).isTrue();
     assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(38)));
-    score.ifPresent(sc -> {assertThat(sc.getUpdatedBy()).isEqualTo("tw|00022323");});
+    score.ifPresent(
+        sc -> {
+          assertThat(sc.getUpdatedBy()).isEqualTo("tw|00022323");
+        });
   }
 
   @Test
@@ -477,8 +488,14 @@ public class JirikiServiceTest {
     Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u001", "001");
     assertThat(score.isPresent()).isTrue();
     assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(90)));
-    score.ifPresent(sc -> {assertThat(sc.getCreatedBy()).isEqualTo("ANONYMOUS");});
-    score.ifPresent(sc -> {assertThat(sc.getUpdatedBy()).isEqualTo("tw|00022323");});
+    score.ifPresent(
+        sc -> {
+          assertThat(sc.getCreatedBy()).isEqualTo("ANONYMOUS");
+        });
+    score.ifPresent(
+        sc -> {
+          assertThat(sc.getUpdatedBy()).isEqualTo("tw|00022323");
+        });
   }
 
   @Test

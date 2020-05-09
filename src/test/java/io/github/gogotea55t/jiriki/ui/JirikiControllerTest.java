@@ -129,6 +129,23 @@ public class JirikiControllerTest {
   }
 
   @Test
+  public void 楽曲情報がランダムに取得できる() throws Exception {
+    when(mockService.getSongByRandom()).thenReturn(mockSongsResponse.get(0));
+    mockMvc
+        .perform(get(new URI("/v1/songs/random")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockSongsResponse.get(0))));
+  }
+  
+  @Test
+  public void 楽曲情報がランダムに取得できなかったときは4004() throws Exception {
+    when(mockService.getSongByRandom()).thenReturn(null);
+    mockMvc
+        .perform(get(new URI("/v1/songs/random")))
+        .andExpect(status().is(404));
+  }
+
+  @Test
   public void 楽曲名で検索して楽曲情報が取得できる() throws Exception {
     query.put("name", "カミサマネジマキ");
     RowBounds a = new RowBounds(0, 20);
@@ -452,7 +469,6 @@ public class JirikiControllerTest {
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
 
-  
   @Test
   public void 平均点一覧を取得できる() throws Exception {
     when(mockService.searchAverageScoresByQuery(query, defaultPaging))
