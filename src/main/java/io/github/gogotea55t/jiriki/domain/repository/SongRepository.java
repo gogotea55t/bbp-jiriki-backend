@@ -49,6 +49,9 @@ public interface SongRepository {
 
   @Select("SELECT COUNT(*) FROM SONGS")
   public int count();
+  
+  @SelectProvider(type = SongsSqlBuilder.class, method = "buildRandomSongSql")
+  public Songs findSongByRandom(int random);
 
   @Insert(
       "INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
