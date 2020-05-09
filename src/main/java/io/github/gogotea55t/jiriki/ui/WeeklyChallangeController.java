@@ -16,12 +16,6 @@ public class WeeklyChallangeController {
     this.wcService = wcService;
   }
   
-  @PostMapping("/v1/weekly_challange")
-  public ResponseEntity<?> addNewSong() {
-	wcService.setWeeklyChallange();
-	return ResponseEntity.ok().build();
-  }
-  
   @GetMapping("/v1/weekly_challange")
   public ResponseEntity<?> weeklyChallange() {
 	WeeklyChallangeResponse response = wcService.getLatestWeeklyChallange();
