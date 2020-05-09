@@ -34,6 +34,12 @@ import io.github.gogotea55t.jiriki.domain.request.PageRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
+import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
+import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.response.UserResponse;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)

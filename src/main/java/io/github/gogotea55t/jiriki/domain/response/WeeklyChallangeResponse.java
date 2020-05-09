@@ -2,7 +2,6 @@ package io.github.gogotea55t.jiriki.domain.response;
 
 import java.time.LocalDate;
 
-import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.entity.WeeklyChallange;
 import lombok.Data;
 

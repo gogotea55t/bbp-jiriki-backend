@@ -1,4 +1,4 @@
-package io.github.gogotea55t.jiriki.domain;
+package io.github.gogotea55t.jiriki.domain.response;
 
 import java.util.List;
 

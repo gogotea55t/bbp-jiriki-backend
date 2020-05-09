@@ -11,9 +11,9 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
-import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
-import io.github.gogotea55t.jiriki.domain.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
+import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 
 @Mapper
 public interface ScoresRepository {
