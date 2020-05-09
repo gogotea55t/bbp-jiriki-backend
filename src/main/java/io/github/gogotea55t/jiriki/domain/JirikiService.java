@@ -1,6 +1,7 @@
 package io.github.gogotea55t.jiriki.domain;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.TwitterUsers;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
+import io.github.gogotea55t.jiriki.domain.entity.WeeklyChallange;
 import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
@@ -311,12 +313,16 @@ public class JirikiService {
       return null;
     }
   }
-  
+
   public SongsResponse getSongByRandom() {
-	int numberOfSongs = songRepository.count();
-	Random random = new Random();
-	Songs response = songRepository.findSongByRandom(random.nextInt(numberOfSongs));
-	return SongsResponse.of(response);
+
+    return SongsResponse.of(getSongEntityByRandom());
+  }
+
+  public Songs getSongEntityByRandom() {
+    int numberOfSongs = songRepository.count();
+    Random random = new Random();
+    return songRepository.findSongByRandom(random.nextInt(numberOfSongs));
   }
 
   public List<SongsResponse> searchSongsByQuery(Map<String, String> query, PageRequest page) {
