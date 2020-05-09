@@ -37,8 +37,17 @@ entity "TwitterUsers" as tw {
    #  users_user_id [FK(users, user_id)]
 }
 
+entity "WeeklyChallanges" as wc {
+  + weekly_challange_id:int
+  --
+  # songs_song_id [FK(songs, song_id)]
+  * start_date: DateTime
+  * end_date: DateTime
+}
+
 us ||-do-o{ sc
 so ||-up-o{ sc
 us ||-ri-o{ tw
+so ||-ri-o{wc
 @enduml
 ```
