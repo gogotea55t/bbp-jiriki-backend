@@ -52,7 +52,7 @@ public class JirikiServiceTest_Average {
   
   @Autowired private AuthService authService;
 
-  private JirikiService jirikiService;
+  private SongService songService;
 
   PageRequest defaultPaging = new PageRequest(0, 20);
 
@@ -61,17 +61,11 @@ public class JirikiServiceTest_Average {
   @Transactional
   @Before
   public void init() {
-    jirikiService =
-        new JirikiService(
-            sheetConfig,
-            sheetService,
-            userRepository,
+    songService =
+        new SongService(
             songRepository,
-            scoreRepository,
-            twiRepository,
-            scoreFactory,
-            rabbitTemplate,
-            authService);
+            userRepository,
+            scoreRepository);
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
@@ -88,7 +82,7 @@ public class JirikiServiceTest_Average {
   @Test
   public void 平均点を計算できる() throws Exception {
     List<Score4UserResponse> scores =
-        jirikiService.searchAverageScoresByQuery(query, defaultPaging);
+        songService.searchAverageScoresByQuery(query, defaultPaging);
     assertThat(scores.size()).isEqualTo(3);
     // ↓なぜか失敗する
     // assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("96.50")));
@@ -99,7 +93,7 @@ public class JirikiServiceTest_Average {
   public void 地力を指定して平均点を計算できる() throws Exception {
     query.put("jiriki", "地力Ｓ＋");
     List<Score4UserResponse> scores =
-        jirikiService.searchAverageScoresByQuery(query, defaultPaging);
+        songService.searchAverageScoresByQuery(query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
     // ↓なぜか失敗する
     // assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("96.50")));
@@ -110,7 +104,7 @@ public class JirikiServiceTest_Average {
   public void 曲名を指定して平均点を計算できる() throws Exception {
     query.put("name", "ミラクルペイント");
     List<Score4UserResponse> scores =
-        jirikiService.searchAverageScoresByQuery(query, defaultPaging);
+        songService.searchAverageScoresByQuery(query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
     // ↓なぜか失敗する
     assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("99.00")));
@@ -121,7 +115,7 @@ public class JirikiServiceTest_Average {
   public void 投稿者名を指定して平均点を計算できる() throws Exception {
     query.put("contributor", "タタナミ");
     List<Score4UserResponse> scores =
-        jirikiService.searchAverageScoresByQuery(query, defaultPaging);
+        songService.searchAverageScoresByQuery(query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
     // ↓なぜか失敗する
     assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("99.00")));
@@ -132,7 +126,7 @@ public class JirikiServiceTest_Average {
   public void 楽器名を指定して平均点を計算できる() throws Exception {
     query.put("instrument", "ピアノ");
     List<Score4UserResponse> scores =
-        jirikiService.searchAverageScoresByQuery(query, defaultPaging);
+        songService.searchAverageScoresByQuery(query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
     // ↓なぜか失敗する
     assertThat(scores.get(0).getScore()).isEqualTo(new ScoreValue(new BigDecimal("99.00")));

@@ -24,7 +24,7 @@ import io.github.gogotea55t.jiriki.domain.response.WeeklyChallangeResponse;
 public class WeeklyChallangeTest {
   @Autowired WeeklyChallangeRepository weeklyChallangeRepository;
   @Autowired SongRepository songRepository;
-  @MockBean JirikiService jirikiService;
+  @MockBean SongService songService;
 
   private WeeklyChallangeService wcService;
   SampleDatum sample = new SampleDatum();
@@ -35,12 +35,12 @@ public class WeeklyChallangeTest {
     weeklyChallangeRepository.deleteAll();
     songRepository.saveAll(sample.getSongs());
 
-    wcService = new WeeklyChallangeService(jirikiService, weeklyChallangeRepository);
+    wcService = new WeeklyChallangeService(songService, weeklyChallangeRepository);
   }
 
   @Test
   public void WeeklyChallangeに追加できる() throws Exception {
-    when(jirikiService.getSongEntityByRandom()).thenReturn(sample.getSongs().get(0));
+    when(songService.getSongEntityByRandom()).thenReturn(sample.getSongs().get(0));
     wcService.setWeeklyChallange();
 
     assertThat(weeklyChallangeRepository.findAll().size()).isEqualTo(1);
@@ -48,7 +48,7 @@ public class WeeklyChallangeTest {
 
   @Test
   public void WeeklyChallangeに追加したうえで参照できる() throws Exception {
-    when(jirikiService.getSongEntityByRandom()).thenReturn(sample.getSongs().get(0));
+    when(songService.getSongEntityByRandom()).thenReturn(sample.getSongs().get(0));
     wcService.setWeeklyChallange();
 
     WeeklyChallangeResponse response = wcService.getLatestWeeklyChallange();
