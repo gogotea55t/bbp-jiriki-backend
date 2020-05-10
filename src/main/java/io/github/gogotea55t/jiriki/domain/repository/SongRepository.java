@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
@@ -30,11 +31,11 @@ public interface SongRepository {
   @SelectProvider(type = SongsSqlBuilder.class, method = "buildScoreSearchSql")
   public List<Score4UserResponse> searchScoreByConditions(
       Map<String, String> searchConditions, RowBounds rb);
-  
+
   @SelectProvider(type = SongsSqlBuilder.class, method = "buildScoreSearchSqlV2")
   public List<Score4UserResponseV2> searchScoreByConditionsV2(
       Map<String, String> searchConditions, RowBounds rb);
-  
+
   @Insert(
       "<script>"
           + "INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
@@ -49,9 +50,13 @@ public interface SongRepository {
 
   @Select("SELECT COUNT(*) FROM SONGS")
   public int count();
-  
+
+  @SelectProvider(type = SongsSqlBuilder.class, method = "countByCondition")
+  public int countByCondition(Map<String, String> query);
+
   @SelectProvider(type = SongsSqlBuilder.class, method = "buildRandomSongSql")
-  public Songs findSongByRandom(int random);
+  public Songs findSongByRandom(
+      @Param("query") Map<String, String> query, @Param("randomOffset") int randomOffset);
 
   @Insert(
       "INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "

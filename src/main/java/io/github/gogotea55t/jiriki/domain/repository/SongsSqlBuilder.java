@@ -2,6 +2,7 @@ package io.github.gogotea55t.jiriki.domain.repository;
 
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
 
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
@@ -121,11 +122,38 @@ public class SongsSqlBuilder {
     }.toString();
   }
 
-  public static String buildRandomSongSql(int randomOffset) {
+  public static String countByCondition(Map<String, String> query) {
+    return new SQL() {
+      {
+        SELECT("COUNT(*)");
+        FROM("SONGS so");
+        if (query.containsKey("user")) {
+          INNER_JOIN("SCORES sc on so.SONG_ID = sc.SONGS_SONG_ID");
+          WHERE("sc.USERS_USER_ID = #{user}");
+        } else if (query.containsKey("jiriki")) {
+          WHERE(
+              "so.JIRIKI_RANK = "
+                  + JirikiRank.getJirikiRankFromRankName(query.get("jiriki")).getJirikiId());
+        }
+      }
+    }.toString();
+  }
+
+  public static String buildRandomSongSql(
+      @Param("query") Map<String, String> query, @Param("randomOffset") int randomOffset) {
     return new SQL() {
       {
         SELECT(SONG_ALL_PARAMS);
         FROM("SONGS so");
+        if (query.containsKey("user")) {
+          INNER_JOIN("SCORES sc on so.SONG_ID = sc.SONGS_SONG_ID");
+          WHERE("sc.USERS_USER_ID = #{query.user}");
+        }
+        if (query.containsKey("jiriki")) {
+          WHERE(
+              "so.JIRIKI_RANK = "
+                  + JirikiRank.getJirikiRankFromRankName(query.get("jiriki")).getJirikiId());
+        }
         LIMIT(1);
         OFFSET("#{randomOffset}");
       }

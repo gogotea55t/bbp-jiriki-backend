@@ -1,6 +1,7 @@
 package io.github.gogotea55t.jiriki.domain;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +26,7 @@ public class WeeklyChallangeService {
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = startDate.plusDays(6);
     WeeklyChallange wc = new WeeklyChallange();
-    wc.setSongs(songService.getSongEntityByRandom());
+    wc.setSongs(songService.getSongEntityByRandom(new HashMap<String, String>()));
     wc.setStartDate(startDate);
     wc.setEndDate(endDate);
     weeklyChallangeRepository.save(wc);

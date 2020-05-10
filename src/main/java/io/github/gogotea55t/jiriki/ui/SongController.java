@@ -149,8 +149,8 @@ public class SongController {
   }
 
   @GetMapping("/v1/songs/random")
-  public ResponseEntity<?> getSongByRandom() {
-    SongsResponse response = songService.getSongByRandom();
+  public ResponseEntity<?> getSongByRandom(@RequestParam Map<String, String> param) {
+    SongsResponse response = songService.getSongByRandom(param);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {

@@ -41,15 +41,19 @@ public class SongService {
     }
   }
 
-  public SongsResponse getSongByRandom() {
-
-    return SongsResponse.of(getSongEntityByRandom());
+  public SongsResponse getSongByRandom(Map<String, String> query) {
+	Songs song = getSongEntityByRandom(query);
+    return SongsResponse.of(song);
   }
 
-  public Songs getSongEntityByRandom() {
-    int numberOfSongs = songRepository.count();
+  public Songs getSongEntityByRandom(Map<String, String> query) {
+    int numberOfSongs = songRepository.countByCondition(query);
+    if (numberOfSongs == 0) {
+      throw new IllegalArgumentException("指定された条件に該当する曲がありません。");
+    }
     Random random = new Random();
-    return songRepository.findSongByRandom(random.nextInt(numberOfSongs));
+    int rand = random.nextInt(numberOfSongs);
+    return songRepository.findSongByRandom(query, rand);
   }
 
   public List<SongsResponse> searchSongsByQuery(Map<String, String> query, PageRequest page) {
