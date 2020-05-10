@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.github.gogotea55t.jiriki.AuthService;
-import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.PlayerService;
 import io.github.gogotea55t.jiriki.domain.ScoreService;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;

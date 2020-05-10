@@ -23,7 +23,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.gogotea55t.jiriki.AuthService;
-import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.PlayerService;
 import io.github.gogotea55t.jiriki.domain.ScoreService;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;

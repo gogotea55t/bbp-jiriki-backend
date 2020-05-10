@@ -10,7 +10,6 @@ import org.assertj.core.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,10 +23,8 @@ import io.github.gogotea55t.jiriki.AuthService;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
-import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
-import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
@@ -37,18 +34,11 @@ import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 @SpringBootTest
 public class JirikiServiceTestWithMock {
   @MockBean GoogleSheetsService sheetsService;
-  @Autowired GoogleSpreadSheetConfig sheetConfig;
   @Autowired private UserRepository userRepository;
 
   @Autowired private SongRepository songRepository;
 
   @Autowired private ScoresRepository scoreRepository;
-
-  @Autowired private TwitterUsersRepository twitterUsersRepository;
-
-  @Autowired private ScoresFactory scoreFactory;
-  
-  @Autowired private RabbitTemplate rabbitTemplate;
   
   @MockBean private AuthService authService;
 
@@ -61,14 +51,10 @@ public class JirikiServiceTestWithMock {
     scoreRepository.deleteAll();
     jirikiService =
         new JirikiService(
-            sheetConfig,
             sheetsService,
             userRepository,
             songRepository,
             scoreRepository,
-            twitterUsersRepository,
-            scoreFactory,
-            rabbitTemplate,
             authService);
     Users sampleUser = new Users();
     sampleUser.setUserId("u001");
