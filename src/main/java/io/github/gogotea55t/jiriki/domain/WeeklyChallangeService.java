@@ -12,11 +12,11 @@ import io.github.gogotea55t.jiriki.domain.response.WeeklyChallangeResponse;
 
 @Service
 public class WeeklyChallangeService {
-  private JirikiService jirikiService;
+  private SongService songService;
   private WeeklyChallangeRepository weeklyChallangeRepository;
   @Autowired
-  public WeeklyChallangeService(JirikiService jirikiService, WeeklyChallangeRepository weeklyChallangeRepository) {
-	this.jirikiService = jirikiService;
+  public WeeklyChallangeService(SongService songService, WeeklyChallangeRepository weeklyChallangeRepository) {
+	this.songService = songService;
 	this.weeklyChallangeRepository = weeklyChallangeRepository;
   }
   
@@ -25,7 +25,7 @@ public class WeeklyChallangeService {
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = startDate.plusDays(6);
     WeeklyChallange wc = new WeeklyChallange();
-    wc.setSongs(jirikiService.getSongEntityByRandom());
+    wc.setSongs(songService.getSongEntityByRandom());
     wc.setStartDate(startDate);
     wc.setEndDate(endDate);
     weeklyChallangeRepository.save(wc);

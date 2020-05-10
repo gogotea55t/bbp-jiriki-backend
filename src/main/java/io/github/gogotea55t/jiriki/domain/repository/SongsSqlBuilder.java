@@ -2,7 +2,6 @@ package io.github.gogotea55t.jiriki.domain.repository;
 
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
 
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;

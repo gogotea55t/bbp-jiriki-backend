@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 
-import io.github.gogotea55t.jiriki.domain.ErrorResponse;
+import io.github.gogotea55t.jiriki.domain.response.ErrorResponse;
 
 /**
  * 例外ハンドリング用クラス

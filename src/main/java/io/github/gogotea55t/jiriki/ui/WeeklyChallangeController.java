@@ -3,7 +3,6 @@ package io.github.gogotea55t.jiriki.ui;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.gogotea55t.jiriki.domain.WeeklyChallangeService;
 import io.github.gogotea55t.jiriki.domain.response.WeeklyChallangeResponse;
