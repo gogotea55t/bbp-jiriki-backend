@@ -114,7 +114,8 @@ public class SongControllerTest {
 
   @Test
   public void 楽曲情報がランダムに取得できる() throws Exception {
-    when(mockService.getSongByRandom()).thenReturn(mockSongsResponse.get(0));
+    Map<String, String> query = new HashMap<String, String>();
+    when(mockService.getSongByRandom(query)).thenReturn(mockSongsResponse.get(0));
     mockMvc
         .perform(get(new URI("/v1/songs/random")))
         .andExpect(status().isOk())
@@ -123,7 +124,8 @@ public class SongControllerTest {
 
   @Test
   public void 楽曲情報がランダムに取得できなかったときは4004() throws Exception {
-    when(mockService.getSongByRandom()).thenReturn(null);
+    Map<String, String> query = new HashMap<String, String>();
+    when(mockService.getSongByRandom(query)).thenReturn(null);
     mockMvc.perform(get(new URI("/v1/songs/random"))).andExpect(status().is(404));
   }
 

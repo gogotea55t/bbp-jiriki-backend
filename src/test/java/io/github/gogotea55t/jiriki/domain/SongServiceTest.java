@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.github.gogotea55t.jiriki.domain.exception.SongsNotFoundException;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
@@ -35,27 +36,27 @@ public class SongServiceTest {
   @Autowired private SongRepository songRepository;
 
   @Autowired private ScoresRepository scoreRepository;
-  
+
   @Rule public ExpectedException expectedException = ExpectedException.none();
 
   private SongService songService;
   PageRequest defaultPaging = new PageRequest(0, 20);
   private Map<String, String> query;
-  
+
   @Before
   public void init() {
-	songService = new SongService(songRepository, userRepository, scoreRepository);
-	query = new HashMap<String, String>();
+    songService = new SongService(songRepository, userRepository, scoreRepository);
+    query = new HashMap<String, String>();
     SampleDatum sample = new SampleDatum();
     userRepository.deleteAll();
     songRepository.deleteAll();
     scoreRepository.deleteAll();
-    
+
     userRepository.saveAll(sample.getUsers());
     songRepository.saveAll(sample.getSongs());
     scoreRepository.saveAll(sample.getScores());
   }
-  
+
   @Test
   public void 全曲取得できる() throws Exception {
     List<SongsResponse> songs = songService.searchSongsByQuery(query, defaultPaging);
@@ -64,11 +65,51 @@ public class SongServiceTest {
 
   @Test
   public void ランダムに1曲取得できる() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
     for (int i = 0; i < 100; i++) {
-      SongsResponse songs = songService.getSongByRandom();
+      SongsResponse songs = songService.getSongByRandom(query);
       assertThat(songs).isNotNull();
     }
   }
+
+  @Test
+  public void 地力を指定した中からランダムに1曲取得できる() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
+    query.put("jiriki", "地力Ｓ＋");
+    for (int i = 0; i < 100; i++) {
+      SongsResponse songs = songService.getSongByRandom(query);
+      assertThat(songs).isNotNull();
+    }
+  }
+
+  @Test
+  public void ユーザIDを指定した中からランダムに1曲取得できる() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
+    query.put("user", "u001");
+    for (int i = 0; i < 100; i++) {
+      SongsResponse songs = songService.getSongByRandom(query);
+      assertThat(songs).isNotNull();
+    }
+  }
+
+  @Test
+  public void 存在しないユーザIDから検索すると例外が発生する() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
+    query.put("user", "u099");
+    expectedException.expect(SongsNotFoundException.class);
+    expectedException.expectMessage("指定された条件に該当する曲がありません。");
+    songService.getSongByRandom(query);
+  }
+  
+  @Test
+  public void 登録されていない地力ランクから検索すると例外が発生する() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
+    query.put("jiriki", "個人差Ｃ");
+    expectedException.expect(SongsNotFoundException.class);
+    expectedException.expectMessage("指定された条件に該当する曲がありません。");
+    songService.getSongByRandom(query);
+  }
+
 
   @Test
   public void ページングの設定は正しく反映される() throws Exception {
@@ -177,72 +218,63 @@ public class SongServiceTest {
 
   @Test
   public void スコア検索をかけるとスコアが返ってくる() throws Exception {
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u002", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u002", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(3);
   }
 
   @Test
   public void 楽曲名でスコア検索ができる() throws Exception {
     query.put("name", "ミラクルペイント");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽曲名でスコア検索ができる_部分一致() throws Exception {
     query.put("name", "ミ");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽曲名でスコア検索ができる_大文字小文字() throws Exception {
     query.put("name", "hISTory");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u002", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u002", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 投稿者名でスコア検索ができる() throws Exception {
     query.put("contributor", "エメラル");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 投稿者名でスコア検索ができる_部分一致() throws Exception {
     query.put("contributor", "エメ");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽器名でスコア情報を検索できる() throws Exception {
     query.put("instrument", "ピアノ");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽器名でスコア情報を検索できる_部分一致() throws Exception {
     query.put("instrument", "ピ");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 地力ランクでスコア情報を検索できる() throws Exception {
     query.put("jiriki", "地力Ａ＋");
-    List<Score4UserResponse> scores =
-        songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 

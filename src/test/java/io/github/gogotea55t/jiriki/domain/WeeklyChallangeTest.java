@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +42,8 @@ public class WeeklyChallangeTest {
 
   @Test
   public void WeeklyChallangeに追加できる() throws Exception {
-    when(songService.getSongEntityByRandom()).thenReturn(sample.getSongs().get(0));
+    Map<String, String> query = new HashMap<String, String>();
+    when(songService.getSongEntityByRandom(query)).thenReturn(sample.getSongs().get(0));
     wcService.setWeeklyChallange();
 
     assertThat(weeklyChallangeRepository.findAll().size()).isEqualTo(1);
@@ -48,7 +51,8 @@ public class WeeklyChallangeTest {
 
   @Test
   public void WeeklyChallangeに追加したうえで参照できる() throws Exception {
-    when(songService.getSongEntityByRandom()).thenReturn(sample.getSongs().get(0));
+    Map<String, String> query = new HashMap<String, String>();
+    when(songService.getSongEntityByRandom(query)).thenReturn(sample.getSongs().get(0));
     wcService.setWeeklyChallange();
 
     WeeklyChallangeResponse response = wcService.getLatestWeeklyChallange();
