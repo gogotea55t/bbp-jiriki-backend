@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
+import io.github.gogotea55t.jiriki.domain.exception.SongsNotFoundException;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
@@ -49,7 +50,7 @@ public class SongService {
   public Songs getSongEntityByRandom(Map<String, String> query) {
     int numberOfSongs = songRepository.countByCondition(query);
     if (numberOfSongs == 0) {
-      throw new IllegalArgumentException("指定された条件に該当する曲がありません。");
+      throw new SongsNotFoundException("指定された条件に該当する曲がありません。");
     }
     Random random = new Random();
     int rand = random.nextInt(numberOfSongs);
