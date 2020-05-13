@@ -15,7 +15,7 @@ public class CorsFilterConfig {
   private String corsAllowOrigin;
 
   @Bean
-  public FilterRegistrationBean corsFilter() {
+  public FilterRegistrationBean<CorsFilter> corsFilter() {
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
@@ -25,7 +25,7 @@ public class CorsFilterConfig {
     config.addAllowedMethod(CorsConfiguration.ALL); // 細かく設定可
     source.registerCorsConfiguration("/oauth/token", config); // OAuth EP
     source.registerCorsConfiguration("/**", config); // 個別設定
-    FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+    FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<CorsFilter>(new CorsFilter(source));
 
     bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
     return bean;

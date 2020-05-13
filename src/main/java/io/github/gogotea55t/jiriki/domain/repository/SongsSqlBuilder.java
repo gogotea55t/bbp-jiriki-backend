@@ -61,8 +61,7 @@ public class SongsSqlBuilder {
     }.toString();
   }
 
-  public static String buildScoreSearchSql(
-      final Map<String, String> searchConditions) {
+  public static String buildScoreSearchSql(final Map<String, String> searchConditions) {
     return new SQL() {
       {
         SELECT(SONG_ALL_PARAMS + ", sc.score as score");
@@ -85,6 +84,78 @@ public class SongsSqlBuilder {
           WHERE("TRUE");
         }
         ORDER_BY("so.jiriki_rank", "CAST(so.song_id AS SIGNED)");
+      }
+    }.toString();
+  }
+
+  public static String buildScoreSearchSqlV2(final Map<String, String> searchConditions) {
+    return new SQL() {
+      {
+        SELECT(SONG_ALL_PARAMS + ", sc.score as score, sub.AVERAGE as average, sub.MAX as max ");
+        FROM("SONGS so");
+        LEFT_OUTER_JOIN(
+            "SCORES sc ON sc.songs_song_id = so.song_id AND sc.users_user_id = #{userId}");
+        INNER_JOIN(
+            "(SELECT sco.SONGS_SONG_ID as SONG_ID, "
+                + "MAX(sco.SCORE) as MAX, "
+                + "AVG(sco.SCORE) as AVERAGE "
+                + "FROM SCORES sco "
+                + "GROUP BY sco.SONGS_SONG_ID) sub "
+                + "ON so.SONG_ID = sub.SONG_ID ");
+        AND();
+        if (searchConditions.containsKey("name")) {
+          WHERE("SONG_NAME like CONCAT('%', #{name}, '%')");
+        } else if (searchConditions.containsKey("jiriki")) {
+          WHERE(
+              "JIRIKI_RANK = "
+                  + JirikiRank.getJirikiRankFromRankName(searchConditions.get("jiriki"))
+                      .getJirikiId());
+        } else if (searchConditions.containsKey("contributor")) {
+          WHERE("CONTRIBUTOR like CONCAT('%', #{contributor}, '%')");
+        } else if (searchConditions.containsKey("instrument")) {
+          WHERE("INSTRUMENT like CONCAT('%', #{instrument},'%')");
+        } else {
+          WHERE("TRUE");
+        }
+        ORDER_BY("so.jiriki_rank", "CAST(so.song_id AS SIGNED)");
+      }
+    }.toString();
+  }
+
+  public static String countByCondition(Map<String, String> query) {
+    return new SQL() {
+      {
+        SELECT("COUNT(*)");
+        FROM("SONGS so");
+        if (query.containsKey("user")) {
+          INNER_JOIN("SCORES sc on so.SONG_ID = sc.SONGS_SONG_ID");
+          WHERE("sc.USERS_USER_ID = #{user}");
+        } else if (query.containsKey("jiriki")) {
+          WHERE(
+              "so.JIRIKI_RANK = "
+                  + JirikiRank.getJirikiRankFromRankName(query.get("jiriki")).getJirikiId());
+        }
+      }
+    }.toString();
+  }
+
+  public static String buildRandomSongSql(
+      @Param("query") Map<String, String> query, @Param("randomOffset") int randomOffset) {
+    return new SQL() {
+      {
+        SELECT(SONG_ALL_PARAMS);
+        FROM("SONGS so");
+        if (query.containsKey("user")) {
+          INNER_JOIN("SCORES sc on so.SONG_ID = sc.SONGS_SONG_ID");
+          WHERE("sc.USERS_USER_ID = #{query.user}");
+        }
+        if (query.containsKey("jiriki")) {
+          WHERE(
+              "so.JIRIKI_RANK = "
+                  + JirikiRank.getJirikiRankFromRankName(query.get("jiriki")).getJirikiId());
+        }
+        LIMIT(1);
+        OFFSET("#{randomOffset}");
       }
     }.toString();
   }

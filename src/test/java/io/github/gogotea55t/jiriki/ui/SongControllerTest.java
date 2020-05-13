@@ -1,14 +1,11 @@
 package io.github.gogotea55t.jiriki.ui;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,49 +18,37 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.MultiValueMap;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.gogotea55t.jiriki.domain.JirikiService;
 import io.github.gogotea55t.jiriki.domain.SampleDatum;
-import io.github.gogotea55t.jiriki.domain.Score4SongResponse;
-import io.github.gogotea55t.jiriki.domain.Score4SongResponseV2;
-import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
-import io.github.gogotea55t.jiriki.domain.SongsResponse;
-import io.github.gogotea55t.jiriki.domain.UserResponse;
+import io.github.gogotea55t.jiriki.domain.SongService;
 import io.github.gogotea55t.jiriki.domain.request.PageRequest;
-import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
-import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
-import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
-import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
-import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
+import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
+import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.response.UserResponse;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
 @SpringBootTest
-public class JirikiControllerTest {
+public class SongControllerTest {
   private MockMvc mockMvc;
-
-  @MockBean JirikiService mockService;
-
+  @MockBean SongService mockService;
   @Autowired ObjectMapper objectMapper;
-
   @Autowired ExceptionHandlerAdvice exceptionHandler;
 
-  private JirikiController controller;
-
+  private SongController controller;
   private PageRequest defaultPaging = new PageRequest(0, 20);
 
   private Map<String, String> query;
-
   private SampleDatum sample = new SampleDatum();
   List<SongsResponse> mockSongsResponse =
       sample.getSongs().stream().map(s -> SongsResponse.of(s)).collect(Collectors.toList());
@@ -91,9 +76,28 @@ public class JirikiControllerTest {
               })
           .collect(Collectors.toList());
 
+  List<Score4UserResponseV2> mockScore4UserResponseV2 =
+      sample
+          .getScores()
+          .stream()
+          .map(
+              u -> {
+                Score4UserResponseV2 su = new Score4UserResponseV2();
+                su.setSongId(u.getSongs().getSongId());
+                su.setJirikiRank(u.getSongs().getJirikiRank());
+                su.setInstrument(u.getSongs().getInstrument());
+                su.setContributor(u.getSongs().getContributor());
+                su.setSongName(u.getSongs().getSongName());
+                su.setScore(u.getScore());
+                su.setAverage(u.getScore());
+                su.setMax(u.getScore());
+                return su;
+              })
+          .collect(Collectors.toList());
+
   @Before
   public void init() {
-    controller = new JirikiController(mockService);
+    controller = new SongController(mockService);
     query = new HashMap<String, String>();
     mockMvc = MockMvcBuilders.standaloneSetup(controller, exceptionHandler).build();
   }
@@ -106,6 +110,23 @@ public class JirikiControllerTest {
         .perform(get(new URI("/v1/songs")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockSongsResponse)));
+  }
+
+  @Test
+  public void 楽曲情報がランダムに取得できる() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
+    when(mockService.getSongByRandom(query)).thenReturn(mockSongsResponse.get(0));
+    mockMvc
+        .perform(get(new URI("/v1/songs/random")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockSongsResponse.get(0))));
+  }
+
+  @Test
+  public void 楽曲情報がランダムに取得できなかったときは4004() throws Exception {
+    Map<String, String> query = new HashMap<String, String>();
+    when(mockService.getSongByRandom(query)).thenReturn(null);
+    mockMvc.perform(get(new URI("/v1/songs/random"))).andExpect(status().is(404));
   }
 
   @Test
@@ -208,103 +229,6 @@ public class JirikiControllerTest {
   }
 
   @Test
-  public void 全プレイヤー情報を取得できる() throws Exception {
-    when(mockService.getAllPlayer()).thenReturn(mockUserResponse);
-    mockMvc
-        .perform(get(new URI("/v1/players")))
-        .andExpect(status().isOk())
-        .andExpect(content().json(toJson(mockUserResponse)));
-  }
-
-  @Test
-  public void プレイヤー名で検索できる() throws Exception {
-    UserResponse user = UserResponse.of(sample.getUsers().get(0));
-    List<UserResponse> users = new ArrayList<UserResponse>();
-    users.add(user);
-
-    when(mockService.getPlayerByName("妖怪1")).thenReturn(users);
-    mockMvc
-        .perform(get(new URI("/v1/players?name=妖怪1")))
-        .andExpect(status().isOk())
-        .andExpect(content().json(toJson(users)));
-  }
-
-  @Test
-  public void プレイヤーのtwitterIdで検索できる() throws Exception {
-    UserResponse user = new UserResponse();
-    user.setUserId("u001");
-    user.setUserName("妖怪1");
-    when(mockService.getUserSubjectFromToken()).thenReturn("twitter_id");
-    when(mockService.findPlayerByTwitterId("twitter_id")).thenReturn(user);
-
-    mockMvc
-        .perform(get(new URI("/v1/players/auth0")))
-        .andExpect(status().isOk())
-        .andExpect(content().json(toJson(user)));
-  }
-
-  @Test
-  public void プレイヤーIDを指定してプレイヤー情報を取得できる() throws Exception {
-    UserResponse user = UserResponse.of(sample.getUsers().get(0));
-    when(mockService.getPlayerById("u001")).thenReturn(user);
-    mockMvc
-        .perform(get(new URI("/v1/players/u001")))
-        .andExpect(status().isOk())
-        .andExpect(content().json(toJson(user)));
-  }
-
-  @Test
-  public void twitterIdとuserIdの新規紐づけができる() throws Exception {
-    TwitterUsersRequest request = new TwitterUsersRequest();
-    when(mockService.getUserSubjectFromToken()).thenReturn("twitter_id");
-    request.setTwitterUserId("twitter_id");
-    request.setUserId("u001");
-    UserResponse user = new UserResponse();
-    user.setUserId("u001");
-    user.setUserName("妖怪1");
-    when(mockService.addNewLinkBetweenUserAndTwitterUser(request)).thenReturn(user);
-    mockMvc
-        .perform(
-            put(new URI("/v1/players/auth0"))
-                .content(toJson(request))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-        .andExpect(status().isCreated())
-        .andExpect(content().json(toJson(user)));
-  }
-
-  @Test
-  public void twitterIdとuserIdの紐づけをしようとしたらトークンがおかしい() throws Exception {
-    TwitterUsersRequest request = new TwitterUsersRequest();
-    when(mockService.getUserSubjectFromToken()).thenThrow(new JWTDecodeException(""));
-    request.setTwitterUserId("twitter_id");
-    request.setUserId("u001");
-    UserResponse user = new UserResponse();
-    user.setUserId("u001");
-    user.setUserName("妖怪1");
-    when(mockService.addNewLinkBetweenUserAndTwitterUser(request)).thenReturn(user);
-    mockMvc
-        .perform(
-            put(new URI("/v1/players/auth0"))
-                .content(toJson(request))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-        .andExpect(status().is4xxClientError());
-  }
-
-  @Test
-  public void twitterIdとuserIdの紐づけをするが他人名義のものをやろうとする() throws Exception {
-    TwitterUsersRequest request = new TwitterUsersRequest();
-    when(mockService.getUserSubjectFromToken()).thenReturn("twitter_id");
-    request.setTwitterUserId("others_twitter_id");
-    request.setUserId("u004");
-    mockMvc
-        .perform(
-            put(new URI("/v1/players/auth0"))
-                .content(toJson(request))
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-        .andExpect(status().is4xxClientError());
-  }
-
-  @Test
   public void プレイヤーIDを指定してスコア情報を取得できる() throws Exception {
     when(mockService.searchScoresByQuery("u001", query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
@@ -371,6 +295,68 @@ public class JirikiControllerTest {
   }
 
   @Test
+  public void プレイヤーIDを指定してスコア情報を取得できるV2() throws Exception {
+    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/u001/scores")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
+  public void 存在しないプレイヤーIDを指定するとスコア情報が取得できないV2() throws Exception {
+    when(mockService.searchScoresByQueryV2("human", query, defaultPaging)).thenReturn(null);
+    mockMvc
+        .perform(get(new URI("/v2/players/human/scores")))
+        .andExpect(status().is4xxClientError());
+  }
+
+  @Test
+  public void プレイヤーIDと楽曲名を指定してスコア情報を取得できるV2() throws Exception {
+    query.put("name", "みてみて☆こっちっち");
+    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/u001/scores?name=みてみて☆こっちっち")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
+  public void プレイヤーIDを投稿者名を指定してスコア情報を取得できるV2() throws Exception {
+    query.put("contributor", "エメラル");
+    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/u001/scores?contributor=エメラル")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
+  public void プレイヤーIDと楽器名を指定してスコア情報を取得できるV2() throws Exception {
+    query.put("instrument", "ピアノ");
+    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/u001/scores?instrument=ピアノ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
+  public void プレイヤーIDと地力ランクを指定してスコア情報を取得できるV2() throws Exception {
+    query.put("jiriki", "地力Ｄ");
+    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/u001/scores?jiriki=地力Ｄ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
   public void 平均点一覧を取得できる() throws Exception {
     when(mockService.searchAverageScoresByQuery(query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
@@ -426,97 +412,5 @@ public class JirikiControllerTest {
         .perform(get(new URI("/v1/players/average/scores?jiriki=地力Ａ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
-  }
-
-  @Test
-  public void スコアの登録ができる() throws Exception {
-    ScoreRequest request = new ScoreRequest();
-    request.setScore(new ScoreValue(44));
-    request.setUserId("u001");
-    request.setSongId("001");
-    when(mockService.getUserSubjectFromToken()).thenReturn("token");
-    UserResponse response = new UserResponse();
-    response.setUserId("u001");
-    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
-
-    mockMvc
-        .perform(
-            put(new URI("/v1/scores"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(request)))
-        .andExpect(status().isAccepted());
-  }
-  
-  @Test
-  public void ログインしているユーザ以外のスコアの登録はできない() throws Exception {
-    ScoreRequest request = new ScoreRequest();
-    request.setScore(new ScoreValue(44));
-    request.setUserId("u001");
-    request.setSongId("001");
-    when(mockService.getUserSubjectFromToken()).thenReturn("token");
-    UserResponse response = new UserResponse();
-    response.setUserId("u004");
-    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
-
-    mockMvc
-        .perform(
-            put(new URI("/v1/scores"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(request)))
-        .andExpect(status().isUnauthorized());
-  }
-
-  @Test
-  public void スコアの削除ができる() throws Exception {
-    ScoreDeleteRequest request = new ScoreDeleteRequest();
-    request.setSongId("001");
-    request.setUserId("u001");
-    when(mockService.deleteScore(request)).thenReturn(1);
-    when(mockService.getUserSubjectFromToken()).thenReturn("token");
-    UserResponse response = new UserResponse();
-    response.setUserId("u001");
-    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
-    mockMvc
-        .perform(
-            delete(new URI("/v1/scores"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(request)))
-        .andExpect(status().isNoContent());
-  }
-
-  @Test
-  public void スコアの削除がされない() throws Exception {
-    ScoreDeleteRequest request = new ScoreDeleteRequest();
-    request.setSongId("001");
-    request.setUserId("u006");
-    when(mockService.deleteScore(request)).thenReturn(0);
-    when(mockService.getUserSubjectFromToken()).thenReturn("token");
-    UserResponse response = new UserResponse();
-    response.setUserId("u006");
-    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
-    mockMvc
-        .perform(
-            delete(new URI("/v1/scores"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(request)))
-        .andExpect(status().isNotFound());
-  }
-  
-  @Test
-  public void 自分以外のスコアの削除はできない() throws Exception {
-	    ScoreDeleteRequest request = new ScoreDeleteRequest();
-	    request.setSongId("001");
-	    request.setUserId("u006");
-	    when(mockService.deleteScore(request)).thenReturn(0);
-	    when(mockService.getUserSubjectFromToken()).thenReturn("token");
-	    UserResponse response = new UserResponse();
-	    response.setUserId("u001");
-	    when(mockService.findPlayerByTwitterId("token")).thenReturn(response);
-	    mockMvc
-	        .perform(
-	            delete(new URI("/v1/scores"))
-	                .contentType(MediaType.APPLICATION_JSON)
-	                .content(toJson(request)))
-	        .andExpect(status().isUnauthorized());	  
   }
 }

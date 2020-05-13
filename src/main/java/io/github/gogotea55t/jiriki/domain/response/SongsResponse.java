@@ -1,4 +1,4 @@
-package io.github.gogotea55t.jiriki.domain;
+package io.github.gogotea55t.jiriki.domain.response;
 
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;

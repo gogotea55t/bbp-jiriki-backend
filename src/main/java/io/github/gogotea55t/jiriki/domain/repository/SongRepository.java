@@ -7,14 +7,16 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.RowBounds;
 
-import io.github.gogotea55t.jiriki.domain.Score4UserResponse;
-import io.github.gogotea55t.jiriki.domain.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
+import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
+import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 
 @Mapper
 public interface SongRepository {
@@ -28,6 +30,10 @@ public interface SongRepository {
 
   @SelectProvider(type = SongsSqlBuilder.class, method = "buildScoreSearchSql")
   public List<Score4UserResponse> searchScoreByConditions(
+      Map<String, String> searchConditions, RowBounds rb);
+
+  @SelectProvider(type = SongsSqlBuilder.class, method = "buildScoreSearchSqlV2")
+  public List<Score4UserResponseV2> searchScoreByConditionsV2(
       Map<String, String> searchConditions, RowBounds rb);
 
   @Insert(
@@ -44,6 +50,13 @@ public interface SongRepository {
 
   @Select("SELECT COUNT(*) FROM SONGS")
   public int count();
+
+  @SelectProvider(type = SongsSqlBuilder.class, method = "countByCondition")
+  public int countByCondition(Map<String, String> query);
+
+  @SelectProvider(type = SongsSqlBuilder.class, method = "buildRandomSongSql")
+  public Songs findSongByRandom(
+      @Param("query") Map<String, String> query, @Param("randomOffset") int randomOffset);
 
   @Insert(
       "INSERT INTO SONGS (SONG_ID, JIRIKI_RANK, SONG_NAME, CONTRIBUTOR, INSTRUMENT) VALUES "
