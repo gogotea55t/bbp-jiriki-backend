@@ -78,4 +78,8 @@ public class ScoreValue {
   public boolean isEqualTo(ScoreValue sc) {
     return this.score.compareTo(sc.getScore()) == 0;
   }
+  
+  public boolean largerThan(int sc) {
+	return this.score.compareTo(new BigDecimal(sc)) >= 0;
+  }
 }
