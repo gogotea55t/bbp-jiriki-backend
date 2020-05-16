@@ -16,6 +16,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 
 @Controller
@@ -176,5 +177,10 @@ public class SongController {
     } else {
       return ResponseEntity.ok(response);
     }
+  }
+  
+  @GetMapping("/v2/songs/{id}/top")
+  public ResponseEntity<?> getTopScoresV2(@PathVariable(name = "id") String id) {
+	return ResponseEntity.ok(songService.getSongTopScore(id));
   }
 }

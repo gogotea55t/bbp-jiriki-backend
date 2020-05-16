@@ -1,5 +1,6 @@
 package io.github.gogotea55t.jiriki.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 
 @Service
@@ -27,7 +29,10 @@ public class SongService {
   private ScoresRepository scoreRepository;
 
   @Autowired
-  public SongService(SongRepository songRepository, UserRepository userRepository, ScoresRepository scoreRepository) {
+  public SongService(
+      SongRepository songRepository,
+      UserRepository userRepository,
+      ScoresRepository scoreRepository) {
     this.songRepository = songRepository;
     this.userRepository = userRepository;
     this.scoreRepository = scoreRepository;
@@ -43,7 +48,7 @@ public class SongService {
   }
 
   public SongsResponse getSongByRandom(Map<String, String> query) {
-	Songs song = getSongEntityByRandom(query);
+    Songs song = getSongEntityByRandom(query);
     return SongsResponse.of(song);
   }
 
@@ -102,5 +107,36 @@ public class SongService {
     } else {
       return null;
     }
+  }
+
+  public SongTopScoreResponse getSongTopScore(String songId) {
+    List<Score4SongResponseV2> results = scoreRepository.findScoresBySongIdV2(songId);
+    List<Score4SongResponseV2> top = new ArrayList<>();
+    List<Score4SongResponseV2> second = new ArrayList<>();
+    List<Score4SongResponseV2> third = new ArrayList<>();
+    int topScore = 0;
+    int secondScore = 0;
+    int thirdScore = 0;
+    for (Score4SongResponseV2 result : results) {
+      if (result.getScore().largerThan(topScore)) {
+        topScore = result.getScore().getScore().intValue();
+        top.add(result);
+      } else if (result.getScore().largerThan(secondScore)) {
+        secondScore = result.getScore().getScore().intValue();
+        second.add(result);
+      } else if (result.getScore().largerThan(thirdScore)) {
+        thirdScore = result.getScore().getScore().intValue();
+        third.add(result);
+      } else {
+        // スコア順に並んでいる想定なのでここまで来たらもう4位以下と考えて処理を打ち切る
+        break;
+      }
+    }
+
+    SongTopScoreResponse response = new SongTopScoreResponse();
+    response.setTop(top);
+    response.setSecond(second);
+    response.setThird(third);
+    return response;
   }
 }

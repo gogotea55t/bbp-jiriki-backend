@@ -16,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import io.github.gogotea55t.jiriki.domain.entity.Scores;
+import io.github.gogotea55t.jiriki.domain.entity.Songs;
+import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.exception.SongsNotFoundException;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
@@ -25,7 +28,9 @@ import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -100,7 +105,7 @@ public class SongServiceTest {
     expectedException.expectMessage("指定された条件に該当する曲がありません。");
     songService.getSongByRandom(query);
   }
-  
+
   @Test
   public void 登録されていない地力ランクから検索すると例外が発生する() throws Exception {
     Map<String, String> query = new HashMap<String, String>();
@@ -109,7 +114,6 @@ public class SongServiceTest {
     expectedException.expectMessage("指定された条件に該当する曲がありません。");
     songService.getSongByRandom(query);
   }
-
 
   @Test
   public void ページングの設定は正しく反映される() throws Exception {
@@ -359,5 +363,70 @@ public class SongServiceTest {
   public void 存在しないユーザーでスコア検索をかけるV2() throws Exception {
     expectedException.expect(IllegalArgumentException.class);
     songService.searchScoresByQueryV2("uqqqq", query, defaultPaging);
+  }
+
+  /*
+   * Top系
+   */
+  @Test
+  public void 上位3人がフルでいる曲の情報を取得する() throws Exception {
+    Songs song = songRepository.findById("001").get();
+    Users thirdMan = new Users();
+    thirdMan.setUserId("u015");
+    thirdMan.setUserName("第三の男");
+    Users fourthMan = new Users();
+    fourthMan.setUserId("u016");
+    fourthMan.setUserName("第四の男");
+    userRepository.save(thirdMan);
+    userRepository.save(fourthMan);
+    Scores thirdManScore = new Scores();
+    thirdManScore.setUsers(thirdMan);
+    thirdManScore.setSongs(song);
+    thirdManScore.setScore(new ScoreValue("78"));
+    Scores fourthManScore = new Scores();
+    fourthManScore.setUsers(fourthMan);
+    fourthManScore.setSongs(song);
+    fourthManScore.setScore(new ScoreValue("76"));
+    scoreRepository.save(thirdManScore);
+    scoreRepository.save(fourthManScore);
+    SongTopScoreResponse response = songService.getSongTopScore("001");
+    assertThat(response.getTop().size()).isEqualTo(1);
+    assertThat(response.getSecond().size()).isEqualTo(1);
+    assertThat(response.getThird().size()).isEqualTo(1);
+  }
+
+  @Test
+  public void トップに複数人数いる曲の情報を取得する() throws Exception {
+    Songs song = songRepository.findById("001").get();
+    Users thirdMan = new Users();
+    thirdMan.setUserId("u015");
+    thirdMan.setUserName("第三の男");
+    Users fourthMan = new Users();
+    fourthMan.setUserId("u016");
+    fourthMan.setUserName("第四の男");
+    userRepository.save(thirdMan);
+    userRepository.save(fourthMan);
+    Scores thirdManScore = new Scores();
+    thirdManScore.setUsers(thirdMan);
+    thirdManScore.setSongs(song);
+    thirdManScore.setScore(new ScoreValue("100"));
+    Scores fourthManScore = new Scores();
+    fourthManScore.setUsers(fourthMan);
+    fourthManScore.setSongs(song);
+    fourthManScore.setScore(new ScoreValue("100"));
+    scoreRepository.save(thirdManScore);
+    scoreRepository.save(fourthManScore);
+    SongTopScoreResponse response = songService.getSongTopScore("001");
+    assertThat(response.getTop().size()).isEqualTo(2);
+    assertThat(response.getSecond().size()).isEqualTo(1);
+    assertThat(response.getThird().size()).isEqualTo(1);
+  }
+
+  @Test
+  public void 存在しない曲のトップ情報を取得しようとする() throws Exception {
+    SongTopScoreResponse response = songService.getSongTopScore("119");
+    assertThat(response.getTop().size()).isEqualTo(0);
+    assertThat(response.getSecond().size()).isEqualTo(0);
+    assertThat(response.getThird().size()).isEqualTo(0);
   }
 }
