@@ -33,6 +33,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
 
@@ -412,5 +413,11 @@ public class SongControllerTest {
         .perform(get(new URI("/v1/players/average/scores?jiriki=地力Ａ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+
+  @Test
+  public void 楽曲のトップスコア情報を取得できる() throws Exception {
+    when(mockService.getSongTopScore("5")).thenReturn(new SongTopScoreResponse());
+    mockMvc.perform(get(new URI("/v2/songs/5/top"))).andExpect(status().isOk());
   }
 }
