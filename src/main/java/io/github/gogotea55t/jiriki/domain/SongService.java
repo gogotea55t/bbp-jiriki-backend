@@ -70,6 +70,11 @@ public class SongService {
       Map<String, String> query, PageRequest page) {
     return songRepository.searchAverageByConditions(query, page.getRb());
   }
+  
+  public List<Score4UserResponseV2> searchAverageScoresByQueryV2(
+	      Map<String, String> query, PageRequest page) {
+	    return songRepository.searchAverageByConditionsV2(query, page.getRb());
+	  }
 
   public List<Score4UserResponse> searchScoresByQuery(
       String userId, Map<String, String> query, PageRequest page) {

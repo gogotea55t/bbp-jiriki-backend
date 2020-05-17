@@ -60,6 +60,33 @@ public class SongsSqlBuilder {
       }
     }.toString();
   }
+  
+  public static String buildAverageScoreSearchSqlV2(final Map<String, String> searchConditions) {
+	    return new SQL() {
+	      {
+	        SELECT(SONG_ALL_PARAMS + ", ROUND(AVG(sc.score), 2) as average, MAX(sc.score) as max");
+	        FROM("SONGS so");
+	        LEFT_OUTER_JOIN("SCORES sc ON sc.songs_song_id = so.song_id");
+	        AND();
+	        if (searchConditions.containsKey("name")) {
+	          WHERE("SONG_NAME like CONCAT('%', #{name}, '%')");
+	        } else if (searchConditions.containsKey("jiriki")) {
+	          WHERE(
+	              "JIRIKI_RANK = "
+	                  + JirikiRank.getJirikiRankFromRankName(searchConditions.get("jiriki"))
+	                      .getJirikiId());
+	        } else if (searchConditions.containsKey("contributor")) {
+	          WHERE("CONTRIBUTOR like CONCAT('%', #{contributor}, '%')");
+	        } else if (searchConditions.containsKey("instrument")) {
+	          WHERE("INSTRUMENT like CONCAT('%', #{instrument},'%')");
+	        } else {
+	          WHERE("TRUE");
+	        }
+	        GROUP_BY("so.SONG_ID");
+	        ORDER_BY("so.jiriki_rank", "CAST(so.song_id AS SIGNED)");
+	      }
+	    }.toString();
+	  }
 
   public static String buildScoreSearchSql(final Map<String, String> searchConditions) {
     return new SQL() {
