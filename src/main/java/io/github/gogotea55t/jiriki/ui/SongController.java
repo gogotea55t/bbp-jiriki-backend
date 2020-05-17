@@ -50,6 +50,12 @@ public class SongController {
     System.out.println(result);
     return ResponseEntity.ok(result);
   }
+  
+  @GetMapping("/v1/songs/{id}/stat")
+  public ResponseEntity<?> getStatisticsOfSong(@PathVariable("id") String songId) {
+
+	  return ResponseEntity.ok(songService.getSongStat(songId));
+  }
 
 
 

@@ -53,4 +53,18 @@ public class ScoreSqlBuilder {
       }
     }.toString();
   }
+
+  public static final String buildScoreStatSql(String songId) {
+    return new SQL() {
+      {
+        SELECT("COUNT(SCORE = 100 or NULL) as gold, "
+            + "COUNT((SCORE < 100 AND SCORE >= 90) OR NULL) as silver, "
+            + "COUNT((SCORE < 90 AND SCORE >= 80) OR NULL) as bronze, "
+            + "COUNT((SCORE < 80 AND SCORE >= 50) OR NULL) as blue, "
+            + "COUNT((SCORE < 50) OR NULL) as gray ");
+        FROM("SCORES sc");
+        WHERE("sc.songs_song_id = #{songId}");
+      }
+    }.toString();
+  }
 }

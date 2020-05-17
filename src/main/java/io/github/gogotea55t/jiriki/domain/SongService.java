@@ -21,6 +21,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 
 @Service
 public class SongService {
@@ -143,5 +144,9 @@ public class SongService {
     response.setSecond(second);
     response.setThird(third);
     return response;
+  }
+  
+  public StatisticResponse getSongStat(String songId) {
+	return scoreRepository.getStatisticsOfSongs(songId);
   }
 }
