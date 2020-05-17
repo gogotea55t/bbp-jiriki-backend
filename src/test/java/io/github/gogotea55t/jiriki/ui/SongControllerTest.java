@@ -357,6 +357,8 @@ public class SongControllerTest {
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
 
+
+  
   @Test
   public void 平均点一覧を取得できる() throws Exception {
     when(mockService.searchAverageScoresByQuery(query, defaultPaging))
@@ -413,6 +415,64 @@ public class SongControllerTest {
         .perform(get(new URI("/v1/players/average/scores?jiriki=地力Ａ")))
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
+  }
+  
+  @Test
+  public void 平均点一覧を取得できるV2() throws Exception {
+    when(mockService.searchAverageScoresByQueryV2(query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/average/scores")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponseV2)));
+  }
+
+  @Test
+  public void 投稿者名で検索して平均点一覧を取得できるV2() throws Exception {
+    query.put("contributor", "エメラル");
+
+    when(mockService.searchAverageScoresByQueryV2(query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/average/scores?contributor=エメラル")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponseV2)));
+  }
+
+  @Test
+  public void 曲名で検索して平均点一覧を取得できるV2() throws Exception {
+    query.put("name", "みてみて☆こっちっち");
+
+    when(mockService.searchAverageScoresByQueryV2(query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/average/scores?name=みてみて☆こっちっち")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponseV2)));
+  }
+
+  @Test
+  public void 楽器名で検索して平均点一覧を取得できるV2() throws Exception {
+    query.put("instrument", "ロックオルガン");
+
+    when(mockService.searchAverageScoresByQueryV2(query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/average/scores?instrument=ロックオルガン")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponseV2)));
+  }
+
+  @Test
+  public void 地力で検索して平均点一覧を取得できるV2() throws Exception {
+    query.put("jiriki", "地力Ａ");
+
+    when(mockService.searchAverageScoresByQueryV2(query, defaultPaging))
+        .thenReturn(mockScore4UserResponseV2);
+    mockMvc
+        .perform(get(new URI("/v2/players/average/scores?jiriki=地力Ａ")))
+        .andExpect(status().isOk())
+        .andExpect(content().json(toJson(mockScore4UserResponseV2)));
   }
 
   @Test
