@@ -28,6 +28,10 @@ public interface SongRepository {
   public List<Score4UserResponse> searchAverageByConditions(
       Map<String, String> searchConditions, RowBounds rb);
 
+  @SelectProvider(type = SongsSqlBuilder.class, method = "buildAverageScoreSearchSqlV2")
+  public List<Score4UserResponseV2> searchAverageByConditionsV2(
+      Map<String, String> searchConditions, RowBounds rb);
+
   @SelectProvider(type = SongsSqlBuilder.class, method = "buildScoreSearchSql")
   public List<Score4UserResponse> searchScoreByConditions(
       Map<String, String> searchConditions, RowBounds rb);

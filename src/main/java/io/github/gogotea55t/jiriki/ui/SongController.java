@@ -16,6 +16,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 
 @Controller
@@ -80,6 +81,34 @@ public class SongController {
     }
   }
 
+  @GetMapping("/v2/players/average/scores")
+  public ResponseEntity<?> getAverageV2(
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String contributor,
+      @RequestParam(required = false) String instrument,
+      @RequestParam(required = false) String jiriki,
+      @RequestParam(required = false, defaultValue = "0") Integer page,
+      @RequestParam(required = false, defaultValue = "20") Integer limit) {
+    PageRequest pageReq = new PageRequest(page, limit);
+    Map<String, String> query = new HashMap<String, String>();
+    if (name != null) {
+      query.put("name", name);
+    } else if (contributor != null) {
+      query.put("contributor", contributor);
+    } else if (instrument != null) {
+      query.put("instrument", instrument);
+    } else if (jiriki != null) {
+      query.put("jiriki", jiriki);
+    } else {
+    }
+    List<Score4UserResponseV2> response = songService.searchAverageScoresByQueryV2(query, pageReq);
+    if (response == null) {
+      return ResponseEntity.notFound().build();
+    } else {
+      return ResponseEntity.ok(response);
+    }
+  }  
+  
   @GetMapping("/v1/players/{id}/scores")
   public ResponseEntity<?> getScoresByPlayerId(
       @PathVariable(name = "id") String id,
@@ -176,5 +205,10 @@ public class SongController {
     } else {
       return ResponseEntity.ok(response);
     }
+  }
+  
+  @GetMapping("/v2/songs/{id}/top")
+  public ResponseEntity<?> getTopScoresV2(@PathVariable(name = "id") String id) {
+	return ResponseEntity.ok(songService.getSongTopScore(id));
   }
 }
