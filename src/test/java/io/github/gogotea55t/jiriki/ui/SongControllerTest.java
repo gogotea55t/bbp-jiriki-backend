@@ -35,6 +35,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
 
 @RunWith(SpringRunner.class)
@@ -357,8 +358,6 @@ public class SongControllerTest {
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
 
-
-  
   @Test
   public void 平均点一覧を取得できる() throws Exception {
     when(mockService.searchAverageScoresByQuery(query, defaultPaging))
@@ -416,7 +415,7 @@ public class SongControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().json(toJson(mockScore4UserResponse)));
   }
-  
+
   @Test
   public void 平均点一覧を取得できるV2() throws Exception {
     when(mockService.searchAverageScoresByQueryV2(query, defaultPaging))
@@ -479,5 +478,11 @@ public class SongControllerTest {
   public void 楽曲のトップスコア情報を取得できる() throws Exception {
     when(mockService.getSongTopScore("5")).thenReturn(new SongTopScoreResponse());
     mockMvc.perform(get(new URI("/v2/songs/5/top"))).andExpect(status().isOk());
+  }
+
+  @Test
+  public void 楽曲の統計情報を取得できる() throws Exception {
+    when(mockService.getSongStat("5")).thenReturn(new StatisticResponse());
+    mockMvc.perform(get(new URI("/v1/songs/5/stats"))).andExpect(status().isOk());
   }
 }
