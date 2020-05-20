@@ -26,7 +26,7 @@ public class SongController {
   public SongController(SongService songService) {
     this.songService = songService;
   }
-  
+
   @GetMapping("/v1/songs")
   public ResponseEntity<?> getSong(
       @RequestParam(required = false) String name,
@@ -50,14 +50,11 @@ public class SongController {
     System.out.println(result);
     return ResponseEntity.ok(result);
   }
-  
-  @GetMapping("/v1/songs/{id}/stat")
+
+  @GetMapping("/v1/songs/{id}/stats")
   public ResponseEntity<?> getStatisticsOfSong(@PathVariable("id") String songId) {
-
-	  return ResponseEntity.ok(songService.getSongStat(songId));
+    return ResponseEntity.ok(songService.getSongStat(songId));
   }
-
-
 
   @GetMapping("/v1/players/average/scores")
   public ResponseEntity<?> getAverage(
@@ -113,8 +110,8 @@ public class SongController {
     } else {
       return ResponseEntity.ok(response);
     }
-  }  
-  
+  }
+
   @GetMapping("/v1/players/{id}/scores")
   public ResponseEntity<?> getScoresByPlayerId(
       @PathVariable(name = "id") String id,
@@ -212,9 +209,9 @@ public class SongController {
       return ResponseEntity.ok(response);
     }
   }
-  
+
   @GetMapping("/v2/songs/{id}/top")
   public ResponseEntity<?> getTopScoresV2(@PathVariable(name = "id") String id) {
-	return ResponseEntity.ok(songService.getSongTopScore(id));
+    return ResponseEntity.ok(songService.getSongTopScore(id));
   }
 }
