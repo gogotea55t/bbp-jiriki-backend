@@ -14,6 +14,7 @@ import org.apache.ibatis.annotations.Update;
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 
 @Mapper
 public interface ScoresRepository {
@@ -24,7 +25,10 @@ public interface ScoresRepository {
   public List<Score4SongResponse> findScoresBySongId(String songId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSqlV2")
-  public List<Score4SongResponseV2> findScoresBySongIdV2(String songId);  
+  public List<Score4SongResponseV2> findScoresBySongIdV2(String songId);
+  
+  @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSql")
+  public StatisticResponse getStatisticsOfSongs(String songId);
   
   @Insert(
       "<script>"
