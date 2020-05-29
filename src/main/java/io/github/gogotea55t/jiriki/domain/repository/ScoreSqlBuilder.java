@@ -57,13 +57,39 @@ public class ScoreSqlBuilder {
   public static final String buildScoreStatSql(String songId) {
     return new SQL() {
       {
-        SELECT("COUNT(SCORE = 100 or NULL) as gold, "
-            + "COUNT((SCORE < 100 AND SCORE >= 90) OR NULL) as silver, "
-            + "COUNT((SCORE < 90 AND SCORE >= 80) OR NULL) as bronze, "
-            + "COUNT((SCORE < 80 AND SCORE >= 50) OR NULL) as blue, "
-            + "COUNT((SCORE < 50) OR NULL) as gray ");
+        SELECT(
+            "COUNT(SCORE = 100 or NULL) as gold, "
+                + "COUNT((SCORE < 100 AND SCORE >= 90) OR NULL) as silver, "
+                + "COUNT((SCORE < 90 AND SCORE >= 80) OR NULL) as bronze, "
+                + "COUNT((SCORE < 80 AND SCORE >= 50) OR NULL) as blue, "
+                + "COUNT((SCORE < 50) OR NULL) as gray ");
         FROM("SCORES sc");
         WHERE("sc.songs_song_id = #{songId}");
+      }
+    }.toString();
+  }
+
+  public static final String buildScoreStatSqlGroupByJiriki(
+      @Param("userId") String userId, @Param("isDetailed") boolean isDetailed) {
+    return new SQL() {
+      {
+        SELECT(
+            "COUNT(SCORE = 100 or NULL) as gold, "
+                + "COUNT((SCORE < 100 AND SCORE >= 90) OR NULL) as silver, "
+                + "COUNT((SCORE < 90 AND SCORE >= 80) OR NULL) as bronze, "
+                + "COUNT((SCORE < 80 AND SCORE >= 50) OR NULL) as blue, "
+                + "COUNT((SCORE < 50) OR NULL) as gray, "
+                + "COUNT(SCORE IS NULL) - COUNT(SCORE) AS none");
+        if (isDetailed) {
+          SELECT("so.JIRIKI_RANK");
+        }
+        FROM("SONGS so");
+        LEFT_OUTER_JOIN(
+            "SCORES sc  ON sc.SONGS_SONG_ID = so.SONG_ID AND sc.USERS_USER_ID = #{userId}");
+        if (isDetailed) {
+          GROUP_BY("so.JIRIKI_RANK");
+          ORDER_BY("so.JIRIKI_RANK");
+        }
       }
     }.toString();
   }
