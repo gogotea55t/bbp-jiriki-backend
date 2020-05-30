@@ -95,7 +95,7 @@ docker {
         if (project.hasProperty('jasypt')) {
           jasyptPass = project.property('jasypt')
         }
-        jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m', "-Djava.security.egd=file:/dev/./urandom", "-Djasypt.encryptor.password=" + jasyptPass]
+        jvmArgs = ['-Dspring.profiles.active=production', '-Xmx2048m', "-Djava.security.egd=file:/dev/./urandom", "-Duser.timezone=Asia/Tokyo", "-Djasypt.encryptor.password=" + jasyptPass]
   }
   registryCredentials {
     url = 'bbp10-jiriki.cf:5000'
