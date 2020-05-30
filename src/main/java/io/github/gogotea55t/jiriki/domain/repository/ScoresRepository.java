@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
@@ -32,9 +34,22 @@ public interface ScoresRepository {
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSql")
   public StatisticResponse getStatisticsOfSongs(String songId);
 
+  @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSqlByUser")
+  public StatisticResponse getStatisticsOfUsers(String userId);
+
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSqlGroupByJiriki")
-  public List<StatisticsResponseByJirikiRank> getStatisticsOfUsers(
-      @Param("userId") String userId, @Param("isDetailed") boolean isDetailed);
+  @Results(
+      id = "statistics_jiriki",
+      value = {
+        @Result(column = "gold", property = "stats.gold"),
+        @Result(column = "silver", property = "stats.silver"),
+        @Result(column = "bronze", property = "stats.bronze"),
+        @Result(column = "blue", property = "stats.blue"),
+        @Result(column = "gray", property = "stats.gray"),
+        @Result(column = "none", property = "stats.none"),
+        @Result(column = "jiriki_rank", property = "jirikiRank"),
+      })
+  public List<StatisticsResponseByJirikiRank> getStatisticsOfUsersGroupByJirikiRank(String userId);
 
   @Insert(
       "<script>"

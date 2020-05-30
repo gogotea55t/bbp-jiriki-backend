@@ -12,6 +12,7 @@ import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseByJirikiRank;
+import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
 
 @Service
 public class ScoreService {
@@ -60,11 +61,11 @@ public class ScoreService {
   }
   
   public StatisticResponse getScoreStatisticsByUserId(String userId) {
-	return scoreRepository.getStatisticsOfUsers(userId, false).get(0).getStats();
+	return scoreRepository.getStatisticsOfUsers(userId);
   }
   
-  public List<StatisticsResponseByJirikiRank> getScoreStatisticsByUserIdGroupByJirikiRank(String userId) {
-	return scoreRepository.getStatisticsOfUsers(userId, true);  
+  public StatisticsResponseDetail getScoreStatisticsByUserIdGroupByJirikiRank(String userId) {
+	return new StatisticsResponseDetail(scoreRepository.getStatisticsOfUsersGroupByJirikiRank(userId));  
   }
 
   public String getUserSubjectFromToken() {
