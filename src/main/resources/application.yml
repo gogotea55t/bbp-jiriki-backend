@@ -4,9 +4,6 @@ spring:
     url: jdbc:mysql://localhost:3306/jiriki_db?serverTimezone=JST
     username: mysql
     password: mysql
-  jpa:
-    hibernate:
-      ddl-auto: none
   rabbitmq:
     host: localhost
     port: 5672
@@ -31,8 +28,8 @@ google:
     
 logging:
   level:
-    org.hibernate.SQL: debug
     org.springframework.security: debug
+    io.github.gogotea55t.jiriki: debug
 
 cors:
   origin: http://localhost:3000
