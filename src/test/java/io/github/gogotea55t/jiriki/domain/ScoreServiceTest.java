@@ -25,6 +25,9 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
+import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
+import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
@@ -145,5 +148,30 @@ public class ScoreServiceTest {
     request.setSongId("004");
 
     assertThat(scoreService.deleteScore(request)).isEqualTo(0);
+  }
+  
+  @Test
+  public void ユーザごとの統計情報を取得できる() throws Exception {
+	StatisticResponse response = scoreService.getScoreStatisticsByUserId("u001");
+	assertThat(response.getGold()).isEqualTo(0);
+	assertThat(response.getSilver()).isEqualTo(2);
+	assertThat(response.getBronze()).isEqualTo(0);
+	assertThat(response.getGray()).isEqualTo(0);
+	assertThat(response.getBlue()).isEqualTo(0);
+	assertThat(response.getNone()).isEqualTo(1);
+  }
+  
+  @Test
+  public void ユーザごとの地力別統計情報を取得できる() throws Exception {
+	StatisticsResponseDetail detail = scoreService.getScoreStatisticsByUserIdGroupByJirikiRank("u001");
+	assertThat(detail.getDetail().size()).isEqualTo(3);
+	StatisticResponse response = detail.getDetail().get(0).getStats();
+	assertThat(detail.getDetail().get(0).getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_S_PLUS);
+	assertThat(response.getGold()).isEqualTo(0);
+	assertThat(response.getSilver()).isEqualTo(1);
+	assertThat(response.getBronze()).isEqualTo(0);
+	assertThat(response.getGray()).isEqualTo(0);
+	assertThat(response.getBlue()).isEqualTo(0);
+	assertThat(response.getNone()).isEqualTo(0);
   }
 }
