@@ -32,5 +32,10 @@ security:
       jwk:
         key-set-uri: https://bbp10-jiriki.auth0.com/.well-known/jwks.json
 
+logging:
+  level:
+    org.springframework.security: info
+    io.github.gogotea55t.jiriki: info
+
 cors:
   origin: https://bbp10-jiriki.cf
