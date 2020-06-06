@@ -1,11 +1,14 @@
 package io.github.gogotea55t.jiriki.ui;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +30,8 @@ import io.github.gogotea55t.jiriki.domain.PlayerService;
 import io.github.gogotea55t.jiriki.domain.ScoreService;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
+import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 import io.github.gogotea55t.jiriki.messaging.MessagingService;
@@ -143,5 +148,41 @@ public class ScoreControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(toJson(request)))
         .andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  public void ユーザごとの統計情報を表示できる() throws Exception {
+    StatisticResponse response = new StatisticResponse();
+    response.setGold(0);
+    response.setSilver(3);
+    response.setBronze(1);
+    response.setBlue(0);
+    response.setGray(0);
+    response.setNone(0);
+    when(mockService.getScoreStatisticsByUserId("u002")).thenReturn(response);
+    mockMvc
+        .perform(get(new URI("/v1/players/u002/stats")))
+        .andExpect(status().isOk())
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                .json(toJson(response)));
+  }
+
+  @Test
+  public void ユーザーごとの地力別統計情報を表示できる() throws Exception {
+    StatisticsResponseDetail detail = new StatisticsResponseDetail(new ArrayList<>());
+    when(mockService.getScoreStatisticsByUserIdGroupByJirikiRank("u002")).thenReturn(detail);
+    mockMvc
+        .perform(get(new URI("/v1/players/u002/stats/detail")))
+        .andExpect(status().isOk())
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                .json(toJson(detail)));
   }
 }

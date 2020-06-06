@@ -1,5 +1,7 @@
 package io.github.gogotea55t.jiriki.domain;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import io.github.gogotea55t.jiriki.AuthService;
@@ -8,6 +10,9 @@ import io.github.gogotea55t.jiriki.domain.factory.ScoresFactory;
 import io.github.gogotea55t.jiriki.domain.repository.ScoresRepository;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
+import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseByJirikiRank;
+import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
 
 @Service
 public class ScoreService {
@@ -53,6 +58,14 @@ public class ScoreService {
     } else {
       return 0;
     }
+  }
+  
+  public StatisticResponse getScoreStatisticsByUserId(String userId) {
+	return scoreRepository.getStatisticsOfUsers(userId);
+  }
+  
+  public StatisticsResponseDetail getScoreStatisticsByUserIdGroupByJirikiRank(String userId) {
+	return new StatisticsResponseDetail(scoreRepository.getStatisticsOfUsersGroupByJirikiRank(userId));  
   }
 
   public String getUserSubjectFromToken() {

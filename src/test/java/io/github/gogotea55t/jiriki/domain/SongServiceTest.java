@@ -30,6 +30,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 
 @RunWith(SpringRunner.class)
@@ -428,5 +429,16 @@ public class SongServiceTest {
     assertThat(response.getTop().size()).isEqualTo(0);
     assertThat(response.getSecond().size()).isEqualTo(0);
     assertThat(response.getThird().size()).isEqualTo(0);
+  }
+  
+  @Test
+  public void 楽曲ごとの統計情報を取得できる() throws Exception {
+	StatisticResponse response = songService.getSongStat("001");
+	assertThat(response.getGold()).isEqualTo(0);
+	assertThat(response.getSilver()).isEqualTo(2);
+	assertThat(response.getBronze()).isEqualTo(0);
+	assertThat(response.getGray()).isEqualTo(0);
+	assertThat(response.getBlue()).isEqualTo(0);
+	assertThat(response.getNone()).isEqualTo(0);
   }
 }
