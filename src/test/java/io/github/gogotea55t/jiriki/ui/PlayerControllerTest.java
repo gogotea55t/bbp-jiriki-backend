@@ -32,6 +32,8 @@ import io.github.gogotea55t.jiriki.domain.PlayerService;
 import io.github.gogotea55t.jiriki.domain.SampleDatum;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -69,7 +71,7 @@ public class PlayerControllerTest {
     List<UserResponse> users = new ArrayList<UserResponse>();
     users.add(user);
 
-    when(mockService.getPlayerByName("妖怪1")).thenReturn(users);
+    when(mockService.getPlayerByName(new UserName("妖怪1"))).thenReturn(users);
     mockMvc
         .perform(get(new URI("/v1/players?name=妖怪1")))
         .andExpect(status().isOk())
@@ -79,8 +81,8 @@ public class PlayerControllerTest {
   @Test
   public void プレイヤーのtwitterIdで検索できる() throws Exception {
     UserResponse user = new UserResponse();
-    user.setUserId("u001");
-    user.setUserName("妖怪1");
+    user.setUserId(new UserId("u001"));
+    user.setUserName(new UserName("妖怪1"));
     when(authService.getUserSubjectFromToken()).thenReturn("twitter_id");
     when(mockService.findPlayerByTwitterId("twitter_id")).thenReturn(user);
 
@@ -93,7 +95,7 @@ public class PlayerControllerTest {
   @Test
   public void プレイヤーIDを指定してプレイヤー情報を取得できる() throws Exception {
     UserResponse user = UserResponse.of(sample.getUsers().get(0));
-    when(mockService.getPlayerById("u001")).thenReturn(user);
+    when(mockService.getPlayerById(new UserId("u001"))).thenReturn(user);
     mockMvc
         .perform(get(new URI("/v1/players/u001")))
         .andExpect(status().isOk())
@@ -105,10 +107,10 @@ public class PlayerControllerTest {
     TwitterUsersRequest request = new TwitterUsersRequest();
     when(authService.getUserSubjectFromToken()).thenReturn("twitter_id");
     request.setTwitterUserId("twitter_id");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     UserResponse user = new UserResponse();
-    user.setUserId("u001");
-    user.setUserName("妖怪1");
+    user.setUserId(new UserId("u001"));
+    user.setUserName(new UserName("妖怪1"));
     when(mockService.addNewLinkBetweenUserAndTwitterUser(request)).thenReturn(user);
     mockMvc
         .perform(
@@ -124,10 +126,10 @@ public class PlayerControllerTest {
     TwitterUsersRequest request = new TwitterUsersRequest();
     when(authService.getUserSubjectFromToken()).thenThrow(new JWTDecodeException(""));
     request.setTwitterUserId("twitter_id");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     UserResponse user = new UserResponse();
-    user.setUserId("u001");
-    user.setUserName("妖怪1");
+    user.setUserId(new UserId("u001"));
+    user.setUserName(new UserName("妖怪1"));
     when(mockService.addNewLinkBetweenUserAndTwitterUser(request)).thenReturn(user);
     mockMvc
         .perform(
@@ -142,7 +144,7 @@ public class PlayerControllerTest {
     TwitterUsersRequest request = new TwitterUsersRequest();
     when(authService.getUserSubjectFromToken()).thenReturn("twitter_id");
     request.setTwitterUserId("others_twitter_id");
-    request.setUserId("u004");
+    request.setUserId(new UserId("u004"));
     mockMvc
         .perform(
             put(new URI("/v1/players/auth0"))

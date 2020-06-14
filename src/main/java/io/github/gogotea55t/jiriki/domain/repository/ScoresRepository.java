@@ -18,12 +18,13 @@ import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseByJirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @Mapper
 public interface ScoresRepository {
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchSql")
   public Optional<Scores> findByUsers_UserIdAndSongs_SongId(
-      @Param("userId") String userId, @Param("songId") String songId);
+      @Param("userId") UserId userId, @Param("songId") String songId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSql")
   public List<Score4SongResponse> findScoresBySongId(String songId);
@@ -72,7 +73,7 @@ public interface ScoresRepository {
   public int count();
 
   @Select("DELETE FROM SCORES WHERE USERS_USER_ID = #{userId} AND SONGS_SONG_ID = #{songId}")
-  public void delete(@Param("songId") String songId, @Param("userId") String userId);
+  public void delete(@Param("songId") String songId, @Param("userId") UserId userId);
 
   @Delete("DELETE FROM SCORES")
   public int deleteAll();

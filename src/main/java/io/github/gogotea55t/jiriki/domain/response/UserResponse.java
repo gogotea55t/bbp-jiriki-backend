@@ -1,13 +1,14 @@
 package io.github.gogotea55t.jiriki.domain.response;
 
 import io.github.gogotea55t.jiriki.domain.entity.Users;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 import lombok.Data;
 
 @Data
 public class UserResponse {
-  private String userName;
-  
-  private String userId;
+  private UserId userId;
+  private UserName userName;
 
   public static UserResponse of(Users user) {
     UserResponse response = new UserResponse();

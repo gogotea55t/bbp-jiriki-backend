@@ -1,7 +1,6 @@
 package io.github.gogotea55t.jiriki.ui;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -34,6 +33,7 @@ import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.messaging.MessagingService;
 
 @RunWith(SpringRunner.class)
@@ -62,11 +62,11 @@ public class ScoreControllerTest {
   public void スコアの登録ができる() throws Exception {
     ScoreRequest request = new ScoreRequest();
     request.setScore(new ScoreValue(44));
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     request.setSongId("001");
     when(authService.getUserSubjectFromToken()).thenReturn("token");
     UserResponse response = new UserResponse();
-    response.setUserId("u001");
+    response.setUserId(new UserId("u001"));
     when(playerService.findPlayerByTwitterId("token")).thenReturn(response);
 
     mockMvc
@@ -81,11 +81,11 @@ public class ScoreControllerTest {
   public void ログインしているユーザ以外のスコアの登録はできない() throws Exception {
     ScoreRequest request = new ScoreRequest();
     request.setScore(new ScoreValue(44));
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     request.setSongId("001");
     when(authService.getUserSubjectFromToken()).thenReturn("token");
     UserResponse response = new UserResponse();
-    response.setUserId("u004");
+    response.setUserId(new UserId("u004"));
     when(playerService.findPlayerByTwitterId("token")).thenReturn(response);
 
     mockMvc
@@ -100,11 +100,11 @@ public class ScoreControllerTest {
   public void スコアの削除ができる() throws Exception {
     ScoreDeleteRequest request = new ScoreDeleteRequest();
     request.setSongId("001");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     when(mockService.deleteScore(request)).thenReturn(1);
     when(authService.getUserSubjectFromToken()).thenReturn("token");
     UserResponse response = new UserResponse();
-    response.setUserId("u001");
+    response.setUserId(new UserId("u001"));
     when(playerService.findPlayerByTwitterId("token")).thenReturn(response);
     mockMvc
         .perform(
@@ -118,11 +118,11 @@ public class ScoreControllerTest {
   public void スコアの削除がされない() throws Exception {
     ScoreDeleteRequest request = new ScoreDeleteRequest();
     request.setSongId("001");
-    request.setUserId("u006");
+    request.setUserId(new UserId("u006"));
     when(mockService.deleteScore(request)).thenReturn(0);
     when(authService.getUserSubjectFromToken()).thenReturn("token");
     UserResponse response = new UserResponse();
-    response.setUserId("u006");
+    response.setUserId(new UserId("u006"));
     when(playerService.findPlayerByTwitterId("token")).thenReturn(response);
     mockMvc
         .perform(
@@ -136,11 +136,11 @@ public class ScoreControllerTest {
   public void 自分以外のスコアの削除はできない() throws Exception {
     ScoreDeleteRequest request = new ScoreDeleteRequest();
     request.setSongId("001");
-    request.setUserId("u006");
+    request.setUserId(new UserId("u006"));
     when(mockService.deleteScore(request)).thenReturn(0);
     when(authService.getUserSubjectFromToken()).thenReturn("token");
     UserResponse response = new UserResponse();
-    response.setUserId("u001");
+    response.setUserId(new UserId("u001"));
     when(playerService.findPlayerByTwitterId("token")).thenReturn(response);
     mockMvc
         .perform(

@@ -18,6 +18,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @Controller
 public class SongController {
@@ -133,7 +134,7 @@ public class SongController {
       query.put("jiriki", jiriki);
     } else {
     }
-    List<Score4UserResponse> response = songService.searchScoresByQuery(id, query, pageReq);
+    List<Score4UserResponse> response = songService.searchScoresByQuery(new UserId(id), query, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {
@@ -162,7 +163,7 @@ public class SongController {
       query.put("jiriki", jiriki);
     } else {
     }
-    List<Score4UserResponseV2> response = songService.searchScoresByQueryV2(id, query, pageReq);
+    List<Score4UserResponseV2> response = songService.searchScoresByQueryV2(new UserId(id), query, pageReq);
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {

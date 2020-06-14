@@ -29,6 +29,7 @@ import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -61,12 +62,12 @@ public class ScoreServiceTest {
   public void スコアの登録ができる() throws Exception {
     ScoreRequest request = new ScoreRequest();
     request.setSongId("002");
-    request.setUserId("u002");
+    request.setUserId(new UserId("u002"));
     request.setScore(new ScoreValue(38));
     when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
 
     scoreService.registerScore(request);
-    Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u002", "002");
+    Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId(new UserId("u002"), "002");
     assertThat(score.isPresent()).isTrue();
     assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(38)));
     score.ifPresent(
@@ -79,12 +80,12 @@ public class ScoreServiceTest {
   public void スコアの更新ができる() throws Exception {
     ScoreRequest request = new ScoreRequest();
     request.setSongId("001");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     request.setScore(new ScoreValue(90));
     when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
 
     scoreService.registerScore(request);
-    Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId("u001", "001");
+    Optional<Scores> score = scoreRepository.findByUsers_UserIdAndSongs_SongId(new UserId("u001"), "001");
     assertThat(score.isPresent()).isTrue();
     assertThat(score.get().getScore()).isEqualTo(new ScoreValue(new BigDecimal(90)));
     score.ifPresent(
@@ -102,7 +103,7 @@ public class ScoreServiceTest {
     expectedException.expect(IllegalArgumentException.class);
     ScoreRequest request = new ScoreRequest();
     request.setSongId("901");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     request.setScore(new ScoreValue(90));
     when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
     scoreService.registerScore(request);
@@ -113,7 +114,7 @@ public class ScoreServiceTest {
     expectedException.expect(IllegalArgumentException.class);
     ScoreRequest request = new ScoreRequest();
     request.setSongId("001");
-    request.setUserId("u901");
+    request.setUserId(new UserId("u901"));
     request.setScore(new ScoreValue(90));
     when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
     scoreService.registerScore(request);
@@ -124,7 +125,7 @@ public class ScoreServiceTest {
     expectedException.expect(IllegalArgumentException.class);
     ScoreRequest request = new ScoreRequest();
     request.setSongId("001");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
     request.setScore(new ScoreValue(90.66));
     when(mockAuthService.getUserSubjectFromToken()).thenReturn("tw|00022323");
     scoreService.registerScore(request);
@@ -134,17 +135,17 @@ public class ScoreServiceTest {
   public void スコアの削除ができる() throws Exception {
     ScoreDeleteRequest request = new ScoreDeleteRequest();
     request.setSongId("001");
-    request.setUserId("u001");
+    request.setUserId(new UserId("u001"));
 
     assertThat(scoreService.deleteScore(request)).isEqualTo(1);
-    assertThat(scoreRepository.findByUsers_UserIdAndSongs_SongId("u001", "001").isPresent())
+    assertThat(scoreRepository.findByUsers_UserIdAndSongs_SongId(new UserId("u001"), "001").isPresent())
         .isFalse();
   }
 
   @Test
   public void 存在しないスコアの削除はしない() throws Exception {
     ScoreDeleteRequest request = new ScoreDeleteRequest();
-    request.setUserId("u009");
+    request.setUserId(new UserId("u009"));
     request.setSongId("004");
 
     assertThat(scoreService.deleteScore(request)).isEqualTo(0);

@@ -22,6 +22,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @Service
 public class SongService {
@@ -78,9 +79,9 @@ public class SongService {
 	  }
 
   public List<Score4UserResponse> searchScoresByQuery(
-      String userId, Map<String, String> query, PageRequest page) {
+      UserId userId, Map<String, String> query, PageRequest page) {
     if (userRepository.findById(userId).isPresent()) {
-      query.put("userId", userId);
+      query.put("userId", userId.toString());
       return songRepository.searchScoreByConditions(query, page.getRb());
     } else {
       throw new IllegalArgumentException("User not found.");
@@ -88,9 +89,9 @@ public class SongService {
   }
 
   public List<Score4UserResponseV2> searchScoresByQueryV2(
-      String userId, Map<String, String> query, PageRequest page) {
+      UserId userId, Map<String, String> query, PageRequest page) {
     if (userRepository.findById(userId).isPresent()) {
-      query.put("userId", userId);
+      query.put("userId", userId.toString());
       return songRepository.searchScoreByConditionsV2(query, page.getRb());
     } else {
       throw new IllegalArgumentException("User not found.");

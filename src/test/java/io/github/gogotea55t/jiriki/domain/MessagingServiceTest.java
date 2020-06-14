@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.messaging.MessagingService;
 
 @RunWith(SpringRunner.class)
@@ -31,7 +32,7 @@ public class MessagingServiceTest {
 	ScoreRequest request = new ScoreRequest();
 	request.setScore(new ScoreValue("34.44"));
 	request.setSongId("555");
-	request.setUserId("u999");
+	request.setUserId(new UserId("u999"));
 	messagingService.messagingTest(request);
   }
   
@@ -39,7 +40,7 @@ public class MessagingServiceTest {
   public void 削除メッセージを送信してもエラーが出ない() {
 	ScoreDeleteRequest request = new ScoreDeleteRequest();
 	request.setSongId("555");
-	request.setUserId("u999");
+	request.setUserId(new UserId("u999"));
 	messagingService.deleteRequest(request);
   }
 }

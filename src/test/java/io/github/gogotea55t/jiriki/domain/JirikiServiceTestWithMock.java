@@ -28,6 +28,8 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -57,12 +59,12 @@ public class JirikiServiceTestWithMock {
             scoreRepository,
             authService);
     Users sampleUser = new Users();
-    sampleUser.setUserId("u001");
-    sampleUser.setUserName("妖怪1");
+    sampleUser.setUserId(new UserId("u001"));
+    sampleUser.setUserName(new UserName("妖怪1"));
     userRepository.save(sampleUser);
     Users sampleUser2 = new Users();
-    sampleUser2.setUserId("u002");
-    sampleUser2.setUserName("妖怪b");
+    sampleUser2.setUserId(new UserId("u002"));
+    sampleUser2.setUserName(new UserName("妖怪b"));
     userRepository.save(sampleUser2);
 
     Songs sampleSong = new Songs();
@@ -210,7 +212,7 @@ public class JirikiServiceTestWithMock {
     jirikiService.doGet();
     assertThat(songRepository.count()).isEqualTo(4);
     assertThat(scoreRepository.count()).isEqualTo(7);
-    Users youkai2 = userRepository.findById("u002").get();
+    Users youkai2 = userRepository.findById(new UserId("u002")).get();
     assertThat(youkai2.getUserName()).isEqualTo("妖怪2");
     Songs miraclePaint = songRepository.findById("558").get();
     assertThat(miraclePaint.getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_A_PLUS);
