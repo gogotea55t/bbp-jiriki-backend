@@ -49,8 +49,8 @@ public class PlayerServiceTest {
   public void ユーザー名で検索をかけることができる() throws Exception {
     List<UserResponse> searchResult = playerService.getPlayerByName(new UserName("妖怪1"));
     assertThat(searchResult.size()).isEqualTo(1);
-    assertThat(searchResult.get(0).getUserName()).isEqualTo("妖怪1");
-    assertThat(searchResult.get(0).getUserId()).isEqualTo("u001");
+    assertThat(searchResult.get(0).getUserName()).isEqualTo(new UserName("妖怪1"));
+    assertThat(searchResult.get(0).getUserId()).isEqualTo(new UserId("u001"));
   }
 
   @Test
@@ -68,7 +68,7 @@ public class PlayerServiceTest {
   @Test
   public void ユーザーIDで検索をかけることができる() throws Exception {
     UserResponse searchResult = playerService.getPlayerById(new UserId("u001"));
-    assertThat(searchResult.getUserName()).isEqualTo("妖怪1");
+    assertThat(searchResult.getUserName()).isEqualTo(new UserName("妖怪1"));
   }
 
   @Test
@@ -88,10 +88,10 @@ public class PlayerServiceTest {
     Optional<TwitterUsers> putResult = twiRepository.findById(testTwitterId);
     assertThat(putResult.isPresent()).isTrue();
     assertThat(putResult.get().getTwitterUserId()).isEqualTo(testTwitterId);
-    assertThat(putResult.get().getUsers().getUserId()).isEqualTo("u001");
+    assertThat(putResult.get().getUsers().getUserId()).isEqualTo(new UserId("u001"));
 
     UserResponse getResult = playerService.findPlayerByTwitterId(testTwitterId);
-    assertThat(getResult.getUserId()).isEqualTo("u001");
+    assertThat(getResult.getUserId()).isEqualTo(new UserId("u001"));
   }
 
   @Test
@@ -117,10 +117,10 @@ public class PlayerServiceTest {
     testRequest.setUserId(new UserId("u001"));
 
     UserResponse putResult = playerService.addNewLinkBetweenUserAndTwitterUser(testRequest);
-    assertThat(putResult.getUserId()).isEqualTo("u001");
+    assertThat(putResult.getUserId()).isEqualTo(new UserId("u001"));
 
     UserResponse getResult = playerService.findPlayerByTwitterId(testTwitterId);
-    assertThat(getResult.getUserId()).isEqualTo("u001");
+    assertThat(getResult.getUserId()).isEqualTo(new UserId("u001"));
 
     assertThat(userRepository.findById(new UserId("u002")).isPresent()).isTrue();
   }

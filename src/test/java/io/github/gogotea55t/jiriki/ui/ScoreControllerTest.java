@@ -159,7 +159,7 @@ public class ScoreControllerTest {
     response.setBlue(0);
     response.setGray(0);
     response.setNone(0);
-    when(mockService.getScoreStatisticsByUserId("u002")).thenReturn(response);
+    when(mockService.getScoreStatisticsByUserId(new UserId("u002"))).thenReturn(response);
     mockMvc
         .perform(get(new URI("/v1/players/u002/stats")))
         .andExpect(status().isOk())
@@ -174,7 +174,7 @@ public class ScoreControllerTest {
   @Test
   public void ユーザーごとの地力別統計情報を表示できる() throws Exception {
     StatisticsResponseDetail detail = new StatisticsResponseDetail(new ArrayList<>());
-    when(mockService.getScoreStatisticsByUserIdGroupByJirikiRank("u002")).thenReturn(detail);
+    when(mockService.getScoreStatisticsByUserIdGroupByJirikiRank(new UserId("u002"))).thenReturn(detail);
     mockMvc
         .perform(get(new URI("/v1/players/u002/stats/detail")))
         .andExpect(status().isOk())

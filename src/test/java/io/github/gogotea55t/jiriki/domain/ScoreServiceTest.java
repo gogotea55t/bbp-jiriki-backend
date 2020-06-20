@@ -153,7 +153,7 @@ public class ScoreServiceTest {
   
   @Test
   public void ユーザごとの統計情報を取得できる() throws Exception {
-	StatisticResponse response = scoreService.getScoreStatisticsByUserId("u001");
+	StatisticResponse response = scoreService.getScoreStatisticsByUserId(new UserId("u001"));
 	assertThat(response.getGold()).isEqualTo(0);
 	assertThat(response.getSilver()).isEqualTo(2);
 	assertThat(response.getBronze()).isEqualTo(0);
@@ -164,7 +164,7 @@ public class ScoreServiceTest {
   
   @Test
   public void ユーザごとの地力別統計情報を取得できる() throws Exception {
-	StatisticsResponseDetail detail = scoreService.getScoreStatisticsByUserIdGroupByJirikiRank("u001");
+	StatisticsResponseDetail detail = scoreService.getScoreStatisticsByUserIdGroupByJirikiRank(new UserId("u001"));
 	assertThat(detail.getDetail().size()).isEqualTo(3);
 	StatisticResponse response = detail.getDetail().get(0).getStats();
 	assertThat(detail.getDetail().get(0).getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_S_PLUS);

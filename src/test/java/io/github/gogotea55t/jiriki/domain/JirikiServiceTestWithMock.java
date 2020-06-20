@@ -213,7 +213,7 @@ public class JirikiServiceTestWithMock {
     assertThat(songRepository.count()).isEqualTo(4);
     assertThat(scoreRepository.count()).isEqualTo(7);
     Users youkai2 = userRepository.findById(new UserId("u002")).get();
-    assertThat(youkai2.getUserName()).isEqualTo("妖怪2");
+    assertThat(youkai2.getUserName()).isEqualTo(new UserName("妖怪2"));
     Songs miraclePaint = songRepository.findById("558").get();
     assertThat(miraclePaint.getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_A_PLUS);
     Scores score =

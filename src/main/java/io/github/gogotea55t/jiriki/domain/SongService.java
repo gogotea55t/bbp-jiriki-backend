@@ -81,7 +81,7 @@ public class SongService {
   public List<Score4UserResponse> searchScoresByQuery(
       UserId userId, Map<String, String> query, PageRequest page) {
     if (userRepository.findById(userId).isPresent()) {
-      query.put("userId", userId.toString());
+      query.put("userId", userId.getValue());
       return songRepository.searchScoreByConditions(query, page.getRb());
     } else {
       throw new IllegalArgumentException("User not found.");
@@ -91,7 +91,7 @@ public class SongService {
   public List<Score4UserResponseV2> searchScoresByQueryV2(
       UserId userId, Map<String, String> query, PageRequest page) {
     if (userRepository.findById(userId).isPresent()) {
-      query.put("userId", userId.toString());
+      query.put("userId", userId.getValue());
       return songRepository.searchScoreByConditionsV2(query, page.getRb());
     } else {
       throw new IllegalArgumentException("User not found.");
