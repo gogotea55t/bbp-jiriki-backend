@@ -32,6 +32,8 @@ import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -223,76 +225,76 @@ public class SongServiceTest {
 
   @Test
   public void スコア検索をかけるとスコアが返ってくる() throws Exception {
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u002", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u002"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(3);
   }
 
   @Test
   public void 楽曲名でスコア検索ができる() throws Exception {
     query.put("name", "ミラクルペイント");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽曲名でスコア検索ができる_部分一致() throws Exception {
     query.put("name", "ミ");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽曲名でスコア検索ができる_大文字小文字() throws Exception {
     query.put("name", "hISTory");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u002", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u002"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 投稿者名でスコア検索ができる() throws Exception {
     query.put("contributor", "エメラル");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 投稿者名でスコア検索ができる_部分一致() throws Exception {
     query.put("contributor", "エメ");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽器名でスコア情報を検索できる() throws Exception {
     query.put("instrument", "ピアノ");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 楽器名でスコア情報を検索できる_部分一致() throws Exception {
     query.put("instrument", "ピ");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 地力ランクでスコア情報を検索できる() throws Exception {
     query.put("jiriki", "地力Ａ＋");
-    List<Score4UserResponse> scores = songService.searchScoresByQuery("u001", query, defaultPaging);
+    List<Score4UserResponse> scores = songService.searchScoresByQuery(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 存在しないユーザーでスコア検索をかける() throws Exception {
     expectedException.expect(IllegalArgumentException.class);
-    songService.searchScoresByQuery("uqqqq", query, defaultPaging);
+    songService.searchScoresByQuery(new UserId("uqqqq"), query, defaultPaging);
   }
 
   @Test
   public void スコア検索をかけるとスコアが返ってくるV2() throws Exception {
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u002", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u002"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(3);
   }
 
@@ -300,7 +302,7 @@ public class SongServiceTest {
   public void 楽曲名でスコア検索ができるV2() throws Exception {
     query.put("name", "ミラクルペイント");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -308,7 +310,7 @@ public class SongServiceTest {
   public void 楽曲名でスコア検索ができるV2_部分一致() throws Exception {
     query.put("name", "ミ");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -316,7 +318,7 @@ public class SongServiceTest {
   public void 楽曲名でスコア検索ができるV2_大文字小文字() throws Exception {
     query.put("name", "hISTory");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u002", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u002"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -324,7 +326,7 @@ public class SongServiceTest {
   public void 投稿者名でスコア検索ができるV2() throws Exception {
     query.put("contributor", "エメラル");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -332,7 +334,7 @@ public class SongServiceTest {
   public void 投稿者名でスコア検索ができるV2_部分一致() throws Exception {
     query.put("contributor", "エメ");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -340,7 +342,7 @@ public class SongServiceTest {
   public void 楽器名でスコア情報を検索できるV2() throws Exception {
     query.put("instrument", "ピアノ");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -348,7 +350,7 @@ public class SongServiceTest {
   public void 楽器名でスコア情報を検索できるV2_部分一致() throws Exception {
     query.put("instrument", "ピ");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
@@ -356,14 +358,14 @@ public class SongServiceTest {
   public void 地力ランクでスコア情報を検索できるV2() throws Exception {
     query.put("jiriki", "地力Ａ＋");
     List<Score4UserResponseV2> scores =
-        songService.searchScoresByQueryV2("u001", query, defaultPaging);
+        songService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging);
     assertThat(scores.size()).isEqualTo(1);
   }
 
   @Test
   public void 存在しないユーザーでスコア検索をかけるV2() throws Exception {
     expectedException.expect(IllegalArgumentException.class);
-    songService.searchScoresByQueryV2("uqqqq", query, defaultPaging);
+    songService.searchScoresByQueryV2(new UserId("uqqqq"), query, defaultPaging);
   }
 
   /*
@@ -373,11 +375,11 @@ public class SongServiceTest {
   public void 上位3人がフルでいる曲の情報を取得する() throws Exception {
     Songs song = songRepository.findById("001").get();
     Users thirdMan = new Users();
-    thirdMan.setUserId("u015");
-    thirdMan.setUserName("第三の男");
+    thirdMan.setUserId(new UserId("u015"));
+    thirdMan.setUserName(new UserName("第三の男"));
     Users fourthMan = new Users();
-    fourthMan.setUserId("u016");
-    fourthMan.setUserName("第四の男");
+    fourthMan.setUserId(new UserId("u016"));
+    fourthMan.setUserName(new UserName("第四の男"));
     userRepository.save(thirdMan);
     userRepository.save(fourthMan);
     Scores thirdManScore = new Scores();
@@ -400,11 +402,11 @@ public class SongServiceTest {
   public void トップに複数人数いる曲の情報を取得する() throws Exception {
     Songs song = songRepository.findById("001").get();
     Users thirdMan = new Users();
-    thirdMan.setUserId("u015");
-    thirdMan.setUserName("第三の男");
+    thirdMan.setUserId(new UserId("u015"));
+    thirdMan.setUserName(new UserName("第三の男"));
     Users fourthMan = new Users();
-    fourthMan.setUserId("u016");
-    fourthMan.setUserName("第四の男");
+    fourthMan.setUserId(new UserId("u016"));
+    fourthMan.setUserName(new UserName("第四の男"));
     userRepository.save(thirdMan);
     userRepository.save(fourthMan);
     Scores thirdManScore = new Scores();

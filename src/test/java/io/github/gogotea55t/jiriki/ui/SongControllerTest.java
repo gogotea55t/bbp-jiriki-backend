@@ -37,6 +37,7 @@ import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -232,7 +233,7 @@ public class SongControllerTest {
 
   @Test
   public void プレイヤーIDを指定してスコア情報を取得できる() throws Exception {
-    when(mockService.searchScoresByQuery("u001", query, defaultPaging))
+    when(mockService.searchScoresByQuery(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/v1/players/u001/scores")))
@@ -242,7 +243,7 @@ public class SongControllerTest {
 
   @Test
   public void 存在しないプレイヤーIDを指定するとスコア情報が取得できない() throws Exception {
-    when(mockService.searchScoresByQuery("human", query, defaultPaging)).thenReturn(null);
+    when(mockService.searchScoresByQuery(new UserId("human"), query, defaultPaging)).thenReturn(null);
     mockMvc
         .perform(get(new URI("/v1/players/human/scores")))
         .andExpect(status().is4xxClientError());
@@ -255,7 +256,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDと楽曲名を指定してスコア情報を取得できる() throws Exception {
     query.put("name", "みてみて☆こっちっち");
-    when(mockService.searchScoresByQuery("u001", query, defaultPaging))
+    when(mockService.searchScoresByQuery(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/v1/players/u001/scores?name=みてみて☆こっちっち")))
@@ -266,7 +267,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDを投稿者名を指定してスコア情報を取得できる() throws Exception {
     query.put("contributor", "エメラル");
-    when(mockService.searchScoresByQuery("u001", query, defaultPaging))
+    when(mockService.searchScoresByQuery(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/v1/players/u001/scores?contributor=エメラル")))
@@ -277,7 +278,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDと楽器名を指定してスコア情報を取得できる() throws Exception {
     query.put("instrument", "ピアノ");
-    when(mockService.searchScoresByQuery("u001", query, defaultPaging))
+    when(mockService.searchScoresByQuery(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/v1/players/u001/scores?instrument=ピアノ")))
@@ -288,7 +289,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDと地力ランクを指定してスコア情報を取得できる() throws Exception {
     query.put("jiriki", "地力Ｄ");
-    when(mockService.searchScoresByQuery("u001", query, defaultPaging))
+    when(mockService.searchScoresByQuery(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponse);
     mockMvc
         .perform(get(new URI("/v1/players/u001/scores?jiriki=地力Ｄ")))
@@ -298,7 +299,7 @@ public class SongControllerTest {
 
   @Test
   public void プレイヤーIDを指定してスコア情報を取得できるV2() throws Exception {
-    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+    when(mockService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponseV2);
     mockMvc
         .perform(get(new URI("/v2/players/u001/scores")))
@@ -308,7 +309,7 @@ public class SongControllerTest {
 
   @Test
   public void 存在しないプレイヤーIDを指定するとスコア情報が取得できないV2() throws Exception {
-    when(mockService.searchScoresByQueryV2("human", query, defaultPaging)).thenReturn(null);
+    when(mockService.searchScoresByQueryV2(new UserId("human"), query, defaultPaging)).thenReturn(null);
     mockMvc
         .perform(get(new URI("/v2/players/human/scores")))
         .andExpect(status().is4xxClientError());
@@ -317,7 +318,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDと楽曲名を指定してスコア情報を取得できるV2() throws Exception {
     query.put("name", "みてみて☆こっちっち");
-    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+    when(mockService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponseV2);
     mockMvc
         .perform(get(new URI("/v2/players/u001/scores?name=みてみて☆こっちっち")))
@@ -328,7 +329,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDを投稿者名を指定してスコア情報を取得できるV2() throws Exception {
     query.put("contributor", "エメラル");
-    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+    when(mockService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponseV2);
     mockMvc
         .perform(get(new URI("/v2/players/u001/scores?contributor=エメラル")))
@@ -339,7 +340,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDと楽器名を指定してスコア情報を取得できるV2() throws Exception {
     query.put("instrument", "ピアノ");
-    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+    when(mockService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponseV2);
     mockMvc
         .perform(get(new URI("/v2/players/u001/scores?instrument=ピアノ")))
@@ -350,7 +351,7 @@ public class SongControllerTest {
   @Test
   public void プレイヤーIDと地力ランクを指定してスコア情報を取得できるV2() throws Exception {
     query.put("jiriki", "地力Ｄ");
-    when(mockService.searchScoresByQueryV2("u001", query, defaultPaging))
+    when(mockService.searchScoresByQueryV2(new UserId("u001"), query, defaultPaging))
         .thenReturn(mockScore4UserResponseV2);
     mockMvc
         .perform(get(new URI("/v2/players/u001/scores?jiriki=地力Ｄ")))

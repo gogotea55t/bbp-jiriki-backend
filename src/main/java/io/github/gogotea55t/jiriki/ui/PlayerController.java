@@ -18,6 +18,8 @@ import io.github.gogotea55t.jiriki.domain.PlayerService;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.response.ErrorResponse;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @Controller
 public class PlayerController {
@@ -34,7 +36,7 @@ public class PlayerController {
   @GetMapping("/v1/players")
   public ResponseEntity<?> getPlayer(@RequestParam(required = false) String name) {
     if (name != null) {
-      List<UserResponse> result = playerService.getPlayerByName(name);
+      List<UserResponse> result = playerService.getPlayerByName(new UserName(name));
       return ResponseEntity.ok(result);
     } else {
       List<UserResponse> result = playerService.getAllPlayer();
@@ -66,7 +68,7 @@ public class PlayerController {
 
   @GetMapping("/v1/players/{id}")
   public ResponseEntity<?> getPlayerById(@PathVariable(name = "id") String id) {
-    UserResponse response = playerService.getPlayerById(id);
+    UserResponse response = playerService.getPlayerById(new UserId(id));
     if (response == null) {
       return ResponseEntity.notFound().build();
     } else {

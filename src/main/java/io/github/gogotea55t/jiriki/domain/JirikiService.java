@@ -25,6 +25,8 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @EnableScheduling
 @Service
@@ -81,8 +83,8 @@ public class JirikiService {
 
         String userIdStr = userId.get(i).toString();
 
-        user.setUserId(userIdStr);
-        user.setUserName(userName.get(i).toString());
+        user.setUserId(new UserId(userIdStr));
+        user.setUserName(new UserName(userName.get(i).toString()));
         users.put(userIdStr, user);
       }
 
@@ -183,7 +185,7 @@ public class JirikiService {
 
               Optional<Scores> scoreFetched =
                   scoreRepository.findByUsers_UserIdAndSongs_SongId(
-                      scoreRows.get(0).get(j).toString(), thisSong.getSongId());
+                      new UserId(scoreRows.get(0).get(j).toString()), thisSong.getSongId());
 
               if (scoreFetched.isPresent()) {
                 if (scoreFetched.get().getScore().isEqualTo(score.getScore())) {

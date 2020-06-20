@@ -14,6 +14,8 @@ import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @Service
 public class PlayerService {
@@ -46,7 +48,7 @@ public class PlayerService {
    * @param name
    * @return
    */
-  public List<UserResponse> getPlayerByName(String name) {
+  public List<UserResponse> getPlayerByName(UserName name) {
     List<UserResponse> players = new ArrayList<>();
     List<Users> users = userRepository.findByUserNameLike(name);
     for (Users user : users) {
@@ -56,7 +58,7 @@ public class PlayerService {
     return players;
   }
 
-  public UserResponse getPlayerById(String id) {
+  public UserResponse getPlayerById(UserId id) {
     Optional<Users> response = userRepository.findById(id);
     if (response.isPresent()) {
       return UserResponse.of(response.get());

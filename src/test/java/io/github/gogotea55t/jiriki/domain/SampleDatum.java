@@ -8,6 +8,8 @@ import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 import lombok.Getter;
 
 @Getter
@@ -18,12 +20,12 @@ public class SampleDatum {
 
   public SampleDatum() {
     Users user1 = new Users();
-    user1.setUserId("u001");
-    user1.setUserName("妖怪1");
+    user1.setUserId(new UserId("u001"));
+    user1.setUserName(new UserName("妖怪1"));
 
     Users user2 = new Users();
-    user2.setUserId("u002");
-    user2.setUserName("妖怪2");
+    user2.setUserId(new UserId("u002"));
+    user2.setUserName(new UserName("妖怪2"));
 
     Songs mitemite = new Songs();
     mitemite.setSongId("001");

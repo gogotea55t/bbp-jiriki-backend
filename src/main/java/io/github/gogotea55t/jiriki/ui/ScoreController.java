@@ -15,6 +15,7 @@ import io.github.gogotea55t.jiriki.domain.PlayerService;
 import io.github.gogotea55t.jiriki.domain.ScoreService;
 import io.github.gogotea55t.jiriki.domain.request.ScoreDeleteRequest;
 import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.messaging.MessagingService;
 
 @Controller
@@ -62,15 +63,15 @@ public class ScoreController {
   
   @GetMapping("/v1/players/{id}/stats")
   public ResponseEntity<?> getStatsOfUsers(@PathVariable("id") String id) {
-	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserId(id)); 
+	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserId(new UserId(id))); 
   }
   
   @GetMapping("/v1/players/{id}/stats/detail")
   public ResponseEntity<?> getStatsOfUsersByJiriki(@PathVariable("id") String id) {
-	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserIdGroupByJirikiRank(id)); 
+	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserIdGroupByJirikiRank(new UserId(id))); 
   }
 
-  private String loginUserId() {
+  private UserId loginUserId() {
     String auth0UserId = authService.getUserSubjectFromToken();
     return playerService.findPlayerByTwitterId(auth0UserId).getUserId();
   }

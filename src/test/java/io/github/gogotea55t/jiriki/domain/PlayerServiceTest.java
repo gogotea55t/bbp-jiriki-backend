@@ -18,6 +18,8 @@ import io.github.gogotea55t.jiriki.domain.repository.TwitterUsersRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.request.TwitterUsersRequest;
 import io.github.gogotea55t.jiriki.domain.response.UserResponse;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("unittest")
@@ -45,33 +47,33 @@ public class PlayerServiceTest {
 
   @Test
   public void ユーザー名で検索をかけることができる() throws Exception {
-    List<UserResponse> searchResult = playerService.getPlayerByName("妖怪1");
+    List<UserResponse> searchResult = playerService.getPlayerByName(new UserName("妖怪1"));
     assertThat(searchResult.size()).isEqualTo(1);
-    assertThat(searchResult.get(0).getUserName()).isEqualTo("妖怪1");
-    assertThat(searchResult.get(0).getUserId()).isEqualTo("u001");
+    assertThat(searchResult.get(0).getUserName()).isEqualTo(new UserName("妖怪1"));
+    assertThat(searchResult.get(0).getUserId()).isEqualTo(new UserId("u001"));
   }
 
   @Test
   public void ユーザー名は部分一致で検索する() throws Exception {
-    List<UserResponse> searchResult = playerService.getPlayerByName("妖怪");
+    List<UserResponse> searchResult = playerService.getPlayerByName(new UserName("妖怪"));
     assertThat(searchResult.size()).isEqualTo(2);
   }
 
   @Test
   public void 検索結果は0件でも問題ない() throws Exception {
-    List<UserResponse> searchResult = playerService.getPlayerByName("人間");
+    List<UserResponse> searchResult = playerService.getPlayerByName(new UserName("人間"));
     assertThat(searchResult.size()).isEqualTo(0);
   }
 
   @Test
   public void ユーザーIDで検索をかけることができる() throws Exception {
-    UserResponse searchResult = playerService.getPlayerById("u001");
-    assertThat(searchResult.getUserName()).isEqualTo("妖怪1");
+    UserResponse searchResult = playerService.getPlayerById(new UserId("u001"));
+    assertThat(searchResult.getUserName()).isEqualTo(new UserName("妖怪1"));
   }
 
   @Test
   public void 存在しないユーザーIDで検索をしたら何もないが返ってくる() throws Exception {
-    UserResponse searchResult = playerService.getPlayerById("human");
+    UserResponse searchResult = playerService.getPlayerById(new UserId("human"));
     assertThat(searchResult).isNull();
   }
 
@@ -79,17 +81,17 @@ public class PlayerServiceTest {
   public void twitterのIDとユーザーの紐づけができ登録したものを閲覧できる() throws Exception {
     TwitterUsersRequest testRequest = new TwitterUsersRequest();
     String testTwitterId = "aaaaaaaaaa";
-    testRequest.setUserId("u001");
+    testRequest.setUserId(new UserId("u001"));
     testRequest.setTwitterUserId(testTwitterId);
     playerService.addNewLinkBetweenUserAndTwitterUser(testRequest);
 
     Optional<TwitterUsers> putResult = twiRepository.findById(testTwitterId);
     assertThat(putResult.isPresent()).isTrue();
     assertThat(putResult.get().getTwitterUserId()).isEqualTo(testTwitterId);
-    assertThat(putResult.get().getUsers().getUserId()).isEqualTo("u001");
+    assertThat(putResult.get().getUsers().getUserId()).isEqualTo(new UserId("u001"));
 
     UserResponse getResult = playerService.findPlayerByTwitterId(testTwitterId);
-    assertThat(getResult.getUserId()).isEqualTo("u001");
+    assertThat(getResult.getUserId()).isEqualTo(new UserId("u001"));
   }
 
   @Test
@@ -100,7 +102,7 @@ public class PlayerServiceTest {
   @Test(expected = NullPointerException.class)
   public void 存在しないユーザーに対してTwitterアカウントを紐づけようとすると例外が出る() throws Exception {
     TwitterUsersRequest testRequest = new TwitterUsersRequest();
-    testRequest.setUserId("hogehoge");
+    testRequest.setUserId(new UserId("hogehoge"));
     testRequest.setTwitterUserId("hogehogehoge");
 
     playerService.addNewLinkBetweenUserAndTwitterUser(testRequest);
@@ -112,14 +114,14 @@ public class PlayerServiceTest {
 
     TwitterUsersRequest testRequest = new TwitterUsersRequest();
     testRequest.setTwitterUserId(testTwitterId);
-    testRequest.setUserId("u001");
+    testRequest.setUserId(new UserId("u001"));
 
     UserResponse putResult = playerService.addNewLinkBetweenUserAndTwitterUser(testRequest);
-    assertThat(putResult.getUserId()).isEqualTo("u001");
+    assertThat(putResult.getUserId()).isEqualTo(new UserId("u001"));
 
     UserResponse getResult = playerService.findPlayerByTwitterId(testTwitterId);
-    assertThat(getResult.getUserId()).isEqualTo("u001");
+    assertThat(getResult.getUserId()).isEqualTo(new UserId("u001"));
 
-    assertThat(userRepository.findById("u002").isPresent()).isTrue();
+    assertThat(userRepository.findById(new UserId("u002")).isPresent()).isTrue();
   }
 }

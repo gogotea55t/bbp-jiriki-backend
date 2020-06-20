@@ -13,6 +13,7 @@ import io.github.gogotea55t.jiriki.domain.request.ScoreRequest;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseByJirikiRank;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseDetail;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @Service
 public class ScoreService {
@@ -60,11 +61,11 @@ public class ScoreService {
     }
   }
   
-  public StatisticResponse getScoreStatisticsByUserId(String userId) {
+  public StatisticResponse getScoreStatisticsByUserId(UserId userId) {
 	return scoreRepository.getStatisticsOfUsers(userId);
   }
   
-  public StatisticsResponseDetail getScoreStatisticsByUserIdGroupByJirikiRank(String userId) {
+  public StatisticsResponseDetail getScoreStatisticsByUserIdGroupByJirikiRank(UserId userId) {
 	return new StatisticsResponseDetail(scoreRepository.getStatisticsOfUsersGroupByJirikiRank(userId));  
   }
 
