@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 import io.github.gogotea55t.jiriki.domain.vo.StringValueObject;
 import lombok.EqualsAndHashCode;
+import lombok.Setter;
 
-@EqualsAndHashCode(callSuper = true)
+@Setter
+@EqualsAndHashCode(callSuper = false)
 public class UserName extends StringValueObject {
   private static final int MAX_LENGTH = 15;
   @JsonValue private String value;

@@ -1,9 +1,9 @@
 package io.github.gogotea55t.jiriki.domain.vo;
 
 public class StringValueObject {
-  private String value;
+  private final String value;
 
-  protected String getValue() {
+  public String getValue() {
     return value;
   }
 

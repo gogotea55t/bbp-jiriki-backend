@@ -63,12 +63,12 @@ public class ScoreController {
   
   @GetMapping("/v1/players/{id}/stats")
   public ResponseEntity<?> getStatsOfUsers(@PathVariable("id") String id) {
-	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserId(id)); 
+	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserId(new UserId(id))); 
   }
   
   @GetMapping("/v1/players/{id}/stats/detail")
   public ResponseEntity<?> getStatsOfUsersByJiriki(@PathVariable("id") String id) {
-	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserIdGroupByJirikiRank(id)); 
+	 return ResponseEntity.ok(scoreService.getScoreStatisticsByUserIdGroupByJirikiRank(new UserId(id))); 
   }
 
   private UserId loginUserId() {

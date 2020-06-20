@@ -13,6 +13,7 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+  type-handlers-package: io.github.gogotea55t.jiriki.domain.vo
       
 security:
   oauth2:

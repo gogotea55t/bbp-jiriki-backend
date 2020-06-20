@@ -29,20 +29,23 @@ public interface UserRepository {
       value = {
         @Result(
             javaType = UserId.class,
-            column = "userId",
+            column = "USER_ID",
             property = "userId",
-            jdbcType = JdbcType.VARCHAR),
+            jdbcType = JdbcType.VARCHAR,
+            id = true),
         @Result(
             javaType = UserName.class,
-            column = "userName",
+            column = "USER_NAME",
             property = "userName",
-            jdbcType = JdbcType.VARCHAR)
+            jdbcType = JdbcType.VARCHAR,
+            id = false)
       })
-  @Select("SELECT USER_ID, USER_NAME FROM USERS WHERE USER_NAME LIKE CONCAT('%', #{userName}, '%')")
+  @Select(
+      "SELECT USER_ID, USER_NAME FROM USERS WHERE USER_NAME LIKE CONCAT('%', #{userName.value}, '%')")
   public List<Users> findByUserNameLike(UserName userName);
 
   @ResultMap("user")
-  @Select("SELECT USER_ID, USER_NAME FROM USERS WHERE USER_ID = #{userId}")
+  @Select("SELECT USER_ID, USER_NAME FROM USERS WHERE USER_ID = #{userId.value}")
   public Optional<Users> findById(UserId userId);
 
   @Select("SELECT EXISTS(SELECT USER_ID, USER_NAME FROM USERS WHERE USER_ID=#{userId})")

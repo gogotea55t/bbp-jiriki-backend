@@ -9,11 +9,13 @@ import java.sql.SQLException;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.MappedTypes;
 
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
+@MappedJdbcTypes(value = JdbcType.VARCHAR)
 @MappedTypes(value = {UserId.class, UserName.class})
 public class GenericStringValueHandler<E extends StringValueObject> extends BaseTypeHandler<E> {
   private Class<E> type;
@@ -32,7 +34,7 @@ public class GenericStringValueHandler<E extends StringValueObject> extends Base
   @Override
   public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
     try {
-      Constructor<E> constructor = type.getDeclaredConstructor();
+      Constructor<E> constructor = type.getDeclaredConstructor(String.class);
       return constructor.newInstance(rs.getString(columnName));
     } catch (InvocationTargetException
         | IllegalAccessException
@@ -45,7 +47,7 @@ public class GenericStringValueHandler<E extends StringValueObject> extends Base
   @Override
   public E getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
     try {
-      Constructor<E> constructor = type.getDeclaredConstructor();
+      Constructor<E> constructor = type.getDeclaredConstructor(String.class);
       return constructor.newInstance(rs.getString(columnIndex));
     } catch (InvocationTargetException
         | IllegalAccessException
@@ -58,7 +60,7 @@ public class GenericStringValueHandler<E extends StringValueObject> extends Base
   @Override
   public E getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
     try {
-      Constructor<E> constructor = type.getDeclaredConstructor();
+      Constructor<E> constructor = type.getDeclaredConstructor(String.class);
       return constructor.newInstance(cs.getString(columnIndex));
     } catch (InvocationTargetException
         | IllegalAccessException

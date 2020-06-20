@@ -12,13 +12,17 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.type.JdbcType;
 
 import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4SongResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseByJirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.GenericStringValueHandler;
+import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
+import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @Mapper
 public interface ScoresRepository {
@@ -26,9 +30,28 @@ public interface ScoresRepository {
   public Optional<Scores> findByUsers_UserIdAndSongs_SongId(
       @Param("userId") UserId userId, @Param("songId") String songId);
 
+  @Results({
+    @Result(
+        javaType = UserName.class,
+        column = "userName",
+        property = "userName",
+        jdbcType = JdbcType.VARCHAR)
+  })
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSql")
   public List<Score4SongResponse> findScoresBySongId(String songId);
 
+  @Results({
+    @Result(
+        javaType = UserId.class,
+        column = "USER_ID",
+        property = "userId",
+        jdbcType = JdbcType.VARCHAR),
+    @Result(
+        javaType = UserName.class,
+        column = "USER_NAME",
+        property = "userName",
+        jdbcType = JdbcType.VARCHAR)
+  })
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSqlV2")
   public List<Score4SongResponseV2> findScoresBySongIdV2(String songId);
 
@@ -36,7 +59,7 @@ public interface ScoresRepository {
   public StatisticResponse getStatisticsOfSongs(String songId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSqlByUser")
-  public StatisticResponse getStatisticsOfUsers(String userId);
+  public StatisticResponse getStatisticsOfUsers(UserId userId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSqlGroupByJiriki")
   @Results(
@@ -50,7 +73,7 @@ public interface ScoresRepository {
         @Result(column = "none", property = "stats.none"),
         @Result(column = "jiriki_rank", property = "jirikiRank"),
       })
-  public List<StatisticsResponseByJirikiRank> getStatisticsOfUsersGroupByJirikiRank(String userId);
+  public List<StatisticsResponseByJirikiRank> getStatisticsOfUsersGroupByJirikiRank(UserId userId);
 
   @Insert(
       "<script>"
