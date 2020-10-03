@@ -2,23 +2,27 @@ package io.github.gogotea55t.jiriki.domain.response;
 
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
+import io.github.gogotea55t.jiriki.domain.vo.song.Contributor;
+import io.github.gogotea55t.jiriki.domain.vo.song.Instrument;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongName;
 import lombok.Data;
 
 @Data
 public class SongsResponse {
   /** 楽曲ID */
-  private String songId;
+  private SongId songId;
 
   private JirikiRank jirikiRank;
 
   /** 楽曲名 */
-  private String songName;
+  private SongName songName;
 
   /** 投稿者名 */
-  private String contributor;
+  private Contributor contributor;
 
   /** 楽器 */
-  private String instrument;
+  private Instrument instrument;
 
   public static SongsResponse of(Songs song) {
     SongsResponse songsResponse = new SongsResponse();

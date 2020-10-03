@@ -6,21 +6,25 @@ import io.github.gogotea55t.jiriki.domain.entity.Scores;
 import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.song.Contributor;
+import io.github.gogotea55t.jiriki.domain.vo.song.Instrument;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Data
 public class Score4UserResponse {
-  private String songId;
+  private SongId songId;
 
   private JirikiRank jirikiRank;
 
-  private String songName;
+  private SongName songName;
 
-  private String contributor;
+  private Contributor contributor;
 
-  private String instrument;
+  private Instrument instrument;
 
   private ScoreValue score;
 
@@ -39,11 +43,11 @@ public class Score4UserResponse {
   }
 
   public Score4UserResponse(Object[] obj) {
-    this.songId = (String) obj[0];
+    this.songId = new SongId((String) obj[0]);
     this.jirikiRank = JirikiRank.getJirikiRankFromId((int) obj[1]);
-    this.songName = (String) obj[2];
-    this.contributor = (String) obj[3];
-    this.instrument = (String) obj[4];
+    this.songName = new SongName((String) obj[2]);
+    this.contributor = new Contributor((String) obj[3]);
+    this.instrument = new Instrument((String) obj[4]);
     if (obj[5] instanceof BigDecimal || obj[5] instanceof Double) {
       this.score = new ScoreValue((BigDecimal) obj[5]);
     } else {

@@ -21,6 +21,7 @@ import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
@@ -86,5 +87,5 @@ public interface SongRepository {
   public void deleteAll();
 
   @Select("SELECT * FROM SONGS WHERE SONG_ID = #{id}")
-  public Optional<Songs> findById(String id);
+  public Optional<Songs> findById(SongId id);
 }

@@ -3,6 +3,7 @@ package io.github.gogotea55t.jiriki.domain.request;
 import java.io.Serializable;
 
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ public class ScoreRequest implements Serializable {
 
   private UserId userId;
 
-  private String songId;
+  private SongId songId;
 
   private ScoreValue score;
 }
