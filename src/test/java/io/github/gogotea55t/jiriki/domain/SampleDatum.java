@@ -8,6 +8,10 @@ import io.github.gogotea55t.jiriki.domain.entity.Songs;
 import io.github.gogotea55t.jiriki.domain.entity.Users;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.song.Contributor;
+import io.github.gogotea55t.jiriki.domain.vo.song.Instrument;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongName;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 import lombok.Getter;
@@ -28,25 +32,25 @@ public class SampleDatum {
     user2.setUserName(new UserName("妖怪2"));
 
     Songs mitemite = new Songs();
-    mitemite.setSongId("001");
+    mitemite.setSongId(new SongId("001"));
     mitemite.setJirikiRank(JirikiRank.getJirikiRankFromRankName("地力Ｓ＋"));
-    mitemite.setInstrument("チェンバロ");
-    mitemite.setSongName("みてみて☆こっちっち");
-    mitemite.setContributor("エメラル");
+    mitemite.setInstrument(new Instrument("チェンバロ"));
+    mitemite.setSongName(new SongName("みてみて☆こっちっち"));
+    mitemite.setContributor(new Contributor("エメラル"));
 
     Songs miraclePaint = new Songs();
-    miraclePaint.setSongId("002");
+    miraclePaint.setSongId(new SongId("002"));
     miraclePaint.setJirikiRank(JirikiRank.getJirikiRankFromRankName("地力Ａ＋"));
-    miraclePaint.setSongName("ミラクルペイント");
-    miraclePaint.setContributor("タタナミ");
-    miraclePaint.setInstrument("ピアノ①");
+    miraclePaint.setSongName(new SongName("ミラクルペイント"));
+    miraclePaint.setContributor(new Contributor("タタナミ"));
+    miraclePaint.setInstrument(new Instrument("ピアノ①"));
     
     Songs gensokyo = new Songs();
-    gensokyo.setSongId("003");
+    gensokyo.setSongId(new SongId("003"));
     gensokyo.setJirikiRank(JirikiRank.JIRIKI_B_PLUS);
-    gensokyo.setSongName("千年幻想郷 〜 History of the Moon");
-    gensokyo.setInstrument("E・ギター");
-    gensokyo.setContributor("DXいしょく＠ばけばけ");
+    gensokyo.setSongName(new SongName("千年幻想郷 〜 History of the Moon"));
+    gensokyo.setInstrument(new Instrument("E・ギター"));
+    gensokyo.setContributor(new Contributor("DXいしょく＠ばけばけ"));
 
     Scores score1 = new Scores();
     score1.setUsers(user1);

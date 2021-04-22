@@ -3,7 +3,9 @@ package io.github.gogotea55t.jiriki.domain.vo.song;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import io.github.gogotea55t.jiriki.domain.vo.StringValueObject;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = false)
 public class SongId extends StringValueObject {
   @JsonValue private final String value;
   private final int MAX_LENGTH = 5;

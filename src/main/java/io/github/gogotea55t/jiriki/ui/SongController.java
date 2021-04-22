@@ -204,6 +204,7 @@ public class SongController {
 
   @GetMapping("/v2/songs/{id}/scores")
   public ResponseEntity<?> getScoresBySongIdV2(@PathVariable(name = "id") SongId id) {
+	System.out.println(id.getValue());
     List<Score4SongResponseV2> response = songService.getScoresBySongIdV2(id);
     if (response == null) {
       return ResponseEntity.notFound().build();
