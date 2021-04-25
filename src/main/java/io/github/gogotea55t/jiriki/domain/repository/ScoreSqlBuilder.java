@@ -3,6 +3,7 @@ package io.github.gogotea55t.jiriki.domain.repository;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.jdbc.SQL;
 
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 public class ScoreSqlBuilder {
@@ -22,7 +23,7 @@ public class ScoreSqlBuilder {
           + "COUNT((SCORE < 50) OR NULL) as gray";
 
   public static final String buildScoreFetchSql(
-      @Param("userId") UserId userId, @Param("songId") String songId) {
+      @Param("userId") UserId userId, @Param("songId") SongId songId) {
     return new SQL() {
       {
         SELECT(SCORE_ALL_PARAMS);
@@ -36,7 +37,7 @@ public class ScoreSqlBuilder {
     }.toString();
   }
 
-  public static final String buildScoreFetchBySongIdSql(String songId) {
+  public static final String buildScoreFetchBySongIdSql(SongId songId) {
     return new SQL() {
       {
         SELECT("us.user_name, sc.score");
@@ -49,7 +50,7 @@ public class ScoreSqlBuilder {
     }.toString();
   }
 
-  public static final String buildScoreFetchBySongIdSqlV2(String songId) {
+  public static final String buildScoreFetchBySongIdSqlV2(SongId songId) {
     return new SQL() {
       {
         SELECT("us.user_id, us.user_name, sc.score");
@@ -62,7 +63,7 @@ public class ScoreSqlBuilder {
     }.toString();
   }
 
-  public static final String buildScoreStatSql(String songId) {
+  public static final String buildScoreStatSql(SongId songId) {
     return new SQL() {
       {
         SELECT(STATS_ALL_PARAMS);

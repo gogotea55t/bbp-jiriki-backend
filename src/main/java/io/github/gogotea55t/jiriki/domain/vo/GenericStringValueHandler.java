@@ -12,11 +12,15 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;
 import org.apache.ibatis.type.MappedTypes;
 
+import io.github.gogotea55t.jiriki.domain.vo.song.Contributor;
+import io.github.gogotea55t.jiriki.domain.vo.song.Instrument;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongName;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
 @MappedJdbcTypes(value = JdbcType.VARCHAR)
-@MappedTypes(value = {UserId.class, UserName.class})
+@MappedTypes(value = {UserId.class, UserName.class, SongId.class, SongName.class, Instrument.class, Contributor.class})
 public class GenericStringValueHandler<E extends StringValueObject> extends BaseTypeHandler<E> {
   private Class<E> type;
 

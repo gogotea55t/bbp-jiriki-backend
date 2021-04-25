@@ -18,6 +18,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponse;
 import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @Controller
@@ -53,7 +54,7 @@ public class SongController {
   }
 
   @GetMapping("/v1/songs/{id}/stats")
-  public ResponseEntity<?> getStatisticsOfSong(@PathVariable("id") String songId) {
+  public ResponseEntity<?> getStatisticsOfSong(@PathVariable("id") SongId songId) {
     return ResponseEntity.ok(songService.getSongStat(songId));
   }
 
@@ -172,7 +173,7 @@ public class SongController {
   }
 
   @GetMapping("/v1/songs/{id}")
-  public ResponseEntity<?> getSongBySongId(@PathVariable(name = "id") String id) {
+  public ResponseEntity<?> getSongBySongId(@PathVariable(name = "id") SongId id) {
     SongsResponse response = songService.getSongBySongId(id);
     if (response == null) {
       return ResponseEntity.notFound().build();
@@ -192,7 +193,7 @@ public class SongController {
   }
 
   @GetMapping("/v1/songs/{id}/scores")
-  public ResponseEntity<?> getScoresBySongId(@PathVariable(name = "id") String id) {
+  public ResponseEntity<?> getScoresBySongId(@PathVariable(name = "id") SongId id) {
     List<Score4SongResponse> response = songService.getScoresBySongId(id);
     if (response == null) {
       return ResponseEntity.notFound().build();
@@ -202,7 +203,8 @@ public class SongController {
   }
 
   @GetMapping("/v2/songs/{id}/scores")
-  public ResponseEntity<?> getScoresBySongIdV2(@PathVariable(name = "id") String id) {
+  public ResponseEntity<?> getScoresBySongIdV2(@PathVariable(name = "id") SongId id) {
+	System.out.println(id.getValue());
     List<Score4SongResponseV2> response = songService.getScoresBySongIdV2(id);
     if (response == null) {
       return ResponseEntity.notFound().build();
@@ -212,7 +214,7 @@ public class SongController {
   }
 
   @GetMapping("/v2/songs/{id}/top")
-  public ResponseEntity<?> getTopScoresV2(@PathVariable(name = "id") String id) {
+  public ResponseEntity<?> getTopScoresV2(@PathVariable(name = "id") SongId id) {
     return ResponseEntity.ok(songService.getSongTopScore(id));
   }
 }

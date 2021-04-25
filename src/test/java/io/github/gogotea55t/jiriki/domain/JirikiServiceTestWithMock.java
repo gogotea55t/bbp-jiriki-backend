@@ -28,6 +28,10 @@ import io.github.gogotea55t.jiriki.domain.repository.SongRepository;
 import io.github.gogotea55t.jiriki.domain.repository.UserRepository;
 import io.github.gogotea55t.jiriki.domain.vo.JirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.song.Contributor;
+import io.github.gogotea55t.jiriki.domain.vo.song.Instrument;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongName;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
@@ -66,21 +70,21 @@ public class JirikiServiceTestWithMock {
     sampleUser2.setUserId(new UserId("u002"));
     sampleUser2.setUserName(new UserName("妖怪b"));
     userRepository.save(sampleUser2);
-
+    
     Songs sampleSong = new Songs();
     sampleSong.setJirikiRank(JirikiRank.JIRIKI_S_PLUS);
-    sampleSong.setSongName("みてみて☆こっちっち");
-    sampleSong.setSongId("4");
-    sampleSong.setContributor("エメラル");
-    sampleSong.setInstrument("チェンバロ");
+    sampleSong.setSongName(new SongName("みてみて☆こっちっち"));
+    sampleSong.setSongId(new SongId("4"));
+    sampleSong.setContributor(new Contributor("エメラル"));
+    sampleSong.setInstrument(new Instrument("チェンバロ"));
     songRepository.save(sampleSong);
 
     Songs sampleSong2 = new Songs();
     sampleSong2.setJirikiRank(JirikiRank.JIRIKI_B_PLUS);
-    sampleSong2.setSongId("558");
-    sampleSong2.setSongName("ミラクルペイント");
-    sampleSong2.setContributor("タタナミ");
-    sampleSong2.setInstrument("ピアノ①");
+    sampleSong2.setSongId(new SongId("558"));
+    sampleSong2.setSongName(new SongName("ミラクルペイント"));
+    sampleSong2.setContributor(new Contributor("タタナミ"));
+    sampleSong2.setInstrument(new Instrument("ピアノ①"));
     songRepository.save(sampleSong2);
     Scores score = new Scores();
     score.setSongs(sampleSong2);
@@ -214,7 +218,7 @@ public class JirikiServiceTestWithMock {
     assertThat(scoreRepository.count()).isEqualTo(7);
     Users youkai2 = userRepository.findById(new UserId("u002")).get();
     assertThat(youkai2.getUserName()).isEqualTo(new UserName("妖怪2"));
-    Songs miraclePaint = songRepository.findById("558").get();
+    Songs miraclePaint = songRepository.findById(new SongId("558")).get();
     assertThat(miraclePaint.getJirikiRank()).isEqualTo(JirikiRank.JIRIKI_A_PLUS);
     Scores score =
         scoreRepository

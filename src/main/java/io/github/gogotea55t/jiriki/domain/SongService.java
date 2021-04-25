@@ -22,6 +22,7 @@ import io.github.gogotea55t.jiriki.domain.response.Score4UserResponseV2;
 import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 
 @Service
@@ -40,7 +41,7 @@ public class SongService {
     this.scoreRepository = scoreRepository;
   }
 
-  public SongsResponse getSongBySongId(String songId) {
+  public SongsResponse getSongBySongId(SongId songId) {
     Optional<Songs> response = songRepository.findById(songId);
     if (response.isPresent()) {
       return SongsResponse.of(response.get());
@@ -98,7 +99,7 @@ public class SongService {
     }
   }
 
-  public List<Score4SongResponse> getScoresBySongId(String songId) {
+  public List<Score4SongResponse> getScoresBySongId(SongId songId) {
     Optional<Songs> song = songRepository.findById(songId);
     if (song.isPresent()) {
       return scoreRepository.findScoresBySongId(songId);
@@ -107,7 +108,7 @@ public class SongService {
     }
   }
 
-  public List<Score4SongResponseV2> getScoresBySongIdV2(String songId) {
+  public List<Score4SongResponseV2> getScoresBySongIdV2(SongId songId) {
     Optional<Songs> song = songRepository.findById(songId);
     if (song.isPresent()) {
       return scoreRepository.findScoresBySongIdV2(songId);
@@ -116,7 +117,7 @@ public class SongService {
     }
   }
 
-  public SongTopScoreResponse getSongTopScore(String songId) {
+  public SongTopScoreResponse getSongTopScore(SongId songId) {
     List<Score4SongResponseV2> results = scoreRepository.findScoresBySongIdV2(songId);
     List<Score4SongResponseV2> top = new ArrayList<>();
     List<Score4SongResponseV2> second = new ArrayList<>();
@@ -147,7 +148,7 @@ public class SongService {
     return response;
   }
   
-  public StatisticResponse getSongStat(String songId) {
+  public StatisticResponse getSongStat(SongId songId) {
 	return scoreRepository.getStatisticsOfSongs(songId);
   }
 }

@@ -21,6 +21,7 @@ import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticsResponseByJirikiRank;
 import io.github.gogotea55t.jiriki.domain.vo.GenericStringValueHandler;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
@@ -28,7 +29,7 @@ import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 public interface ScoresRepository {
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchSql")
   public Optional<Scores> findByUsers_UserIdAndSongs_SongId(
-      @Param("userId") UserId userId, @Param("songId") String songId);
+      @Param("userId") UserId userId, @Param("songId") SongId songId);
 
   @Results({
     @Result(
@@ -38,7 +39,7 @@ public interface ScoresRepository {
         jdbcType = JdbcType.VARCHAR)
   })
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSql")
-  public List<Score4SongResponse> findScoresBySongId(String songId);
+  public List<Score4SongResponse> findScoresBySongId(SongId songId);
 
   @Results({
     @Result(
@@ -53,10 +54,10 @@ public interface ScoresRepository {
         jdbcType = JdbcType.VARCHAR)
   })
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreFetchBySongIdSqlV2")
-  public List<Score4SongResponseV2> findScoresBySongIdV2(String songId);
+  public List<Score4SongResponseV2> findScoresBySongIdV2(SongId songId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSql")
-  public StatisticResponse getStatisticsOfSongs(String songId);
+  public StatisticResponse getStatisticsOfSongs(SongId songId);
 
   @SelectProvider(type = ScoreSqlBuilder.class, method = "buildScoreStatSqlByUser")
   public StatisticResponse getStatisticsOfUsers(UserId userId);
@@ -96,7 +97,7 @@ public interface ScoresRepository {
   public int count();
 
   @Select("DELETE FROM SCORES WHERE USERS_USER_ID = #{userId} AND SONGS_SONG_ID = #{songId}")
-  public void delete(@Param("songId") String songId, @Param("userId") UserId userId);
+  public void delete(@Param("songId") SongId songId, @Param("userId") UserId userId);
 
   @Delete("DELETE FROM SCORES")
   public int deleteAll();

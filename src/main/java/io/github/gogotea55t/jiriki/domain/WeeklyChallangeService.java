@@ -23,8 +23,9 @@ public class WeeklyChallangeService {
 	this.weeklyChallangeRepository = weeklyChallangeRepository;
   }
   
-  @Scheduled(cron = "0 0 0 * * 1")
+  @Scheduled(cron = "0 46 12 * * *")
   public void setWeeklyChallange() {
+	  System.out.println("Start");
     LocalDate startDate = LocalDate.now();
     LocalDate endDate = startDate.plusDays(6);
     WeeklyChallange wc = new WeeklyChallange();

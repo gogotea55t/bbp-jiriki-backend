@@ -32,6 +32,8 @@ import io.github.gogotea55t.jiriki.domain.response.SongTopScoreResponse;
 import io.github.gogotea55t.jiriki.domain.response.SongsResponse;
 import io.github.gogotea55t.jiriki.domain.response.StatisticResponse;
 import io.github.gogotea55t.jiriki.domain.vo.ScoreValue;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongId;
+import io.github.gogotea55t.jiriki.domain.vo.song.SongName;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserId;
 import io.github.gogotea55t.jiriki.domain.vo.user.UserName;
 
@@ -185,13 +187,13 @@ public class SongServiceTest {
 
   @Test
   public void 楽曲IDで検索をかけられる() throws Exception {
-    SongsResponse songs = songService.getSongBySongId("001");
-    assertThat(songs.getSongName()).isEqualTo("みてみて☆こっちっち");
+    SongsResponse songs = songService.getSongBySongId(new SongId("001"));
+    assertThat(songs.getSongName()).isEqualTo(new SongName("みてみて☆こっちっち"));
   }
 
   @Test
   public void 存在しない楽曲IDで検索をかけると何もないを返す() throws Exception {
-    SongsResponse songs = songService.getSongBySongId("aaa");
+    SongsResponse songs = songService.getSongBySongId(new SongId("aaa"));
     assertThat(songs).isNull();
   }
 
@@ -201,25 +203,25 @@ public class SongServiceTest {
 
   @Test
   public void 存在しない楽曲IDでスコアを検索すると何もないが返ってくる() throws Exception {
-    List<Score4SongResponse> scores = songService.getScoresBySongId("00000");
+    List<Score4SongResponse> scores = songService.getScoresBySongId(new SongId("00000"));
     assertThat(scores).isNull();
   }
 
   @Test
   public void 存在する楽曲IDでスコアを検索できる() throws Exception {
-    List<Score4SongResponse> scores = songService.getScoresBySongId("001");
+    List<Score4SongResponse> scores = songService.getScoresBySongId(new SongId("001"));
     assertThat(scores.size()).isEqualTo(2);
   }
 
   @Test
   public void 存在しない楽曲IDでスコアを検索すると何もないが返ってくるV2() throws Exception {
-    List<Score4SongResponseV2> scores = songService.getScoresBySongIdV2("00000");
+    List<Score4SongResponseV2> scores = songService.getScoresBySongIdV2(new SongId("00000"));
     assertThat(scores).isNull();
   }
 
   @Test
   public void 存在する楽曲IDでスコアを検索できるV2() throws Exception {
-    List<Score4SongResponseV2> scores = songService.getScoresBySongIdV2("001");
+    List<Score4SongResponseV2> scores = songService.getScoresBySongIdV2(new SongId("001"));
     assertThat(scores.size()).isEqualTo(2);
   }
 
@@ -373,7 +375,7 @@ public class SongServiceTest {
    */
   @Test
   public void 上位3人がフルでいる曲の情報を取得する() throws Exception {
-    Songs song = songRepository.findById("001").get();
+    Songs song = songRepository.findById(new SongId("001")).get();
     Users thirdMan = new Users();
     thirdMan.setUserId(new UserId("u015"));
     thirdMan.setUserName(new UserName("第三の男"));
@@ -392,7 +394,7 @@ public class SongServiceTest {
     fourthManScore.setScore(new ScoreValue("76"));
     scoreRepository.save(thirdManScore);
     scoreRepository.save(fourthManScore);
-    SongTopScoreResponse response = songService.getSongTopScore("001");
+    SongTopScoreResponse response = songService.getSongTopScore(new SongId("001"));
     assertThat(response.getTop().size()).isEqualTo(1);
     assertThat(response.getSecond().size()).isEqualTo(1);
     assertThat(response.getThird().size()).isEqualTo(1);
@@ -400,7 +402,7 @@ public class SongServiceTest {
 
   @Test
   public void トップに複数人数いる曲の情報を取得する() throws Exception {
-    Songs song = songRepository.findById("001").get();
+    Songs song = songRepository.findById(new SongId("001")).get();
     Users thirdMan = new Users();
     thirdMan.setUserId(new UserId("u015"));
     thirdMan.setUserName(new UserName("第三の男"));
@@ -419,7 +421,7 @@ public class SongServiceTest {
     fourthManScore.setScore(new ScoreValue("100"));
     scoreRepository.save(thirdManScore);
     scoreRepository.save(fourthManScore);
-    SongTopScoreResponse response = songService.getSongTopScore("001");
+    SongTopScoreResponse response = songService.getSongTopScore(new SongId("001"));
     assertThat(response.getTop().size()).isEqualTo(2);
     assertThat(response.getSecond().size()).isEqualTo(1);
     assertThat(response.getThird().size()).isEqualTo(1);
@@ -427,7 +429,7 @@ public class SongServiceTest {
 
   @Test
   public void 存在しない曲のトップ情報を取得しようとする() throws Exception {
-    SongTopScoreResponse response = songService.getSongTopScore("119");
+    SongTopScoreResponse response = songService.getSongTopScore(new SongId("119"));
     assertThat(response.getTop().size()).isEqualTo(0);
     assertThat(response.getSecond().size()).isEqualTo(0);
     assertThat(response.getThird().size()).isEqualTo(0);
@@ -435,7 +437,7 @@ public class SongServiceTest {
   
   @Test
   public void 楽曲ごとの統計情報を取得できる() throws Exception {
-	StatisticResponse response = songService.getSongStat("001");
+	StatisticResponse response = songService.getSongStat(new SongId("001"));
 	assertThat(response.getGold()).isEqualTo(0);
 	assertThat(response.getSilver()).isEqualTo(2);
 	assertThat(response.getBronze()).isEqualTo(0);
