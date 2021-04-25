@@ -16,7 +16,7 @@ public class Contributor extends StringValueObject {
       throw new IllegalArgumentException("投稿者名の入力は必須です。");
     }
     if (value.length() > MAX_LENGTH) {
-      throw new IllegalArgumentException("投稿者名は" + MAX_LENGTH + "以上にできません。");
+      throw new IllegalArgumentException("投稿者名は" + MAX_LENGTH + "文字以上にできません。");
     }
     this.value = value;
   }

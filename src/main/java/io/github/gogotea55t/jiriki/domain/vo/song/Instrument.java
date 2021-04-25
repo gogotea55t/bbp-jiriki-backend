@@ -8,15 +8,15 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class Instrument extends StringValueObject {
   @JsonValue private final String value;
-  private final int MAX_LENGTH = 60;
+  private final int MAX_LENGTH = 15;
 
   public Instrument(String value) {
     super(value);
     if (value == null) {
-      throw new IllegalArgumentException("楽曲名の入力は必須です。");
+      throw new IllegalArgumentException("楽器名の入力は必須です。");
     }
     if (value.length() > MAX_LENGTH) {
-      throw new IllegalArgumentException("楽曲名は" + MAX_LENGTH + "以上にできません。");
+      throw new IllegalArgumentException("楽器名は" + MAX_LENGTH + "文字以上にできません。");
     }
     this.value = value;
   }
